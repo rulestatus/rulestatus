@@ -122,29 +122,41 @@ Without this, the ceiling on sales is "useful developer tool." With it, the prod
 
 Deliverable: a written statement from the reviewer that can be referenced in reports and on the website.
 
-### P2.7 — Run history and compliance audit trail
+### P2.7 — CI run as audit trail; annotate JSON report with run provenance
 
-Every `rulestatus run` result should be stored locally in `.rulestatus/history/YYYY-MM-DD-HHMMSS.json`. Add a `rulestatus history` command that shows a timeline of evidence check results over time.
+The GitHub Actions run history is already the audit log — timestamped, commit-linked, actor-attributed, and immutable. Don't reinvent it locally. Instead, make the existing CI output auditor-readable:
 
-**Why this matters for the business:** When a regulator investigates, the question is not just "are you compliant today?" but "what systematic steps did you take?" A 12-month trail of timestamped evidence check runs — including gaps that were identified and then resolved — is direct proof of a documented compliance program. This is precisely what regulators mean by "reasonable measures."
+1. **Annotate the JSON report** with `GITHUB_RUN_ID`, `GITHUB_SHA`, `GITHUB_ACTOR`, and `GITHUB_REPOSITORY` when running in CI (detect via env). This links every report to an exact run and committer.
 
-It also creates genuine lock-in: the historical audit trail only exists in rulestatus. Churning means losing the evidence of your compliance program history.
+2. **Upload JSON as a retained artifact** in `action.yml` via `actions/upload-artifact`. GitHub retains artifacts for 90 days by default (configurable). Auditors get a queryable, per-run evidence archive without any custom storage.
 
+3. **Add `upload-artifact: true` input** to the action so teams can opt in.
+
+The "12-month trail" value prop is real — but it's the GitHub Actions run history, not a local file. The story to regulators is: "every deployment was gated on a compliance check; here is the GitHub Actions history showing every run, its commit, and its actor."
+
+### P2.8 — Attestation for MANUAL checks via committed files + Sigstore
+
+Two existing infrastructure pieces cover this completely:
+
+**For MANUAL check sign-off (human attestation):**
+
+`rulestatus attest <ASSERT-ID>` generates a structured YAML file at `.rulestatus/attestations/<ASSERT-ID>.yaml`:
+
+```yaml
+assertion_id: ASSERT-EU-AI-ACT-013-001-01
+attested_by: "TODO: Full name, role"
+attested_at: "TODO: YYYY-MM-DD"
+statement: "TODO: Description of how this obligation is met"
+evidence_ref: "TODO: Path or URL to supporting evidence"
 ```
-$ rulestatus history
-  2026-04-26  39 evidence found  1 gap  (ASSERT-EU-AI-ACT-009-001-01 — fixed next day)
-  2026-04-25  38 evidence found  2 gaps
-  2026-04-01  30 evidence found  10 gaps
-  ...
-```
 
-### P2.8 — Attestation workflow for MANUAL checks
+The user fills it in and **commits it to the repo**. The git commit provides identity (committer), timestamp, and immutability. No custom storage or signing infra needed. This is how policy-as-code tools (OPA, Conftest) already handle human attestations — the commit IS the attestation.
 
-Several assertions cannot be automated and currently resolve to `MANUAL` status. These represent real compliance obligations (e.g., AI disclosure verification, physical oversight mechanisms) that auditors will ask about.
+**For cryptographic signing of the full evidence report:**
 
-Add a structured attestation workflow: when a check is `MANUAL`, `rulestatus attest <ASSERT-ID>` prompts the user for a written statement and optional evidence file attachment, stores the attestation with a timestamp and user identity, and includes it in the evidence bundle.
+Use `gh attestation create` (GitHub CLI, backed by Sigstore/Rekor) to sign the JSON report as a build artifact. This produces a verifiable OIDC-backed attestation tied to the GitHub Actions workflow identity — provable to any verifier without a private key. Use the in-toto attestation predicate format (`https://slsa.dev/provenance/v1`) for compatibility with the supply chain security ecosystem.
 
-This converts open-ended MANUAL items into a documented paper trail that auditors can review. Without it, MANUAL results are a black box in the report.
+Add an optional `attest: true` input to `action.yml` that runs `gh attestation create` on the JSON report after each run.
 
 ### P2.5 — `rulestatus update` command
 

@@ -70,3 +70,22 @@ runs:
         echo "report-dir=${{ inputs.output-dir }}" >> $GITHUB_OUTPUT
 
         exit ${EXIT_CODE:-0}
+
+    # TODO P2.7: upload JSON report as retained artifact
+    # - name: Upload evidence report
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: rulestatus-evidence-${{ github.sha }}
+    #     path: ${{ inputs.output-dir }}/*.json
+    #     retention-days: 365
+
+    # TODO P2.8: cryptographically sign evidence report (requires gh CLI + OIDC token)
+    # - name: Attest evidence report
+    #   if: inputs.attest == 'true'
+    #   run: |
+    #     gh attestation create ${{ inputs.output-dir }}/*.json \
+    #       --repo ${{ github.repository }}
+    #   shell: bash
+    #   env:
+    #     GH_TOKEN: ${{ github.token }}
