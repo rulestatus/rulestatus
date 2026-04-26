@@ -14,6 +14,7 @@ export class JsonReporter implements Reporter {
         disclaimer:
           "This report documents automated evidence scanning results. Evidence present does not constitute a legal determination of compliance with the EU AI Act. Not legal advice. Not a conformity assessment.",
       },
+      framework: report.framework,
       system: {
         name: report.systemName,
         actor: report.actor,

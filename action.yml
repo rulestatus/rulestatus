@@ -51,19 +51,18 @@ runs:
       id: run
       shell: bash
       run: |
-        ARGS="--format ${{ inputs.report-format }} --output ${{ inputs.output-dir }}"
+        BASE_ARGS="--format ${{ inputs.report-format }} --output ${{ inputs.output-dir }}"
 
         if [ -n "${{ inputs.config-path }}" ]; then
-          ARGS="$ARGS --config ${{ inputs.config-path }}"
+          BASE_ARGS="$BASE_ARGS --config ${{ inputs.config-path }}"
         fi
 
-        # Convert comma-separated frameworks to multiple --framework flags
+        EXIT_CODE=0
         IFS=',' read -ra FWS <<< "${{ inputs.frameworks }}"
         for fw in "${FWS[@]}"; do
-          ARGS="$ARGS --framework $(echo $fw | xargs)"
+          fw=$(echo "$fw" | xargs)
+          rulestatus run $BASE_ARGS --framework "$fw" || EXIT_CODE=$?
         done
-
-        rulestatus run $ARGS || EXIT_CODE=$?
 
         SARIF_FILE="${{ inputs.output-dir }}/eu-ai-act-$(date +%Y-%m-%d).sarif"
         echo "sarif-file=$SARIF_FILE" >> $GITHUB_OUTPUT
