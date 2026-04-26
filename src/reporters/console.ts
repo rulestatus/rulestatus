@@ -53,15 +53,20 @@ export class ConsoleReporter implements Reporter {
     const criticalFails = failed(report).filter((r) => r.severity === "critical");
     if (criticalFails.length > 0) {
       console.log(
-        chalk.bold.red(`  Critical failures: ${criticalFails.length} — pipeline BLOCKED`),
+        chalk.bold.red(`  Critical evidence gaps: ${criticalFails.length} — pipeline BLOCKED`),
       );
     } else if (f > 0) {
-      console.log(chalk.yellow(`  Non-critical failures: ${f}`));
+      console.log(chalk.yellow(`  Non-critical evidence gaps: ${f}`));
     } else if (w > 0) {
-      console.log(chalk.yellow(`  Warnings present — review recommended`));
+      console.log(chalk.yellow(`  Evidence warnings — review recommended`));
     } else {
-      console.log(chalk.bold.green("  All checks passed ✓"));
+      console.log(chalk.bold.green("  All evidence items found ✓"));
     }
+    console.log(
+      chalk.dim(
+        "  Note: evidence present ≠ legally compliant. Not legal advice or a conformity assessment.",
+      ),
+    );
     console.log();
   }
 }

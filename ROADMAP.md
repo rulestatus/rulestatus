@@ -2,7 +2,7 @@
 
 ## Current State (April 2026)
 
-Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `report` work. Reporters: console, JSON, SARIF, PDF, badge. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) exists.
+Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report` work. Reporters: console, JSON, SARIF, PDF, badge. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) exists. All reporters use evidence-readiness framing with legal disclaimers.
 
 ---
 
@@ -41,6 +41,10 @@ This is what makes `explain` the killer feature the review identified.
 ### P1.3 — Fix console reporter double-render bug
 
 `cmdRun.ts` lines 62–65: both branches of the `if (!formats.includes("console"))` block call `ConsoleReporter.render()`. The condition is inverted — console is rendered twice in some cases and the format selection logic is wrong.
+
+### P1.6 — Evidence readiness framing and legal disclaimers ✓ Done
+
+All report outputs (console, PDF, JSON) now use evidence-readiness language ("evidence found / evidence gap") rather than compliance language ("pass / fail"). Mandatory disclaimer added to every output surface clarifying that results are not legal advice and do not constitute a conformity assessment.
 
 ### P1.4 — Open question: JUnit XML export
 
@@ -109,6 +113,38 @@ Legal analysts edit YAML; engineers encode YAML to TypeScript tests. Clear separ
 ### P2.4 — Reduce runtime API probe surface
 
 `apiProbe.ts` exists and Article 13/14 rules use it. In practice, most target systems don't expose clean local APIs in CI. Bias evidence collection toward document/config/schema checks (80%) with API probing as a fallback only. Where runtime checks are required, provide a `manual` fallback that marks the assertion as `MANUAL` rather than `FAIL`.
+
+### P2.6 — Legal review credential
+
+The single most important business milestone before enterprise sales. Get a named law firm, notified body, or qualified compliance professional to formally review the EU AI Act assertion library and endorse the methodology. Display their name and review date in every PDF report footer.
+
+Without this, the ceiling on sales is "useful developer tool." With it, the product can be presented in enterprise procurement and security reviews as having been validated by qualified legal professionals. This is not optional for the Auditor Platform tier.
+
+Deliverable: a written statement from the reviewer that can be referenced in reports and on the website.
+
+### P2.7 — Run history and compliance audit trail
+
+Every `rulestatus run` result should be stored locally in `.rulestatus/history/YYYY-MM-DD-HHMMSS.json`. Add a `rulestatus history` command that shows a timeline of evidence check results over time.
+
+**Why this matters for the business:** When a regulator investigates, the question is not just "are you compliant today?" but "what systematic steps did you take?" A 12-month trail of timestamped evidence check runs — including gaps that were identified and then resolved — is direct proof of a documented compliance program. This is precisely what regulators mean by "reasonable measures."
+
+It also creates genuine lock-in: the historical audit trail only exists in rulestatus. Churning means losing the evidence of your compliance program history.
+
+```
+$ rulestatus history
+  2026-04-26  39 evidence found  1 gap  (ASSERT-EU-AI-ACT-009-001-01 — fixed next day)
+  2026-04-25  38 evidence found  2 gaps
+  2026-04-01  30 evidence found  10 gaps
+  ...
+```
+
+### P2.8 — Attestation workflow for MANUAL checks
+
+Several assertions cannot be automated and currently resolve to `MANUAL` status. These represent real compliance obligations (e.g., AI disclosure verification, physical oversight mechanisms) that auditors will ask about.
+
+Add a structured attestation workflow: when a check is `MANUAL`, `rulestatus attest <ASSERT-ID>` prompts the user for a written statement and optional evidence file attachment, stores the attestation with a timestamp and user identity, and includes it in the evidence bundle.
+
+This converts open-ended MANUAL items into a documented paper trail that auditors can review. Without it, MANUAL results are a black box in the report.
 
 ### P2.5 — `rulestatus update` command
 

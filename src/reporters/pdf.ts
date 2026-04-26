@@ -29,7 +29,7 @@ export class PdfReporter implements Reporter {
         .text("Rulestatus", { align: "center" })
         .fontSize(14)
         .fillColor("#333")
-        .text("AI Compliance Report", { align: "center" })
+        .text("Evidence Readiness Report", { align: "center" })
         .moveDown(1)
         .fontSize(11)
         .text(`System: ${report.systemName}`, { align: "center" })
@@ -44,24 +44,52 @@ export class PdfReporter implements Reporter {
       const w = warned(report).length;
       const s = skipped(report).length;
       const m = manual(report).length;
-      const blocked = f > 0 ? "BLOCKED" : "PASSED";
+      const overallLabel = f > 0 ? "EVIDENCE GAPS FOUND" : "EVIDENCE COMPLETE";
       const statusColor = f > 0 ? "#c62828" : "#2e7d32";
 
       doc
         .fontSize(16)
         .fillColor(statusColor)
-        .text(`Overall Status: ${blocked}`, { align: "center" })
+        .text(overallLabel, { align: "center" })
         .moveDown(0.5)
         .fontSize(11)
         .fillColor("#333")
-        .text(`${p} passed  |  ${f} failed  |  ${w} warnings  |  ${s} skipped  |  ${m} manual`, {
-          align: "center",
-        })
-        .moveDown(2);
+        .text(
+          `${p} evidence found  |  ${f} gaps  |  ${w} warnings  |  ${s} skipped  |  ${m} manual`,
+          { align: "center" },
+        )
+        .moveDown(1.5);
+
+      // Disclaimer box
+      doc
+        .fontSize(8.5)
+        .fillColor("#555")
+        .rect(50, doc.y, doc.page.width - 100, 52)
+        .stroke("#bbb")
+        .text(
+          "DISCLAIMER: This report documents the results of automated evidence scanning against " +
+            "structured assertion specifications derived from the EU AI Act (Regulation (EU) 2024/1689). " +
+            "Evidence present in the required format does not constitute a legal determination of compliance. " +
+            "For high-risk AI systems, conformity assessment under Article 43 may require evaluation by a notified body. " +
+            "This report should be treated as due diligence documentation, not a compliance certificate. " +
+            "Consult qualified legal counsel for compliance determinations.",
+          { align: "left", width: doc.page.width - 120 },
+        )
+        .moveDown(2)
+        .fillColor("#333");
 
       // ── Results by article ───────────────────────────────────────────────────
       doc.addPage();
-      doc.fontSize(16).fillColor("#1a237e").text("Results by Article").moveDown(0.5);
+      doc
+        .fontSize(16)
+        .fillColor("#1a237e")
+        .text("Evidence Check Results by Article")
+        .moveDown(0.3)
+        .fontSize(8)
+        .fillColor("#888")
+        .text("Evidence present ≠ legally compliant. Not legal advice or a conformity assessment.")
+        .fillColor("#333")
+        .moveDown(0.5);
 
       const byArticle = groupByArticle(report.results);
       for (const [article, results] of Object.entries(byArticle).sort(articleSort)) {
@@ -92,11 +120,11 @@ export class PdfReporter implements Reporter {
         doc.moveDown(0.5);
       }
 
-      // ── Provenance appendix ──────────────────────────────────────────────────
+      // ── Evidence gap provenance appendix ────────────────────────────────────
       const failures = failed(report);
       if (failures.length > 0) {
         doc.addPage();
-        doc.fontSize(14).fillColor("#1a237e").text("Failure Provenance").moveDown(0.5);
+        doc.fontSize(14).fillColor("#1a237e").text("Evidence Gap Provenance").moveDown(0.5);
 
         for (const r of failures) {
           doc
