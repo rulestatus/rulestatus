@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 import { Command } from "commander";
 import { loadConfig } from "../config/loader.js";
@@ -16,25 +16,65 @@ function spawnProvider(args: string[]): boolean {
 }
 
 export function cmdAttest(): Command {
-  const defaultProvider: Provider =
-    process.env.GITHUB_ACTIONS === "true" ? "github" : "none";
+  const defaultProvider: Provider = process.env.GITHUB_ACTIONS === "true" ? "github" : "none";
 
   return new Command("attest")
-    .description("Generate a cryptographic attestation for a compliance bundle or report")
-    .argument("<file>", "File to attest (output of `rulestatus bundle` or a report file)")
+    .description("Attest a compliance artifact (file) or sign off a manual check (ASSERT-ID)")
+    .argument(
+      "<subject>",
+      "File path to sign cryptographically, or an ASSERT-ID (e.g. ASSERT-EU-AI-ACT-013-001-01) to generate a manual sign-off template",
+    )
     .option(
       "--provider <p>",
       "Signing provider: github (gh CLI + OIDC), cosign, none (hash manifest only)",
       defaultProvider,
     )
     .option("--output <path>", "Output path for the attestation JSON")
-    .action(async (file: string, opts, cmd) => {
+    .action(async (subject: string, opts, cmd) => {
       const globalOpts = cmd.parent?.opts() ?? {};
       const config = await loadConfig(globalOpts.config);
 
-      const data = readFileSync(file);
+      // ASSERT-ID mode: generate a human attestation YAML template to commit
+      if (/^ASSERT-/i.test(subject)) {
+        const assertId = subject.toUpperCase();
+        const attestDir = ".rulestatus/attestations";
+        const outputPath = opts.output ?? `${attestDir}/${assertId}.yaml`;
+
+        if (existsSync(outputPath)) {
+          console.log(`\n  Already exists: ${outputPath}`);
+          console.log("  Edit it and commit to the repo to complete the attestation.\n");
+          return;
+        }
+
+        mkdirSync(attestDir, { recursive: true });
+        const template = [
+          `# Manual attestation for ${assertId}`,
+          `# Fill in all TODO fields, then commit this file to the repository.`,
+          `# The git commit provides identity (committer), timestamp, and immutability.`,
+          ``,
+          `assertion_id: "${assertId}"`,
+          `attested_by: "TODO: Full name, role (e.g. Jane Smith, Head of AI Safety)"`,
+          `attested_at: "TODO: YYYY-MM-DD"`,
+          `statement: "TODO: Describe how this obligation is met in your system"`,
+          `evidence_ref: "TODO: Path or URL to supporting evidence (e.g. docs/bias_assessment.yaml)"`,
+          ``,
+        ].join("\n");
+
+        writeFileSync(outputPath, template, "utf-8");
+        console.log(`\n  Template:  ${outputPath}`);
+        console.log(
+          `  Next step: fill in all TODO fields and run \`git add ${outputPath} && git commit\``,
+        );
+        console.log(
+          "  The commit IS the attestation — it provides identity, timestamp, and immutability.\n",
+        );
+        return;
+      }
+
+      // File mode: cryptographic attestation of a bundle or report file
+      const data = readFileSync(subject);
       const digest = sha256hex(data);
-      const sizeBytes = statSync(file).size;
+      const sizeBytes = statSync(subject).size;
 
       const attestation = {
         tool: "rulestatus",
@@ -43,7 +83,7 @@ export function cmdAttest(): Command {
         disclaimer:
           "This attestation records the SHA-256 digest of a rulestatus compliance artifact at the time of signing. It does not constitute a legal determination of compliance with any regulation.",
         subject: {
-          name: basename(file),
+          name: basename(subject),
           digest: { sha256: digest },
           sizeBytes,
         },
@@ -56,13 +96,13 @@ export function cmdAttest(): Command {
         signingProvider: opts.provider,
       };
 
-      const attestationPath = opts.output ?? `${file}.attestation.json`;
-      const sha256Path = `${file}.sha256`;
+      const attestationPath = opts.output ?? `${subject}.attestation.json`;
+      const sha256Path = `${subject}.sha256`;
 
       writeFileSync(attestationPath, JSON.stringify(attestation, null, 2));
-      writeFileSync(sha256Path, `${digest}  ${basename(file)}\n`);
+      writeFileSync(sha256Path, `${digest}  ${basename(subject)}\n`);
 
-      console.log(`\n  File:        ${file}`);
+      console.log(`\n  File:        ${subject}`);
       console.log(`  SHA-256:     ${digest}`);
       console.log(`  Attestation: ${attestationPath}`);
       console.log(`  Checksum:    ${sha256Path}`);
@@ -70,18 +110,20 @@ export function cmdAttest(): Command {
       if (opts.provider === "github") {
         const repo = process.env.GITHUB_REPOSITORY;
         if (!repo) {
-          console.error("\n  Error: GITHUB_REPOSITORY env var not set — is this running in GitHub Actions?");
+          console.error(
+            "\n  Error: GITHUB_REPOSITORY env var not set — is this running in GitHub Actions?",
+          );
           process.exit(1);
         }
         console.log("\n  Running: gh attestation create ...");
-        const ok = spawnProvider(["gh", "attestation", "create", file, "--repo", repo]);
+        const ok = spawnProvider(["gh", "attestation", "create", subject, "--repo", repo]);
         if (!ok) {
           console.error("  Error: gh attestation create failed");
           process.exit(1);
         }
       } else if (opts.provider === "cosign") {
         console.log("\n  Running: cosign attest ...");
-        const ok = spawnProvider(["cosign", "attest", "--yes", file]);
+        const ok = spawnProvider(["cosign", "attest", "--yes", subject]);
         if (!ok) {
           console.error("  Error: cosign attest failed");
           process.exit(1);

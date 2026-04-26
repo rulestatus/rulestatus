@@ -4,8 +4,22 @@ import type { RunReport } from "../core/result.js";
 import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
+function ciProvenance(): Record<string, string> | undefined {
+  if (process.env.GITHUB_ACTIONS !== "true") return undefined;
+  const repo = process.env.GITHUB_REPOSITORY ?? "";
+  const runId = process.env.GITHUB_RUN_ID ?? "";
+  return {
+    runId,
+    sha: process.env.GITHUB_SHA ?? "",
+    actor: process.env.GITHUB_ACTOR ?? "",
+    repository: repo,
+    runUrl: `https://github.com/${repo}/actions/runs/${runId}`,
+  };
+}
+
 export class JsonReporter implements Reporter {
   async render(report: RunReport, outputPath = "rulestatus-results.json"): Promise<void> {
+    const ci = ciProvenance();
     const data = {
       meta: {
         tool: "rulestatus",
@@ -14,6 +28,7 @@ export class JsonReporter implements Reporter {
         disclaimer:
           "This report documents automated evidence scanning results. Evidence present does not constitute a legal determination of compliance with the EU AI Act. Not legal advice. Not a conformity assessment.",
       },
+      ...(ci ? { ci } : {}),
       framework: report.framework,
       system: {
         name: report.systemName,

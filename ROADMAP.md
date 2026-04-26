@@ -2,7 +2,7 @@
 
 ## Current State (April 2026)
 
-Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report` work. Reporters: console, JSON, SARIF, PDF, badge. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) exists. All reporters use evidence-readiness framing with legal disclaimers.
+Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
 
 ---
 
@@ -46,9 +46,9 @@ This is what makes `explain` the killer feature the review identified.
 
 All report outputs (console, PDF, JSON) now use evidence-readiness language ("evidence found / evidence gap") rather than compliance language ("pass / fail"). Mandatory disclaimer added to every output surface clarifying that results are not legal advice and do not constitute a conformity assessment.
 
-### P1.4 — Open question: JUnit XML export
+### P1.4 — JUnit XML export ✓ Done
 
-Raised in PRD §6. JUnit XML enables native GitHub/GitLab test result annotations (not just SARIF). Decision needed: add a `junit` format to `cmdRun` or defer to Phase 2.
+`--format junit` added to `cmdRun` and `cmdReport`. Results grouped into `<testsuite>` per article; FAIL/WARN → `<failure>`, MANUAL → `<error>`, SKIP → `<skipped/>`.
 
 ### P1.5 — Update PRD code examples from Python to TypeScript
 
@@ -60,24 +60,9 @@ PRD §4 (Stage 4) shows Python SDK examples. The implementation is TypeScript/Bu
 
 Focus: make the tool produce output auditors actually accept as evidence.
 
-### P2.1 — Evidence Bundle
+### P2.1 — Evidence Bundle ✓ Done
 
-Auditors don't trust ephemeral CI runs. They want a timestamped, versioned, immutable artifact that proves what was checked and what was found.
-
-Introduce `rulestatus bundle` (or add `--bundle` flag to `run`) that produces a signed evidence package:
-
-```
-compliance-evidence-2026-04-26/
-  manifest.json          ← hash of every input file used
-  report.json            ← full run results with provenance chain
-  evidence/
-    risk_register.json   ← snapshot of the actual file checked
-    model_card.yaml
-    ...
-  signature.json         ← timestamp + tool version + config hash
-```
-
-This is the artifact that goes to auditors, not a PDF report.
+`rulestatus bundle` packages all compliance artifacts into a `.tar.gz` archive using Bun's native gzip (no external deps). Output: `manifest.json` + evidence files snapshot + last-run summary. Default output: `.rulestatus/<system-name>-<timestamp>.tar.gz`.
 
 ### P2.2 — Obligation → Assertion Methodology
 
@@ -122,41 +107,21 @@ Without this, the ceiling on sales is "useful developer tool." With it, the prod
 
 Deliverable: a written statement from the reviewer that can be referenced in reports and on the website.
 
-### P2.7 — CI run as audit trail; annotate JSON report with run provenance
+### P2.7 — CI run as audit trail; annotate JSON report with run provenance ✓ Done
 
-The GitHub Actions run history is already the audit log — timestamped, commit-linked, actor-attributed, and immutable. Don't reinvent it locally. Instead, make the existing CI output auditor-readable:
+1. JSON reports now include a `ci` block (`runId`, `sha`, `actor`, `repository`, `runUrl`) when `GITHUB_ACTIONS=true`.
+2. `action.yml` uploads the full output directory as a retained artifact via `actions/upload-artifact@v4` (365-day retention by default).
+3. `upload-artifacts` input (default `true`) and `retention-days` input added. `artifact-url` output exposed for downstream steps.
 
-1. **Annotate the JSON report** with `GITHUB_RUN_ID`, `GITHUB_SHA`, `GITHUB_ACTOR`, and `GITHUB_REPOSITORY` when running in CI (detect via env). This links every report to an exact run and committer.
+### P2.8 — Attestation for MANUAL checks via committed files + Sigstore ✓ Done
 
-2. **Upload JSON as a retained artifact** in `action.yml` via `actions/upload-artifact`. GitHub retains artifacts for 90 days by default (configurable). Auditors get a queryable, per-run evidence archive without any custom storage.
+`rulestatus attest` handles two modes:
 
-3. **Add `upload-artifact: true` input** to the action so teams can opt in.
+**ASSERT-ID mode** (`rulestatus attest ASSERT-EU-AI-ACT-013-001-01`): generates `.rulestatus/attestations/<ASSERT-ID>.yaml` — a structured YAML template the user fills in and commits. The git commit provides identity, timestamp, and immutability. Idempotent: skips if already exists.
 
-The "12-month trail" value prop is real — but it's the GitHub Actions run history, not a local file. The story to regulators is: "every deployment was gated on a compliance check; here is the GitHub Actions history showing every run, its commit, and its actor."
+**File mode** (`rulestatus attest bundle.tar.gz`): computes SHA-256, writes `<file>.sha256` and `<file>.attestation.json`. With `--provider github`: calls `gh attestation create` (Sigstore/Rekor, OIDC-backed). With `--provider cosign`: calls `cosign attest`. Auto-selects `github` provider when `GITHUB_ACTIONS=true`.
 
-### P2.8 — Attestation for MANUAL checks via committed files + Sigstore
-
-Two existing infrastructure pieces cover this completely:
-
-**For MANUAL check sign-off (human attestation):**
-
-`rulestatus attest <ASSERT-ID>` generates a structured YAML file at `.rulestatus/attestations/<ASSERT-ID>.yaml`:
-
-```yaml
-assertion_id: ASSERT-EU-AI-ACT-013-001-01
-attested_by: "TODO: Full name, role"
-attested_at: "TODO: YYYY-MM-DD"
-statement: "TODO: Description of how this obligation is met"
-evidence_ref: "TODO: Path or URL to supporting evidence"
-```
-
-The user fills it in and **commits it to the repo**. The git commit provides identity (committer), timestamp, and immutability. No custom storage or signing infra needed. This is how policy-as-code tools (OPA, Conftest) already handle human attestations — the commit IS the attestation.
-
-**For cryptographic signing of the full evidence report:**
-
-Use `gh attestation create` (GitHub CLI, backed by Sigstore/Rekor) to sign the JSON report as a build artifact. This produces a verifiable OIDC-backed attestation tied to the GitHub Actions workflow identity — provable to any verifier without a private key. Use the in-toto attestation predicate format (`https://slsa.dev/provenance/v1`) for compatibility with the supply chain security ecosystem.
-
-Add an optional `attest: true` input to `action.yml` that runs `gh attestation create` on the JSON report after each run.
+`action.yml` has `attest` input (default `false`, requires `id_token: write`); when enabled, bundles and attests after each run.
 
 ### P2.5 — `rulestatus update` command
 
