@@ -4,6 +4,18 @@
 
 Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
 
+**What is already audit-grade (not gaps):**
+- Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
+- System boundary declaration: `.rulestatus.yaml` requires `name`, `actor`, `riskLevel`, `domain`, `intendedUse`. Engine filters rules by actor and risk level.
+- Over-claim guardrails: evidence-readiness language ("evidence gap" not "non-compliant"), mandatory disclaimer on every output surface, hardcoded `disclaimer` field in attestation JSON.
+- Audit trail: JSON report captures all rule IDs, timestamps, durations, and CI provenance block per run.
+
+**Genuine remaining gaps (addressed in Phase 2 below):**
+- No per-evidence-item hashing at collection time — attestation covers the output bundle, not individual source files evaluated during the run.
+- Binary pass/fail with no confidence or evidence strength model.
+- No per-rule evidence trace in results — `explain` shows static remediation, not what was found at runtime.
+- No secrets/PII redaction in evidence collectors.
+
 ---
 
 ## Phase 1 — MVP Polish (Weeks 1–4)
@@ -36,7 +48,7 @@ WHY YOU FAILED
   Missing field: mitigation_measures
 ```
 
-This is what makes `explain` the killer feature the review identified.
+This also closes the per-rule evidence trace gap: once evidence context flows into `RuleResult`, auditors can replay exactly which files each rule evaluated and what the engine saw. Without this, the top-level audit trail exists (run timestamp, rule IDs, CI provenance) but the evidence-to-finding chain per rule is not reconstructable.
 
 ### P1.3 — Fix console reporter double-render bug
 
@@ -122,6 +134,31 @@ Deliverable: a written statement from the reviewer that can be referenced in rep
 **File mode** (`rulestatus attest bundle.tar.gz`): computes SHA-256, writes `<file>.sha256` and `<file>.attestation.json`. With `--provider github`: calls `gh attestation create` (Sigstore/Rekor, OIDC-backed). With `--provider cosign`: calls `cosign attest`. Auto-selects `github` provider when `GITHUB_ACTIONS=true`.
 
 `action.yml` has `attest` input (default `false`, requires `id_token: write`); when enabled, bundles and attests after each run.
+
+### P2.9 — Per-evidence-item hashing at collection time
+
+Current attestation covers the output bundle (`rulestatus attest bundle.tar.gz` → SHA-256 + Sigstore). What it cannot prove: which specific version of `docs/risk_register.json` was on disk when a rule evaluated it.
+
+Extend `EvidenceRegistry` to record a SHA-256 digest and file path for every document it loads. Attach this as an `evidenceSources` array to `RuleResult`. Include in JSON report output.
+
+This closes the chain: `git commit` → `CI run` → `evidence hash per rule` → `bundle hash` → `Sigstore attestation`. Any auditor can verify that a specific file version produced a specific finding.
+
+### P2.10 — Evidence strength / confidence levels on findings
+
+The rule engine is binary: a document either exists and has the required fields or it doesn't. This misses the "weak signal" case where a file is present but barely satisfies the check (e.g. a risk register with one entry, a bias assessment covering one demographic).
+
+Add a `confidence` field to `RuleResult` with values `strong | moderate | weak`. Rules set confidence based on how thoroughly evidence satisfies the obligation, not just whether it's present. Surface in console output and PDF report. Auditors can then distinguish a robust control from a minimum-viable one without rejecting the tool's output entirely.
+
+### P2.11 — Secrets and PII redaction in evidence collectors
+
+`FilesystemCollector` reads files verbatim and their content flows into JSON reports and bundles. A risk register or model card containing API keys, connection strings, or personal data will be captured unfiltered.
+
+Add a redaction pass in `EvidenceRegistry` before any document content is serialized into a result or report:
+- Strip values matching common secret patterns (API key formats, connection strings, bearer tokens)
+- Flag fields named `password`, `secret`, `token`, `key` as `[REDACTED]`
+- Add a `redactedFields` count to the evidence source record so omissions are visible to auditors
+
+This is a data governance requirement before the tool can be run in regulated environments.
 
 ### P2.5 — `rulestatus update` command
 
