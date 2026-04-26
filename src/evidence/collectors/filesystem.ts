@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
-import { join, resolve, extname, relative } from "node:path";
+import { extname, join, resolve } from "node:path";
 import yaml from "js-yaml";
 import { DictDocument, TextDocument } from "../document.js";
 import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
@@ -9,7 +9,7 @@ const STRUCTURED_EXTS = new Set([".yaml", ".yml", ".json"]);
 export class FilesystemCollector implements EvidenceCollector {
   constructor(
     private readonly basePath: string,
-    private readonly evidenceConfig: Record<string, unknown>,
+    _evidenceConfig: Record<string, unknown>,
   ) {}
 
   async findDocument(opts: FindDocumentOptions): Promise<Document | null> {

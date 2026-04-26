@@ -1,5 +1,5 @@
-import type { SeverityLevel } from "./severity.js";
 import type { SystemContext } from "./context.js";
+import type { SeverityLevel } from "./severity.js";
 
 export interface RuleMeta {
   id: string;

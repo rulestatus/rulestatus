@@ -107,12 +107,12 @@ rule(
       );
     }
 
-    const risks = register["risks"] as Array<Record<string, unknown>> | undefined;
+    const risks = register.risks as Array<Record<string, unknown>> | undefined;
     if (!risks || risks.length === 0) {
       throw new ComplianceError("Risk register contains no risk entries.");
     }
 
-    const dimensions = new Set(risks.map((r) => String(r["dimension"] ?? "")));
+    const dimensions = new Set(risks.map((r) => String(r.dimension ?? "")));
     const required = new Set(["health", "safety", "fundamental_rights"]);
     const missing = [...required].filter((d) => !dimensions.has(d));
 
@@ -146,15 +146,15 @@ rule(
       throw new ComplianceError("No risk register found.");
     }
 
-    const risks = register["risks"] as Array<Record<string, unknown>> | undefined;
+    const risks = register.risks as Array<Record<string, unknown>> | undefined;
     if (!risks || risks.length === 0) {
       throw new ComplianceError("Risk register contains no risk entries.");
     }
 
     const hasEmerging = risks.some(
       (r) =>
-        String(r["source"] ?? "").toLowerCase() === "emerging" ||
-        String(r["category"] ?? "").toLowerCase() === "misuse",
+        String(r.source ?? "").toLowerCase() === "emerging" ||
+        String(r.category ?? "").toLowerCase() === "misuse",
     );
 
     if (!hasEmerging) {
@@ -217,7 +217,7 @@ rule(
   async (system) => {
     const testPlan = await system.evidence.loadStructured("test_plan");
     if (testPlan) {
-      if (!testPlan["representative_data"] && !testPlan["testDatasets"]) {
+      if (!testPlan.representative_data && !testPlan.testDatasets) {
         throw new ComplianceError(
           "Test plan found but missing representative data documentation. " +
             "Add `representative_data` field.",
@@ -268,12 +268,11 @@ rule(
       throw new ComplianceError("No risk register found.");
     }
 
-    const risks = register["risks"] as Array<Record<string, unknown>> | undefined;
+    const risks = register.risks as Array<Record<string, unknown>> | undefined;
     if (!risks) return;
 
     const hasResidual = risks.some(
-      (r) =>
-        String(r["status"] ?? "").toLowerCase() === "residual" || r["residual_risk"] != null,
+      (r) => String(r.status ?? "").toLowerCase() === "residual" || r.residual_risk != null,
     );
 
     if (!hasResidual) {

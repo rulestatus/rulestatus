@@ -10,7 +10,7 @@ function makeFieldValue(raw: unknown): FieldValue {
       if (!raw) return false;
       try {
         const dt = new Date(String(raw));
-        if (isNaN(dt.getTime())) return false;
+        if (Number.isNaN(dt.getTime())) return false;
         const diffMs = Date.now() - dt.getTime();
         return diffMs >= 0 && diffMs <= n * 30 * 24 * 60 * 60 * 1000;
       } catch {
@@ -32,7 +32,9 @@ export class DictDocument implements Document {
 
   hasField(name: string): boolean {
     const val = this.data[name];
-    return val !== null && val !== undefined && val !== "" && !(Array.isArray(val) && val.length === 0);
+    return (
+      val !== null && val !== undefined && val !== "" && !(Array.isArray(val) && val.length === 0)
+    );
   }
 
   field(name: string): FieldValue {
@@ -61,12 +63,9 @@ export class TextDocument implements Document {
   }
 
   field(name: string): FieldValue {
-    const pattern = new RegExp(
-      `^(?:#{1,4}\\s*)?${escapeRegex(name)}\\s*:?\\s*(.+)$`,
-      "im",
-    );
+    const pattern = new RegExp(`^(?:#{1,4}\\s*)?${escapeRegex(name)}\\s*:?\\s*(.+)$`, "im");
     const m = this.text.match(pattern);
-    return makeFieldValue(m ? m[1]?.trim() ?? null : null);
+    return makeFieldValue(m ? (m[1]?.trim() ?? null) : null);
   }
 }
 

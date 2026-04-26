@@ -27,9 +27,9 @@ rule(
     // Try config
     const config = await system.evidence.loadConfig("human_oversight");
     if (config) {
-      const override = config["override"] as Record<string, unknown> | undefined;
-      if (override?.["enabled"] === true) return;
-      if (config["override_mechanism"] || config["overrideMechanism"]) return;
+      const override = config.override as Record<string, unknown> | undefined;
+      if (override?.enabled === true) return;
+      if (config.override_mechanism || config.overrideMechanism) return;
     }
 
     // Try documentation
@@ -75,9 +75,7 @@ rule(
       !doc.hasField("humanOversightMeasures") &&
       !doc.hasField("human_oversight")
     ) {
-      throw new ComplianceError(
-        "Technical documentation missing: human_oversight_measures field.",
-      );
+      throw new ComplianceError("Technical documentation missing: human_oversight_measures field.");
     }
   },
 );
@@ -99,11 +97,11 @@ rule(
   async (system) => {
     if (system.hasApi()) {
       const res = await system.evidence.probeApi("/api/explain");
-      if (res && res.ok) return;
+      if (res?.ok) return;
     }
 
     const config = await system.evidence.loadConfig("explainability");
-    if (config?.["enabled"] === true) return;
+    if (config?.enabled === true) return;
 
     const doc = await system.evidence.findDocument({
       category: "technical-documentation",
@@ -135,8 +133,8 @@ rule(
   },
   async (system) => {
     const config = await system.evidence.loadConfig("human_oversight");
-    if (config?.["pause_capability"] === true || config?.["pauseCapability"] === true) return;
-    if (config?.["stop_mechanism"] || config?.["stopMechanism"]) return;
+    if (config?.pause_capability === true || config?.pauseCapability === true) return;
+    if (config?.stop_mechanism || config?.stopMechanism) return;
 
     const doc = await system.evidence.findDocument({
       category: "human-oversight",
@@ -163,8 +161,7 @@ rule(
     obligation: "OBL-EU-AI-ACT-014-005",
     legalText:
       "Article 14(3): oversight persons must have the competence, training and authority to oversee the AI system.",
-    remediation:
-      "Create oversight training materials in docs/training/ or docs/oversight/.",
+    remediation: "Create oversight training materials in docs/training/ or docs/oversight/.",
   },
   async (system) => {
     const doc = await system.evidence.findDocument({
@@ -197,8 +194,12 @@ rule(
   async (system) => {
     const loggingConfig = await system.evidence.loadConfig("logging");
     if (loggingConfig) {
-      const auditLog = loggingConfig["audit_log"] ?? loggingConfig["auditLog"];
-      if (auditLog && typeof auditLog === "object" && (auditLog as Record<string, unknown>)["enabled"] === true) {
+      const auditLog = loggingConfig.audit_log ?? loggingConfig.auditLog;
+      if (
+        auditLog &&
+        typeof auditLog === "object" &&
+        (auditLog as Record<string, unknown>).enabled === true
+      ) {
         return;
       }
     }

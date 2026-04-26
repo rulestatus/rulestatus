@@ -1,10 +1,10 @@
 import type { RulestatusConfig } from "../config/schema.js";
 import { EvidenceRegistry } from "../evidence/registry.js";
-import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
-import { type RuleMeta, RULE_REGISTRY } from "./rule.js";
-import { type RuleResult, type RunReport } from "./result.js";
-import { type SeverityLevel, atLeast } from "./severity.js";
 import { SystemContext } from "./context.js";
+import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
+import type { RuleResult, RunReport } from "./result.js";
+import { RULE_REGISTRY, type RuleMeta } from "./rule.js";
+import { atLeast, type SeverityLevel } from "./severity.js";
 
 const FRAMEWORK_MODULES: Record<string, string> = {
   "eu-ai-act": "../frameworks/euAiAct/index.js",
@@ -46,17 +46,19 @@ export class Engine {
       rules = rules.filter((r) => r.framework === opts.framework);
     }
     if (opts.article) {
-      rules = rules.filter((r) => r.article.startsWith(opts.article!));
+      const article = opts.article;
+      rules = rules.filter((r) => r.article.startsWith(article));
     }
     if (opts.severity) {
-      rules = rules.filter((r) => atLeast(r.severity, opts.severity!));
+      const severity = opts.severity;
+      rules = rules.filter((r) => atLeast(r.severity, severity));
     }
 
     // Filter by system's actor and risk level
     rules = rules.filter((r) => {
       const at = r.appliesTo;
-      if (at["actor"] && at["actor"] !== this.config.system.actor) return false;
-      if (at["riskLevel"] && at["riskLevel"] !== this.config.system.riskLevel) return false;
+      if (at.actor && at.actor !== this.config.system.actor) return false;
+      if (at.riskLevel && at.riskLevel !== this.config.system.riskLevel) return false;
       return true;
     });
 

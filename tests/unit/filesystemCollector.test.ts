@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { mkdirSync, writeFileSync } from "node:fs";
 import { FilesystemCollector } from "../../src/evidence/collectors/filesystem.js";
 
 function tmpDir(): string {
@@ -71,7 +71,7 @@ describe("FilesystemCollector", () => {
     const data = await collector.loadStructured("risk_register");
 
     expect(data).not.toBeNull();
-    expect(Array.isArray(data?.["risks"])).toBe(true);
+    expect(Array.isArray(data?.risks)).toBe(true);
   });
 
   it("parses Markdown with YAML front-matter", async () => {

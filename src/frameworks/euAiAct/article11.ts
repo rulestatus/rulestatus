@@ -69,7 +69,8 @@ rule(
     appliesTo: { actor: "provider", riskLevel: "high-risk" },
     title: "Technical documentation covers required Annex IV sections",
     obligation: "OBL-EU-AI-ACT-011-001",
-    legalText: "Article 11 and Annex IV — Technical documentation required for high-risk AI systems.",
+    legalText:
+      "Article 11 and Annex IV — Technical documentation required for high-risk AI systems.",
     remediation:
       `Ensure your technical documentation includes at least 10 of the ${ANNEX_IV_FIELDS.length} Annex IV sections. ` +
       `Required fields: ${ANNEX_IV_FIELDS.join(", ")}.`,
@@ -84,9 +85,7 @@ rule(
       throw new ComplianceError("No technical documentation found.");
     }
 
-    const covered = ANNEX_IV_FIELDS.filter(
-      (f) => doc.hasField(f) || doc.hasField(toCamel(f)),
-    );
+    const covered = ANNEX_IV_FIELDS.filter((f) => doc.hasField(f) || doc.hasField(toCamel(f)));
 
     if (covered.length < 10) {
       const missing = ANNEX_IV_FIELDS.filter((f) => !covered.includes(f));
@@ -129,9 +128,7 @@ rule(
       !doc.hasField("modelArchitecture") &&
       !doc.hasField("architecture")
     ) {
-      throw new ComplianceError(
-        "Technical documentation missing: model architecture description.",
-      );
+      throw new ComplianceError("Technical documentation missing: model architecture description.");
     }
   },
 );
@@ -183,8 +180,7 @@ rule(
     obligation: "OBL-EU-AI-ACT-011-001",
     legalText:
       "Article 11(2): technical documentation must be kept up to date; version control is implied.",
-    remediation:
-      "Add `version` and `date` fields to your technical documentation.",
+    remediation: "Add `version` and `date` fields to your technical documentation.",
   },
   async (system) => {
     const doc = await system.evidence.findDocument({

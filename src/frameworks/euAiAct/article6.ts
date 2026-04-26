@@ -1,4 +1,4 @@
-import { ComplianceError, SkipTest } from "../../core/exceptions.js";
+import { ComplianceError } from "../../core/exceptions.js";
 import { rule } from "../../core/rule.js";
 import { CRITICAL, INFO, MAJOR } from "../../core/severity.js";
 
@@ -54,8 +54,7 @@ rule(
   },
   async (system) => {
     const config = await system.evidence.loadConfig("system");
-    const category =
-      String(config?.["annex_iii_category"] ?? config?.["annexIiiCategory"] ?? "").trim();
+    const category = String(config?.annex_iii_category ?? config?.annexIiiCategory ?? "").trim();
 
     if (!category) {
       throw new ComplianceError(

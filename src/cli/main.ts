@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
-import { cmdInit } from "./cmdInit.js";
-import { cmdRun } from "./cmdRun.js";
 import { cmdExplain } from "./cmdExplain.js";
+import { cmdInit } from "./cmdInit.js";
 import { cmdReport } from "./cmdReport.js";
+import { cmdRun } from "./cmdRun.js";
 
 const program = new Command();
 

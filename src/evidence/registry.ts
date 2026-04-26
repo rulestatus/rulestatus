@@ -1,9 +1,8 @@
 import { ManualReviewRequired } from "../core/exceptions.js";
-import { DictDocument } from "./document.js";
-import { FilesystemCollector } from "./collectors/filesystem.js";
-import { ConfigCollector } from "./collectors/config.js";
-import { ModelCardCollector } from "./collectors/modelCard.js";
 import { ApiProbeCollector, type ApiResponse } from "./collectors/apiProbe.js";
+import { ConfigCollector } from "./collectors/config.js";
+import { FilesystemCollector } from "./collectors/filesystem.js";
+import { ModelCardCollector } from "./collectors/modelCard.js";
 import type { Document, FindDocumentOptions } from "./types.js";
 
 export class EvidenceRegistry {
@@ -15,12 +14,12 @@ export class EvidenceRegistry {
 
   constructor(
     private readonly evidenceConfig: Record<string, unknown>,
-    private readonly basePath: string,
+    _basePath: string,
   ) {
-    this.fs = new FilesystemCollector(basePath, evidenceConfig);
-    this.cfg = new ConfigCollector(basePath, evidenceConfig);
-    this.mc = new ModelCardCollector(basePath, evidenceConfig);
-    this.api = new ApiProbeCollector(basePath, evidenceConfig);
+    this.fs = new FilesystemCollector(_basePath, evidenceConfig);
+    this.cfg = new ConfigCollector(_basePath, evidenceConfig);
+    this.mc = new ModelCardCollector(_basePath, evidenceConfig);
+    this.api = new ApiProbeCollector(_basePath, evidenceConfig);
   }
 
   async findDocument(opts: FindDocumentOptions): Promise<Document | null> {
@@ -36,8 +35,7 @@ export class EvidenceRegistry {
     if (this.cache.has(key)) return this.cache.get(key) as Record<string, unknown> | null;
 
     // Config-specified explicit path takes priority
-    const explicit =
-      this.evidenceConfig[name] ?? this.evidenceConfig[toCamel(name)];
+    const explicit = this.evidenceConfig[name] ?? this.evidenceConfig[toCamel(name)];
     let result: Record<string, unknown> | null = null;
 
     if (explicit) {
@@ -79,7 +77,7 @@ export class EvidenceRegistry {
   /** Returns true if an API base URL is configured. */
   hasApi(): boolean {
     const url = String(
-      this.evidenceConfig["api_base_url"] ?? this.evidenceConfig["apiBaseUrl"] ?? "",
+      this.evidenceConfig.api_base_url ?? this.evidenceConfig.apiBaseUrl ?? "",
     ).trim();
     return url.length > 0;
   }

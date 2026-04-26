@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { resolve, extname } from "node:path";
+import { resolve } from "node:path";
 import yaml from "js-yaml";
 import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
 
@@ -18,7 +18,9 @@ export class ConfigCollector implements EvidenceCollector {
   }
 
   async loadConfig(name: string): Promise<Record<string, unknown> | null> {
-    const configDir = String(this.evidenceConfig["config_path"] ?? this.evidenceConfig["configPath"] ?? "config");
+    const configDir = String(
+      this.evidenceConfig.config_path ?? this.evidenceConfig.configPath ?? "config",
+    );
     const base = resolve(this.basePath, configDir);
 
     for (const ext of ["yaml", "yml", "json", "toml"]) {
@@ -58,7 +60,10 @@ function parseTrivialToml(text: string): Record<string, unknown> | null {
     const eq = trimmed.indexOf("=");
     if (eq < 0) continue;
     const key = trimmed.slice(0, eq).trim();
-    const rawVal = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, "");
+    const rawVal = trimmed
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
     result[key] = rawVal === "true" ? true : rawVal === "false" ? false : rawVal;
   }
   return Object.keys(result).length > 0 ? result : null;

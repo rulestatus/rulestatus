@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { defaultConfig } from "../../src/config/schema.js";
+import { Engine } from "../../src/core/engine.js";
+import { ComplianceError, ManualReviewRequired, SkipTest } from "../../src/core/exceptions.js";
 import { RULE_REGISTRY } from "../../src/core/rule.js";
 import { CRITICAL, MAJOR } from "../../src/core/severity.js";
-import { ComplianceError, ManualReviewRequired, SkipTest } from "../../src/core/exceptions.js";
-import { Engine } from "../../src/core/engine.js";
-import { defaultConfig } from "../../src/config/schema.js";
 
 function makeConfig(overrides: Record<string, unknown> = {}) {
   const cfg = defaultConfig();

@@ -21,10 +21,10 @@ rule(
     // Try config first
     const config = await system.evidence.loadConfig("transparency");
     if (config) {
-      const disclosure = (config["ai_disclosure"] ?? config["aiDisclosure"]) as
+      const disclosure = (config.ai_disclosure ?? config.aiDisclosure) as
         | Record<string, unknown>
         | undefined;
-      if (disclosure?.["enabled"] === true) return;
+      if (disclosure?.enabled === true) return;
       throw new ComplianceError(
         "AI disclosure is disabled in transparency config. Set `ai_disclosure.enabled: true`.",
       );
@@ -111,7 +111,11 @@ rule(
     if (!doc.hasField("intended_purpose") && !doc.hasField("intendedPurpose")) {
       throw new ComplianceError("Instructions for use missing: intended_purpose field.");
     }
-    if (!doc.hasField("known_limitations") && !doc.hasField("knownLimitations") && !doc.hasField("limitations")) {
+    if (
+      !doc.hasField("known_limitations") &&
+      !doc.hasField("knownLimitations") &&
+      !doc.hasField("limitations")
+    ) {
       throw new ComplianceError("Instructions for use missing: known_limitations field.");
     }
   },
@@ -198,19 +202,22 @@ rule(
     obligation: "OBL-EU-AI-ACT-013-004",
     legalText:
       "Article 13(3)(a): instructions for use must include the name and registered address of the provider.",
-    remediation:
-      "Add `provider_contact` to your instructions for use or system config.",
+    remediation: "Add `provider_contact` to your instructions for use or system config.",
   },
   async (system) => {
     const config = await system.evidence.loadConfig("system");
-    if (config?.["provider_contact"] || config?.["providerContact"]) return;
+    if (config?.provider_contact || config?.providerContact) return;
 
     const doc = await system.evidence.findDocument({
       category: "instructions-for-use",
       paths: ["docs/compliance/", "docs/"],
       formats: ["yaml", "md", "pdf", "docx"],
     });
-    if (!doc?.hasField("provider_contact") && !doc?.hasField("providerContact") && !doc?.hasField("provider")) {
+    if (
+      !doc?.hasField("provider_contact") &&
+      !doc?.hasField("providerContact") &&
+      !doc?.hasField("provider")
+    ) {
       throw new ComplianceError(
         "Provider contact information not found. Add `provider_contact` to instructions for use or system config.",
       );

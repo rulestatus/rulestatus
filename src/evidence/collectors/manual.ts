@@ -1,5 +1,5 @@
 import { ManualReviewRequired } from "../../core/exceptions.js";
-import type { EvidenceCollector, FindDocumentOptions, Document } from "../types.js";
+import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
 
 export class ManualCollector implements EvidenceCollector {
   async findDocument(_opts: FindDocumentOptions): Promise<Document | null> {

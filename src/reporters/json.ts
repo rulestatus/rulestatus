@@ -1,8 +1,7 @@
-import { writeFileSync } from "node:fs";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { RunReport } from "../core/result.js";
+import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 export class JsonReporter implements Reporter {
@@ -25,8 +24,7 @@ export class JsonReporter implements Reporter {
         warned: warned(report).length,
         skipped: skipped(report).length,
         manual: manual(report).length,
-        durationMs:
-          report.finishedAt.getTime() - report.startedAt.getTime(),
+        durationMs: report.finishedAt.getTime() - report.startedAt.getTime(),
       },
       results: report.results.map((r) => ({
         id: r.ruleId,

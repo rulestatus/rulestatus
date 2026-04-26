@@ -1,13 +1,13 @@
 import chalk from "chalk";
-import { failed, manual, passed, skipped, warned, exitCode } from "../core/result.js";
 import type { RuleResult, RunReport } from "../core/result.js";
+import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
-  PASS:   chalk.bold.green,
-  FAIL:   chalk.bold.red,
-  WARN:   chalk.bold.yellow,
-  SKIP:   chalk.dim,
+  PASS: chalk.bold.green,
+  FAIL: chalk.bold.red,
+  WARN: chalk.bold.yellow,
+  SKIP: chalk.dim,
   MANUAL: chalk.bold.blue,
 };
 
@@ -18,7 +18,7 @@ export class ConsoleReporter implements Reporter {
     console.log(`  ${chalk.bold("Rulestatus v1.0")} — ${fw}`);
     console.log(`  System: ${report.systemName}`);
     console.log(`  Actor: ${report.actor} | Risk level: ${report.riskLevel}`);
-    console.log("  " + "─".repeat(50));
+    console.log(`  ${"─".repeat(50)}`);
 
     // Group by article prefix (e.g. "9", "10")
     const byArticle = groupByArticle(report.results);
@@ -32,7 +32,7 @@ export class ConsoleReporter implements Reporter {
         console.log(`    ${statusLabel} ${idLabel} ${r.title}`);
         if (r.message && (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")) {
           for (const line of r.message.split("\n").slice(0, 3)) {
-            if (line.trim()) console.log(`      ${chalk.dim("-> " + line.trim())}`);
+            if (line.trim()) console.log(`      ${chalk.dim(`-> ${line.trim()}`)}`);
           }
         }
       }
@@ -44,10 +44,10 @@ export class ConsoleReporter implements Reporter {
     const s = skipped(report).length;
     const m = manual(report).length;
 
-    console.log("\n  " + "─".repeat(50));
+    console.log(`\n  ${"─".repeat(50)}`);
     console.log(
-      `  Results: ${chalk.green(p + " passed")} | ${chalk.red(f + " failed")} | ` +
-        `${chalk.yellow(w + " warnings")} | ${chalk.dim(s + " skipped")} | ${chalk.blue(m + " manual")}`,
+      `  Results: ${chalk.green(`${p} passed`)} | ${chalk.red(`${f} failed`)} | ` +
+        `${chalk.yellow(`${w} warnings`)} | ${chalk.dim(`${s} skipped`)} | ${chalk.blue(`${m} manual`)}`,
     );
 
     const criticalFails = failed(report).filter((r) => r.severity === "critical");
@@ -70,7 +70,8 @@ function groupByArticle(results: RuleResult[]): Record<string, RuleResult[]> {
   const groups: Record<string, RuleResult[]> = {};
   for (const r of results) {
     const key = r.article.split(".")[0] ?? r.article;
-    (groups[key] ??= []).push(r);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
   }
   return groups;
 }

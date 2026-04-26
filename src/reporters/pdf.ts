@@ -1,8 +1,8 @@
-import { mkdirSync, createWriteStream } from "node:fs";
+import { createWriteStream, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import PDFDocument from "pdfkit";
-import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { RuleResult, RunReport } from "../core/result.js";
+import { failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 const STATUS_COLOR: Record<string, string> = {
@@ -54,7 +54,9 @@ export class PdfReporter implements Reporter {
         .moveDown(0.5)
         .fontSize(11)
         .fillColor("#333")
-        .text(`${p} passed  |  ${f} failed  |  ${w} warnings  |  ${s} skipped  |  ${m} manual`, { align: "center" })
+        .text(`${p} passed  |  ${f} failed  |  ${w} warnings  |  ${s} skipped  |  ${m} manual`, {
+          align: "center",
+        })
         .moveDown(2);
 
       // ── Results by article ───────────────────────────────────────────────────
@@ -63,7 +65,11 @@ export class PdfReporter implements Reporter {
 
       const byArticle = groupByArticle(report.results);
       for (const [article, results] of Object.entries(byArticle).sort(articleSort)) {
-        doc.fontSize(13).fillColor("#333").text(`Article ${article}`, { underline: true }).moveDown(0.3);
+        doc
+          .fontSize(13)
+          .fillColor("#333")
+          .text(`Article ${article}`, { underline: true })
+          .moveDown(0.3);
 
         for (const r of results) {
           const color = STATUS_COLOR[r.status] ?? "#333";
@@ -119,7 +125,8 @@ function groupByArticle(results: RuleResult[]): Record<string, RuleResult[]> {
   const groups: Record<string, RuleResult[]> = {};
   for (const r of results) {
     const key = r.article.split(".")[0] ?? r.article;
-    (groups[key] ??= []).push(r);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(r);
   }
   return groups;
 }

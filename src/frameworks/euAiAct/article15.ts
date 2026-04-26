@@ -57,9 +57,11 @@ rule(
   async (system) => {
     const testResults = await system.evidence.loadStructured("test_results");
     if (testResults) {
-      const results = testResults["results"] as Array<Record<string, unknown>> | undefined;
-      const hasRobustness = results?.some(
-        (r) => String(r["category"] ?? "").toLowerCase().includes("robust"),
+      const results = testResults.results as Array<Record<string, unknown>> | undefined;
+      const hasRobustness = results?.some((r) =>
+        String(r.category ?? "")
+          .toLowerCase()
+          .includes("robust"),
       );
       if (hasRobustness) return;
     }
@@ -103,8 +105,7 @@ rule(
     });
     if (!doc) {
       throw new ComplianceError(
-        "No cybersecurity documentation found. " +
-          "Create docs/security/ or config/security.yaml.",
+        "No cybersecurity documentation found. " + "Create docs/security/ or config/security.yaml.",
       );
     }
   },
@@ -121,12 +122,11 @@ rule(
     obligation: "OBL-EU-AI-ACT-015-003",
     legalText:
       "Article 15(4): systems must include technical measures to protect against unauthorised access.",
-    remediation:
-      "Add an `access_control` field to your security config or security documentation.",
+    remediation: "Add an `access_control` field to your security config or security documentation.",
   },
   async (system) => {
     const config = await system.evidence.loadConfig("security");
-    if (config?.["access_control"] || config?.["accessControl"]) return;
+    if (config?.access_control || config?.accessControl) return;
 
     const doc = await system.evidence.findDocument({
       category: "security",
@@ -199,9 +199,8 @@ rule(
       );
     }
 
-    const groups = biasReport["group_metrics"] ??
-      biasReport["groupMetrics"] ??
-      biasReport["per_group_metrics"];
+    const groups =
+      biasReport.group_metrics ?? biasReport.groupMetrics ?? biasReport.per_group_metrics;
     if (!groups || (Array.isArray(groups) && groups.length === 0)) {
       throw new ComplianceError(
         "Bias assessment missing per-group metrics. " +

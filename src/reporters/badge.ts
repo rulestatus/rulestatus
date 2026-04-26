@@ -1,7 +1,7 @@
-import { writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { failed, warned } from "../core/result.js";
 import type { RunReport } from "../core/result.js";
+import { failed, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 export class BadgeReporter implements Reporter {

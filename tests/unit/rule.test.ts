@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "bun:test";
-import { rule, RULE_REGISTRY } from "../../src/core/rule.js";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { RULE_REGISTRY, rule } from "../../src/core/rule.js";
 import { CRITICAL } from "../../src/core/severity.js";
 
 describe("rule()", () => {

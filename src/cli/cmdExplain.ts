@@ -1,5 +1,5 @@
-import { Command } from "commander";
 import chalk from "chalk";
+import { Command } from "commander";
 import { RULE_REGISTRY } from "../core/rule.js";
 
 const FRAMEWORK_MODULES: Record<string, string> = {
@@ -19,9 +19,7 @@ export function cmdExplain(): Command {
       const rule = RULE_REGISTRY.find((r) => r.id === assertId);
       if (!rule) {
         console.error(chalk.red(`Unknown assertion ID: ${assertId}`));
-        console.error(
-          `Run ${chalk.bold("rulestatus run")} to see applicable assertion IDs.`,
-        );
+        console.error(`Run ${chalk.bold("rulestatus run")} to see applicable assertion IDs.`);
         process.exit(1);
       }
 

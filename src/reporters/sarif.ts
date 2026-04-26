@@ -1,7 +1,7 @@
-import { writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import type { RunReport } from "../core/result.js";
 import { failed, warned } from "../core/result.js";
-import type { RuleResult, RunReport } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 const SARIF_LEVEL: Record<string, string> = {
@@ -18,20 +18,23 @@ export class SarifReporter implements Reporter {
     const ruleIds = new Set(actionable.map((r) => r.ruleId));
     const allRules = report.results.filter((r) => ruleIds.has(r.ruleId));
 
-    const sarifRules = [...ruleIds].map((id) => {
-      const r = allRules.find((x) => x.ruleId === id)!;
-      return {
-        id: r.ruleId,
-        name: r.title.replace(/\s+/g, ""),
-        shortDescription: { text: r.title },
-        fullDescription: { text: `EU AI Act, Article ${r.article}: ${r.title}` },
-        defaultConfiguration: { level: SARIF_LEVEL[r.severity] ?? "warning" },
-        properties: {
-          tags: ["compliance", "ai-regulation", `article-${r.article}`, r.framework],
-          severity: r.severity,
+    const sarifRules = [...ruleIds].flatMap((id) => {
+      const r = allRules.find((x) => x.ruleId === id);
+      if (!r) return [];
+      return [
+        {
+          id: r.ruleId,
+          name: r.title.replace(/\s+/g, ""),
+          shortDescription: { text: r.title },
+          fullDescription: { text: `EU AI Act, Article ${r.article}: ${r.title}` },
+          defaultConfiguration: { level: SARIF_LEVEL[r.severity] ?? "warning" },
+          properties: {
+            tags: ["compliance", "ai-regulation", `article-${r.article}`, r.framework],
+            severity: r.severity,
+          },
+          helpUri: `https://eur-lex.europa.eu/eli/reg/2024/1689/oj`,
         },
-        helpUri: `https://eur-lex.europa.eu/eli/reg/2024/1689/oj`,
-      };
+      ];
     });
 
     const sarifResults = actionable.map((r) => ({
@@ -49,8 +52,7 @@ export class SarifReporter implements Reporter {
 
     const sarif = {
       version: "2.1.0",
-      $schema:
-        "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0.json",
+      $schema: "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0.json",
       runs: [
         {
           tool: {

@@ -102,9 +102,10 @@ rule(
       throw new ComplianceError("No bias_assessment document found.");
     }
 
-    const characteristics = biasReport["characteristics_evaluated"] ??
-      biasReport["characteristicsEvaluated"] ??
-      biasReport["protected_attributes"];
+    const characteristics =
+      biasReport.characteristics_evaluated ??
+      biasReport.characteristicsEvaluated ??
+      biasReport.protected_attributes;
 
     if (!Array.isArray(characteristics) || characteristics.length === 0) {
       throw new ComplianceError(
@@ -114,9 +115,7 @@ rule(
     }
 
     const covered = (characteristics as string[]).map((c) => String(c).toLowerCase());
-    const matched = PROTECTED_CHARACTERISTICS.filter((pc) =>
-      covered.some((c) => c.includes(pc)),
-    );
+    const matched = PROTECTED_CHARACTERISTICS.filter((pc) => covered.some((c) => c.includes(pc)));
 
     if (matched.length < 3) {
       throw new ComplianceError(
@@ -193,7 +192,9 @@ rule(
       formats: ["yaml", "md", "pdf", "docx"],
     });
     if (!doc) {
-      throw new ComplianceError("No data governance document found to check for special category data handling.");
+      throw new ComplianceError(
+        "No data governance document found to check for special category data handling.",
+      );
     }
 
     // This check only applies if the system processes special category data

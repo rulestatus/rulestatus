@@ -1,4 +1,4 @@
-import type { EvidenceCollector, FindDocumentOptions, Document } from "../types.js";
+import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
 
 export interface ApiResponse {
   statusCode: number;
@@ -9,7 +9,7 @@ export interface ApiResponse {
 
 export class ApiProbeCollector implements EvidenceCollector {
   constructor(
-    private readonly basePath: string,
+    _basePath: string,
     private readonly evidenceConfig: Record<string, unknown>,
   ) {}
 
@@ -26,8 +26,9 @@ export class ApiProbeCollector implements EvidenceCollector {
   }
 
   async probe(endpoint: string, timeoutMs = 10_000): Promise<ApiResponse | null> {
-    const baseUrl =
-      String(this.evidenceConfig["api_base_url"] ?? this.evidenceConfig["apiBaseUrl"] ?? "").trim();
+    const baseUrl = String(
+      this.evidenceConfig.api_base_url ?? this.evidenceConfig.apiBaseUrl ?? "",
+    ).trim();
     if (!baseUrl) return null;
 
     const url = `${baseUrl.replace(/\/$/, "")}/${endpoint.replace(/^\//, "")}`;

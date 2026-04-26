@@ -1,16 +1,16 @@
+import { mkdirSync } from "node:fs";
+import { resolve } from "node:path";
 import { Command } from "commander";
 import { loadConfig } from "../config/loader.js";
 import { Engine } from "../core/engine.js";
+import type { RunReport } from "../core/result.js";
 import { exitCode } from "../core/result.js";
 import type { SeverityLevel } from "../core/severity.js";
+import { BadgeReporter } from "../reporters/badge.js";
 import { ConsoleReporter } from "../reporters/console.js";
 import { JsonReporter } from "../reporters/json.js";
-import { SarifReporter } from "../reporters/sarif.js";
 import { PdfReporter } from "../reporters/pdf.js";
-import { BadgeReporter } from "../reporters/badge.js";
-import { mkdirSync } from "node:fs";
-import { resolve } from "node:path";
-import type { RunReport } from "../core/result.js";
+import { SarifReporter } from "../reporters/sarif.js";
 
 export function cmdRun(): Command {
   return new Command("run")
@@ -22,24 +22,24 @@ export function cmdRun(): Command {
     .option("--output <dir>", "Output directory for reports")
     .action(async (opts, cmd) => {
       const globalOpts = cmd.parent?.opts() ?? {};
-      const config = await loadConfig(globalOpts["config"]);
+      const config = await loadConfig(globalOpts.config);
 
       const engine = new Engine(config);
       await engine.loadFrameworks(config.frameworks);
 
-      const report = await engine.run({
+      const runOpts: import("../core/engine.js").RunOptions = {
         framework: opts.framework,
         article: opts.article,
-        severity: opts.severity as SeverityLevel | undefined,
-      });
+      };
+      if (opts.severity) runOpts.severity = opts.severity as SeverityLevel;
+      const report = await engine.run(runOpts);
 
-      const formats: string[] =
-        opts.format ?? config.reporting.format ?? ["console"];
+      const formats: string[] = opts.format ?? config.reporting.format ?? ["console"];
 
       const outputDir = opts.output ?? config.reporting.outputDir ?? "./compliance-reports";
       mkdirSync(outputDir, { recursive: true });
 
-      const dateStr = new Date().toISOString().split("T")[0];
+      const dateStr = new Date().toISOString().split("T")[0] ?? "unknown";
       const fw = opts.framework ?? config.frameworks[0] ?? "eu-ai-act";
 
       await dispatchReporters(report, formats, outputDir, dateStr, fw, config.reporting.badge);

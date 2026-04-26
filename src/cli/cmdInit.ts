@@ -1,6 +1,6 @@
-import { Command } from "commander";
 import { existsSync, writeFileSync } from "node:fs";
 import * as p from "@clack/prompts";
+import { Command } from "commander";
 import yaml from "js-yaml";
 
 export function cmdInit(): Command {
@@ -29,7 +29,7 @@ export function cmdInit(): Command {
         (await p.text({
           message: "AI system name:",
           placeholder: "My Fraud Detection Model v1.0",
-          validate: (v) => (v.trim() ? undefined : "Name is required"),
+          validate: (v) => ((v ?? "").trim() ? undefined : "Name is required"),
         }));
 
       if (p.isCancel(name)) {

@@ -23,7 +23,7 @@ export class ModelCardCollector implements EvidenceCollector {
   }
 
   async load(): Promise<Document | null> {
-    const configured = this.evidenceConfig["model_card"] ?? this.evidenceConfig["modelCard"];
+    const configured = this.evidenceConfig.model_card ?? this.evidenceConfig.modelCard;
     const candidates: string[] = [];
 
     if (configured) candidates.push(resolve(this.basePath, String(configured)));
@@ -52,7 +52,10 @@ export class ModelCardCollector implements EvidenceCollector {
           if (parts.length >= 3) {
             const fm = yaml.load(parts[1] ?? "");
             if (fm && typeof fm === "object" && !Array.isArray(fm)) {
-              const data = { ...(fm as Record<string, unknown>), _body: parts.slice(2).join("---") };
+              const data = {
+                ...(fm as Record<string, unknown>),
+                _body: parts.slice(2).join("---"),
+              };
               return new DictDocument(data, filePath);
             }
           }

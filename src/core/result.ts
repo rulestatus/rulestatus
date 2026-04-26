@@ -1,4 +1,4 @@
-import { type SeverityLevel, atLeast } from "./severity.js";
+import { atLeast, type SeverityLevel } from "./severity.js";
 
 export type RuleStatus = "PASS" | "FAIL" | "WARN" | "SKIP" | "MANUAL";
 
