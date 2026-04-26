@@ -7,3 +7,4 @@ compliance-reports/
 compliance-badge.svg
 .DS_Store
 bun.lockb
+repomix-output.*

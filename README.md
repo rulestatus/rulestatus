@@ -141,7 +141,7 @@ evidence:
   config_path: ./config/
 
 reporting:
-  format: [console]             # console | json | sarif | pdf | badge
+  format: [console]             # console | json | sarif | junit | pdf | badge
   output_dir: ./compliance-reports/
 
 severity_gate:
@@ -169,10 +169,11 @@ EU AI Act obligations for **high-risk AI providers** (Articles 6, 9, 10, 11, 13,
 
 ## Output formats
 
-| Format | Use |
-|---|---|
+| Format    | Use                                                   |
+| --------- | ----------------------------------------------------- |
 | `console` | Default — coloured terminal output grouped by article |
-| `json` | Machine-readable results with full provenance |
-| `sarif` | GitHub Code Scanning / IDE integration |
-| `pdf` | Evidence Readiness Report for auditors |
-| `badge` | SVG badge for README or dashboard |
+| `json`    | Machine-readable results with full provenance         |
+| `sarif`   | GitHub Code Scanning / IDE integration                |
+| `junit`   | JUnit compatible XML artifact                         |
+| `pdf`     | Evidence Readiness Report for auditors                |
+| `badge`   | SVG badge for README or dashboard                     |

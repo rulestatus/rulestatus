@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
+import { cmdBundle } from "./cmdBundle.js";
 import { cmdExplain } from "./cmdExplain.js";
 import { cmdGenerate } from "./cmdGenerate.js";
 import { cmdInit } from "./cmdInit.js";
@@ -19,5 +20,6 @@ program.addCommand(cmdRun());
 program.addCommand(cmdGenerate());
 program.addCommand(cmdExplain());
 program.addCommand(cmdReport());
+program.addCommand(cmdBundle());
 
 program.parse();
