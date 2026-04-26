@@ -407,7 +407,7 @@ export function cmdGenerate(): Command {
             ...TEMPLATE_NAMES.map((name) => ({
               value: name,
               label: name,
-              hint: `${TEMPLATES[name].articles} — ${TEMPLATES[name].description}`,
+              hint: `${TEMPLATES[name]?.articles} — ${TEMPLATES[name]?.description}`,
             })),
             { value: "__all__", label: "all", hint: "Generate all templates at once" },
           ],
@@ -428,9 +428,7 @@ export function cmdGenerate(): Command {
       }
 
       if (!TEMPLATES[template]) {
-        console.error(
-          `Unknown template: "${template}"\nAvailable: ${TEMPLATE_NAMES.join(", ")}`,
-        );
+        console.error(`Unknown template: "${template}"\nAvailable: ${TEMPLATE_NAMES.join(", ")}`);
         process.exit(1);
       }
 
