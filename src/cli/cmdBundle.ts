@@ -23,7 +23,12 @@ function tarHeader(filename: string, size: number): Uint8Array {
   setField(108, "0000000\0");
   setField(116, "0000000\0");
   setField(124, `${size.toString(8).padStart(11, "0")}\0`);
-  setField(136, `${Math.floor(Date.now() / 1000).toString(8).padStart(11, "0")}\0`);
+  setField(
+    136,
+    `${Math.floor(Date.now() / 1000)
+      .toString(8)
+      .padStart(11, "0")}\0`,
+  );
   header.fill(0x20, 148, 156); // checksum placeholder: spaces
   header[156] = 0x30; // type flag '0' = regular file
   setField(257, "ustar\0");
@@ -72,12 +77,21 @@ function walkDir(dir: string, prefix: string, seen: Set<string>, out: BundleFile
       walkDir(full, `${prefix}/${entry.name}`, seen, out);
     } else if (entry.isFile() && !seen.has(full)) {
       seen.add(full);
-      out.push({ archivePath: `${prefix}/${entry.name}`, sourcePath: full, sizeBytes: statSync(full).size });
+      out.push({
+        archivePath: `${prefix}/${entry.name}`,
+        sourcePath: full,
+        sizeBytes: statSync(full).size,
+      });
     }
   }
 }
 
-function addFile(archivePath: string, sourcePath: string, seen: Set<string>, out: BundleFile[]): void {
+function addFile(
+  archivePath: string,
+  sourcePath: string,
+  seen: Set<string>,
+  out: BundleFile[],
+): void {
   const abs = resolve(sourcePath);
   if (!existsSync(abs) || seen.has(abs)) return;
   seen.add(abs);
@@ -89,7 +103,8 @@ function collectFiles(config: RulestatusConfig, configFilePath: string | null): 
   const seen = new Set<string>();
 
   if (configFilePath) addFile("config/.rulestatus.yaml", configFilePath, seen, files);
-  if (existsSync(".rulestatus/last-run.json")) addFile("reports/last-run.json", ".rulestatus/last-run.json", seen, files);
+  if (existsSync(".rulestatus/last-run.json"))
+    addFile("reports/last-run.json", ".rulestatus/last-run.json", seen, files);
 
   walkDir(config.evidence.docsPath, "evidence/docs", seen, files);
   walkDir(config.evidence.configPath, "evidence/config", seen, files);
@@ -108,7 +123,10 @@ function collectFiles(config: RulestatusConfig, configFilePath: string | null): 
 
 function readLastRunSummary(): Record<string, unknown> | null {
   try {
-    const raw = JSON.parse(readFileSync(".rulestatus/last-run.json", "utf-8")) as Record<string, unknown>;
+    const raw = JSON.parse(readFileSync(".rulestatus/last-run.json", "utf-8")) as Record<
+      string,
+      unknown
+    >;
     const results = (raw.results as Array<Record<string, unknown>>) ?? [];
     const count = (status: string) => results.filter((r) => r.status === status).length;
     return {
@@ -165,17 +183,24 @@ export function cmdBundle(): Command {
       const enc = new TextEncoder();
       const entries: Array<{ path: string; data: Uint8Array }> = [
         { path: "manifest.json", data: enc.encode(JSON.stringify(manifest, null, 2)) },
-        ...files.map((f) => ({ path: f.archivePath, data: new Uint8Array(readFileSync(f.sourcePath)) })),
+        ...files.map((f) => ({
+          path: f.archivePath,
+          data: new Uint8Array(readFileSync(f.sourcePath)),
+        })),
       ];
 
       mkdirSync(dirname(outputPath), { recursive: true });
       writeFileSync(outputPath, buildTarGz(entries));
 
       console.log(`\n  Bundle: ${outputPath}`);
-      console.log(`  System: ${config.system.name} (${config.system.actor}, ${config.system.riskLevel})`);
+      console.log(
+        `  System: ${config.system.name} (${config.system.actor}, ${config.system.riskLevel})`,
+      );
       console.log(`  Files:  ${files.length} evidence file${files.length !== 1 ? "s" : ""}`);
       if (lastRun) {
-        console.log(`  Run:    ${lastRun.passed}/${lastRun.total} passed (last run: ${lastRun.ranAt})`);
+        console.log(
+          `  Run:    ${lastRun.passed}/${lastRun.total} passed (last run: ${lastRun.ranAt})`,
+        );
       } else {
         console.log("  Run:    no last-run data (run `rulestatus run` first)");
       }
