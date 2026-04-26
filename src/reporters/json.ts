@@ -11,6 +11,8 @@ export class JsonReporter implements Reporter {
         tool: "rulestatus",
         version: "1.0.0",
         generatedAt: new Date().toISOString(),
+        disclaimer:
+          "This report documents automated evidence scanning results. Evidence present does not constitute a legal determination of compliance with the EU AI Act. Not legal advice. Not a conformity assessment.",
       },
       system: {
         name: report.systemName,

@@ -2,7 +2,7 @@
 
 ## Current State (April 2026)
 
-Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `report` work. Reporters: console, JSON, SARIF, PDF, badge. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) exists.
+Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report` work. Reporters: console, JSON, SARIF, PDF, badge. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) exists. All reporters use evidence-readiness framing with legal disclaimers.
 
 ---
 
@@ -41,6 +41,10 @@ This is what makes `explain` the killer feature the review identified.
 ### P1.3 — Fix console reporter double-render bug
 
 `cmdRun.ts` lines 62–65: both branches of the `if (!formats.includes("console"))` block call `ConsoleReporter.render()`. The condition is inverted — console is rendered twice in some cases and the format selection logic is wrong.
+
+### P1.6 — Evidence readiness framing and legal disclaimers ✓ Done
+
+All report outputs (console, PDF, JSON) now use evidence-readiness language ("evidence found / evidence gap") rather than compliance language ("pass / fail"). Mandatory disclaimer added to every output surface clarifying that results are not legal advice and do not constitute a conformity assessment.
 
 ### P1.4 — Open question: JUnit XML export
 
@@ -109,6 +113,50 @@ Legal analysts edit YAML; engineers encode YAML to TypeScript tests. Clear separ
 ### P2.4 — Reduce runtime API probe surface
 
 `apiProbe.ts` exists and Article 13/14 rules use it. In practice, most target systems don't expose clean local APIs in CI. Bias evidence collection toward document/config/schema checks (80%) with API probing as a fallback only. Where runtime checks are required, provide a `manual` fallback that marks the assertion as `MANUAL` rather than `FAIL`.
+
+### P2.6 — Legal review credential
+
+The single most important business milestone before enterprise sales. Get a named law firm, notified body, or qualified compliance professional to formally review the EU AI Act assertion library and endorse the methodology. Display their name and review date in every PDF report footer.
+
+Without this, the ceiling on sales is "useful developer tool." With it, the product can be presented in enterprise procurement and security reviews as having been validated by qualified legal professionals. This is not optional for the Auditor Platform tier.
+
+Deliverable: a written statement from the reviewer that can be referenced in reports and on the website.
+
+### P2.7 — CI run as audit trail; annotate JSON report with run provenance
+
+The GitHub Actions run history is already the audit log — timestamped, commit-linked, actor-attributed, and immutable. Don't reinvent it locally. Instead, make the existing CI output auditor-readable:
+
+1. **Annotate the JSON report** with `GITHUB_RUN_ID`, `GITHUB_SHA`, `GITHUB_ACTOR`, and `GITHUB_REPOSITORY` when running in CI (detect via env). This links every report to an exact run and committer.
+
+2. **Upload JSON as a retained artifact** in `action.yml` via `actions/upload-artifact`. GitHub retains artifacts for 90 days by default (configurable). Auditors get a queryable, per-run evidence archive without any custom storage.
+
+3. **Add `upload-artifact: true` input** to the action so teams can opt in.
+
+The "12-month trail" value prop is real — but it's the GitHub Actions run history, not a local file. The story to regulators is: "every deployment was gated on a compliance check; here is the GitHub Actions history showing every run, its commit, and its actor."
+
+### P2.8 — Attestation for MANUAL checks via committed files + Sigstore
+
+Two existing infrastructure pieces cover this completely:
+
+**For MANUAL check sign-off (human attestation):**
+
+`rulestatus attest <ASSERT-ID>` generates a structured YAML file at `.rulestatus/attestations/<ASSERT-ID>.yaml`:
+
+```yaml
+assertion_id: ASSERT-EU-AI-ACT-013-001-01
+attested_by: "TODO: Full name, role"
+attested_at: "TODO: YYYY-MM-DD"
+statement: "TODO: Description of how this obligation is met"
+evidence_ref: "TODO: Path or URL to supporting evidence"
+```
+
+The user fills it in and **commits it to the repo**. The git commit provides identity (committer), timestamp, and immutability. No custom storage or signing infra needed. This is how policy-as-code tools (OPA, Conftest) already handle human attestations — the commit IS the attestation.
+
+**For cryptographic signing of the full evidence report:**
+
+Use `gh attestation create` (GitHub CLI, backed by Sigstore/Rekor) to sign the JSON report as a build artifact. This produces a verifiable OIDC-backed attestation tied to the GitHub Actions workflow identity — provable to any verifier without a private key. Use the in-toto attestation predicate format (`https://slsa.dev/provenance/v1`) for compatibility with the supply chain security ecosystem.
+
+Add an optional `attest: true` input to `action.yml` that runs `gh attestation create` on the JSON report after each run.
 
 ### P2.5 — `rulestatus update` command
 
