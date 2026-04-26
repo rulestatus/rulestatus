@@ -9,6 +9,7 @@ import type { SeverityLevel } from "../core/severity.js";
 import { BadgeReporter } from "../reporters/badge.js";
 import { ConsoleReporter } from "../reporters/console.js";
 import { JsonReporter } from "../reporters/json.js";
+import { JunitReporter } from "../reporters/junit.js";
 import { PdfReporter } from "../reporters/pdf.js";
 import { SarifReporter } from "../reporters/sarif.js";
 
@@ -88,6 +89,8 @@ async function dispatchReporters(
       await new JsonReporter().render(report, `${resolved}/${fw}-${dateStr}.json`);
     } else if (fmt === "sarif") {
       await new SarifReporter().render(report, `${resolved}/${fw}-${dateStr}.sarif`);
+    } else if (fmt === "junit") {
+      await new JunitReporter().render(report, `${resolved}/${fw}-${dateStr}.xml`);
     } else if (fmt === "pdf") {
       await new PdfReporter().render(report, `${resolved}/${fw}-${dateStr}.pdf`);
     } else if (fmt === "badge") {

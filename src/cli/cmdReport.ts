@@ -3,6 +3,7 @@ import { Command } from "commander";
 import type { RunReport } from "../core/result.js";
 import { BadgeReporter } from "../reporters/badge.js";
 import { ConsoleReporter } from "../reporters/console.js";
+import { JunitReporter } from "../reporters/junit.js";
 import { PdfReporter } from "../reporters/pdf.js";
 import { SarifReporter } from "../reporters/sarif.js";
 
@@ -10,7 +11,7 @@ export function cmdReport(): Command {
   return new Command("report")
     .description("Generate a compliance report from a saved JSON results file")
     .argument("<input>", "Path to a rulestatus JSON results file")
-    .option("--format <fmt>", "Output format: console, pdf, sarif, badge", "pdf")
+    .option("--format <fmt>", "Output format: console, pdf, sarif, junit, badge", "pdf")
     .option("--output <path>", "Output file path")
     .action(async (input: string, opts) => {
       let data: unknown;
@@ -23,7 +24,8 @@ export function cmdReport(): Command {
 
       const report = deserializeReport(data);
 
-      const outputPath = opts.output ?? `compliance-report.${opts.format}`;
+      const ext = opts.format === "junit" ? "xml" : opts.format;
+      const outputPath = opts.output ?? `compliance-report.${ext}`;
 
       switch (opts.format) {
         case "pdf":
@@ -31,6 +33,9 @@ export function cmdReport(): Command {
           break;
         case "sarif":
           await new SarifReporter().render(report, outputPath);
+          break;
+        case "junit":
+          await new JunitReporter().render(report, outputPath);
           break;
         case "badge":
           await new BadgeReporter().render(report, outputPath);
