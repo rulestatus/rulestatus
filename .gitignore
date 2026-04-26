@@ -1,6 +1,7 @@
 node_modules/
 dist/
 compliance-reports/
+.rulestatus/
 *.sarif
 *.pdf
 compliance-badge.svg

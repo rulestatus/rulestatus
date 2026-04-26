@@ -6,10 +6,6 @@ import type { RuleResult, RunReport } from "./result.js";
 import { RULE_REGISTRY, type RuleMeta } from "./rule.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
 
-const FRAMEWORK_MODULES: Record<string, string> = {
-  "eu-ai-act": "../frameworks/euAiAct/index.js",
-};
-
 export interface RunOptions {
   framework?: string;
   article?: string;
@@ -32,9 +28,8 @@ export class Engine {
   /** Lazily import framework modules, triggering side-effect registration into RULE_REGISTRY. */
   async loadFrameworks(frameworks: string[]): Promise<void> {
     for (const fw of frameworks) {
-      const modulePath = FRAMEWORK_MODULES[fw];
-      if (modulePath) {
-        await import(modulePath);
+      if (fw === "eu-ai-act") {
+        await import("../frameworks/euAiAct/index.js");
       }
     }
   }
