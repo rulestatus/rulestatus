@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "system": "Acme Fraud Detection Model v2.1",
+  "risks": [
+    {
+      "id": "RISK-001",
+      "dimension": "health",
+      "source": "known",
+      "description": "Model misclassification may deny legitimate healthcare payments",
+      "severity": "high",
+      "likelihood": "medium",
+      "mitigation": "Manual review queue for health-sector transactions",
+      "status": "mitigated"
+    },
+    {
+      "id": "RISK-002",
+      "dimension": "safety",
+      "source": "known",
+      "description": "False positives in emergency transaction blocking",
+      "severity": "critical",
+      "likelihood": "low",
+      "mitigation": "Whitelist for emergency merchant category codes",
+      "status": "mitigated"
+    },
+    {
+      "id": "RISK-003",
+      "dimension": "fundamental_rights",
+      "source": "known",
+      "description": "Potential demographic bias in fraud scoring",
+      "severity": "high",
+      "likelihood": "medium",
+      "mitigation": "Quarterly bias audit against protected characteristics",
+      "status": "monitored"
+    },
+    {
+      "id": "RISK-004",
+      "dimension": "safety",
+      "source": "emerging",
+      "category": "misuse",
+      "description": "Model used on population outside training distribution (e.g. new regions)",
+      "severity": "high",
+      "likelihood": "medium",
+      "mitigation": "Input validation + distribution shift detection alerts",
+      "status": "open"
+    },
+    {
+      "id": "RISK-005",
+      "dimension": "fundamental_rights",
+      "source": "emerging",
+      "category": "misuse",
+      "description": "Adversarial inputs crafted to bypass fraud detection",
+      "severity": "medium",
+      "likelihood": "low",
+      "mitigation": "Adversarial robustness testing in quarterly model reviews",
+      "status": "residual",
+      "residual_risk": "Sophisticated adversarial attacks remain possible but economically unfeasible for most threat actors"
+    }
+  ]
+}

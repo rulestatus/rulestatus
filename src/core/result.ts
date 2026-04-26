@@ -1,0 +1,54 @@
+import { type SeverityLevel, atLeast } from "./severity.js";
+
+export type RuleStatus = "PASS" | "FAIL" | "WARN" | "SKIP" | "MANUAL";
+
+export interface RuleResult {
+  ruleId: string;
+  title: string;
+  framework: string;
+  article: string;
+  severity: SeverityLevel;
+  status: RuleStatus;
+  message?: string;
+  durationMs: number;
+  timestamp: Date;
+}
+
+export interface RunReport {
+  systemName: string;
+  actor: string;
+  riskLevel: string;
+  framework: string;
+  startedAt: Date;
+  finishedAt: Date;
+  results: RuleResult[];
+}
+
+export function passed(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "PASS");
+}
+
+export function failed(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "FAIL");
+}
+
+export function warned(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "WARN");
+}
+
+export function skipped(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "SKIP");
+}
+
+export function manual(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "MANUAL");
+}
+
+/**
+ * Returns 1 if any FAIL result meets or exceeds the `failOn` severity threshold,
+ * otherwise 0. Used as the CLI process exit code.
+ */
+export function exitCode(report: RunReport, failOn: SeverityLevel = "critical"): number {
+  const blocking = failed(report).filter((r) => atLeast(r.severity, failOn));
+  return blocking.length > 0 ? 1 : 0;
+}

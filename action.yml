@@ -1,0 +1,72 @@
+name: "Rulestatus AI Compliance Check"
+description: "Run EU AI Act and other AI regulation compliance tests in CI/CD"
+author: "Rulestatus"
+branding:
+  icon: shield
+  color: blue
+
+inputs:
+  frameworks:
+    description: "Comma-separated list of frameworks to run (e.g. eu-ai-act)"
+    required: false
+    default: "eu-ai-act"
+  severity-gate:
+    description: "Fail CI if any result at this severity or above fails"
+    required: false
+    default: "critical"
+  report-format:
+    description: "Output format(s): console, json, sarif, pdf, badge"
+    required: false
+    default: "sarif"
+  config-path:
+    description: "Path to .rulestatus.yaml config file"
+    required: false
+    default: ""
+  output-dir:
+    description: "Directory for report output files"
+    required: false
+    default: "compliance-reports"
+
+outputs:
+  sarif-file:
+    description: "Path to SARIF output file (if sarif format selected)"
+    value: ${{ steps.run.outputs.sarif-file }}
+  report-dir:
+    description: "Path to report output directory"
+    value: ${{ steps.run.outputs.report-dir }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Install Rulestatus
+      shell: bash
+      run: bun install -g rulestatus
+
+    - name: Run compliance checks
+      id: run
+      shell: bash
+      run: |
+        ARGS="--format ${{ inputs.report-format }} --output ${{ inputs.output-dir }}"
+
+        if [ -n "${{ inputs.config-path }}" ]; then
+          ARGS="$ARGS --config ${{ inputs.config-path }}"
+        fi
+
+        # Convert comma-separated frameworks to multiple --framework flags
+        IFS=',' read -ra FWS <<< "${{ inputs.frameworks }}"
+        for fw in "${FWS[@]}"; do
+          ARGS="$ARGS --framework $(echo $fw | xargs)"
+        done
+
+        rulestatus run $ARGS || EXIT_CODE=$?
+
+        SARIF_FILE="${{ inputs.output-dir }}/eu-ai-act-$(date +%Y-%m-%d).sarif"
+        echo "sarif-file=$SARIF_FILE" >> $GITHUB_OUTPUT
+        echo "report-dir=${{ inputs.output-dir }}" >> $GITHUB_OUTPUT
+
+        exit ${EXIT_CODE:-0}

@@ -1,0 +1,6 @@
+[test]
+root = "./tests"
+preload = [""]
+
+[install]
+exact = false

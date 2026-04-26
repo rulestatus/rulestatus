@@ -1,0 +1,35 @@
+# .rulestatus.yaml — Rulestatus project configuration
+# Copy to .rulestatus.yaml and edit for your system.
+
+system:
+  name: "Acme Fraud Detection Model v2.1"
+  actor: provider               # provider | deployer | importer | distributor
+  risk_level: high-risk         # prohibited | high-risk | limited-risk | minimal-risk
+  domain: financial-services
+  intended_use: "Automated fraud detection for credit card transactions"
+  # api_base_url: http://localhost:8080   # optional — for API probe checks
+
+frameworks:
+  - eu-ai-act
+  # - iso-42001    # coming soon
+  # - nist-ai-rmf  # coming soon
+
+evidence:
+  docs_path: ./docs/compliance/
+  model_card: ./model/model_card.yaml
+  risk_register: ./docs/risk_register.json
+  config_path: ./config/
+  # api_base_url: http://localhost:8080
+
+reporting:
+  format:
+    - console
+    - pdf
+    # - sarif   # uncomment for GitHub Code Scanning integration
+    # - badge   # generates compliance-badge.svg
+  output_dir: ./compliance-reports/
+  badge: false
+
+severity_gate:
+  fail_on: critical   # Pipeline exits with code 1 if any CRITICAL test fails
+  warn_on: major      # MAJOR failures are shown as warnings but do not block

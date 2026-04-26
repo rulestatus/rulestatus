@@ -1,0 +1,8 @@
+node_modules/
+dist/
+compliance-reports/
+*.sarif
+*.pdf
+compliance-badge.svg
+.DS_Store
+bun.lockb
