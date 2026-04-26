@@ -2,19 +2,12 @@ import chalk from "chalk";
 import { Command } from "commander";
 import { RULE_REGISTRY } from "../core/rule.js";
 
-const FRAMEWORK_MODULES: Record<string, string> = {
-  "eu-ai-act": "../frameworks/euAiAct/index.js",
-};
-
 export function cmdExplain(): Command {
   return new Command("explain")
     .description("Explain a failing assertion and how to fix it")
     .argument("<assert-id>", "Assertion ID (e.g. ASSERT-EU-AI-ACT-009-002-B-01)")
     .action(async (assertId: string) => {
-      // Load all framework modules to populate the registry
-      for (const modulePath of Object.values(FRAMEWORK_MODULES)) {
-        await import(modulePath);
-      }
+      await import("../frameworks/euAiAct/index.js");
 
       const rule = RULE_REGISTRY.find((r) => r.id === assertId);
       if (!rule) {
