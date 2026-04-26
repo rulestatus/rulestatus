@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { Command } from "commander";
 import { cmdExplain } from "./cmdExplain.js";
+import { cmdGenerate } from "./cmdGenerate.js";
 import { cmdInit } from "./cmdInit.js";
 import { cmdReport } from "./cmdReport.js";
 import { cmdRun } from "./cmdRun.js";
@@ -15,6 +16,7 @@ program
 
 program.addCommand(cmdInit());
 program.addCommand(cmdRun());
+program.addCommand(cmdGenerate());
 program.addCommand(cmdExplain());
 program.addCommand(cmdReport());
 

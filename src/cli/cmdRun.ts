@@ -58,12 +58,7 @@ async function dispatchReporters(
 ): Promise<void> {
   const resolved = resolve(outputDir);
 
-  // Console is always rendered
-  if (!formats.includes("console")) {
-    await new ConsoleReporter().render(report);
-  } else {
-    await new ConsoleReporter().render(report);
-  }
+  await new ConsoleReporter().render(report);
 
   for (const fmt of formats) {
     if (fmt === "console") continue;
