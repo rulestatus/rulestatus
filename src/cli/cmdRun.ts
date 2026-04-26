@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { Command } from "commander";
 import { loadConfig } from "../config/loader.js";
@@ -43,9 +43,30 @@ export function cmdRun(): Command {
       const fw = opts.framework ?? config.frameworks[0] ?? "eu-ai-act";
 
       await dispatchReporters(report, formats, outputDir, dateStr, fw, config.reporting.badge);
+      persistLastRun(report);
 
       process.exit(exitCode(report, config.severityGate.failOn));
     });
+}
+
+function persistLastRun(report: RunReport): void {
+  try {
+    mkdirSync(".rulestatus", { recursive: true });
+    const payload = {
+      ranAt: new Date().toISOString(),
+      systemName: report.systemName,
+      results: report.results.map((r) => ({
+        ruleId: r.ruleId,
+        article: r.article,
+        severity: r.severity,
+        status: r.status,
+        message: r.message ?? null,
+      })),
+    };
+    writeFileSync(".rulestatus/last-run.json", JSON.stringify(payload, null, 2), "utf-8");
+  } catch {
+    // Non-fatal — don't crash the run if we can't write the cache
+  }
 }
 
 async function dispatchReporters(

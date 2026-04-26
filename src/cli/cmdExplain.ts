@@ -1,6 +1,48 @@
+import { readFileSync } from "node:fs";
 import chalk from "chalk";
 import { Command } from "commander";
 import { RULE_REGISTRY } from "../core/rule.js";
+
+interface LastRunResult {
+  ruleId: string;
+  article: string;
+  severity: string;
+  status: string;
+  message: string | null;
+}
+
+interface LastRun {
+  ranAt: string;
+  systemName: string;
+  results: LastRunResult[];
+}
+
+function loadLastRun(): LastRun | null {
+  try {
+    return JSON.parse(readFileSync(".rulestatus/last-run.json", "utf-8")) as LastRun;
+  } catch {
+    return null;
+  }
+}
+
+function suggestGenerate(article: string): string | null {
+  const [major, minor] = article.split(".");
+  if (major === "9") {
+    if (minor === "1" || minor === "3") return "risk-management";
+    if (minor === "2" || minor === "4" || minor === "5" || minor === "8") return "risk-register";
+  }
+  if (major === "10") {
+    if (minor === "2") return "bias-assessment";
+    return "data-governance";
+  }
+  if (major === "11") return "technical-doc";
+  if (major === "13") {
+    if (minor === "1") return "transparency-config";
+    return "instructions-for-use";
+  }
+  if (major === "14" || major === "15") return "instructions-for-use";
+  return null;
+}
 
 export function cmdExplain(): Command {
   return new Command("explain")
@@ -32,6 +74,52 @@ export function cmdExplain(): Command {
         for (const line of rule.legalText.split("\n")) {
           console.log(`  ${chalk.italic(line)}`);
         }
+      }
+
+      // ── Last run context ──────────────────────────────────────────────────────
+      const lastRun = loadLastRun();
+      if (lastRun) {
+        const result = lastRun.results.find((r) => r.ruleId === assertId);
+        const ranDate = lastRun.ranAt.split("T")[0];
+        console.log();
+
+        if (result) {
+          const statusColor =
+            result.status === "PASS"
+              ? chalk.bold.green
+              : result.status === "FAIL"
+                ? chalk.bold.red
+                : result.status === "MANUAL"
+                  ? chalk.bold.blue
+                  : chalk.bold.yellow;
+
+          console.log(
+            `${chalk.bold("  LAST RUN")}  ${chalk.dim(`·  ${ranDate}  ·`)}  ${statusColor(result.status)}`,
+          );
+
+          if (result.message) {
+            for (const line of result.message.split("\n").slice(0, 5)) {
+              if (line.trim()) console.log(`  ${chalk.dim(line.trim())}`);
+            }
+          }
+
+          if (result.status === "FAIL" || result.status === "MANUAL") {
+            const template = suggestGenerate(rule.article);
+            if (template) {
+              console.log(
+                `  ${chalk.cyan("→")} Run: ${chalk.bold(`rulestatus generate ${template}`)}`,
+              );
+            }
+          }
+        } else {
+          console.log(chalk.bold("  LAST RUN"));
+          console.log(chalk.dim(`  This assertion was not included in the last run (${ranDate}).`));
+          console.log(chalk.dim("  Run: rulestatus run"));
+        }
+      } else {
+        console.log();
+        console.log(chalk.bold("  LAST RUN"));
+        console.log(chalk.dim("  No run results found. Run: rulestatus run"));
       }
 
       if (rule.description) {
