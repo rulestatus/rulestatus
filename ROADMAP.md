@@ -50,9 +50,9 @@ WHY YOU FAILED
 
 This also closes the per-rule evidence trace gap: once evidence context flows into `RuleResult`, auditors can replay exactly which files each rule evaluated and what the engine saw. Without this, the top-level audit trail exists (run timestamp, rule IDs, CI provenance) but the evidence-to-finding chain per rule is not reconstructable.
 
-### P1.3 — Fix console reporter double-render bug
+### P1.3 — Fix console reporter double-render bug ✓ Done
 
-`cmdRun.ts` lines 62–65: both branches of the `if (!formats.includes("console"))` block call `ConsoleReporter.render()`. The condition is inverted — console is rendered twice in some cases and the format selection logic is wrong.
+`ConsoleReporter` was called unconditionally before the format loop, then the loop skipped `"console"`. Effect: console always rendered regardless of the requested formats. Fixed by moving console rendering into the loop alongside all other formats.
 
 ### P1.6 — Evidence readiness framing and legal disclaimers ✓ Done
 
@@ -62,9 +62,9 @@ All report outputs (console, PDF, JSON) now use evidence-readiness language ("ev
 
 `--format junit` added to `cmdRun` and `cmdReport`. Results grouped into `<testsuite>` per article; FAIL/WARN → `<failure>`, MANUAL → `<error>`, SKIP → `<skipped/>`.
 
-### P1.5 — Update PRD code examples from Python to TypeScript
+### P1.5 — Update PRD code examples from Python to TypeScript ✓ Done
 
-PRD §4 (Stage 4) shows Python SDK examples. The implementation is TypeScript/Bun. Before open-source launch this inconsistency will confuse contributors and evaluators.
+Stage 4 code example rewritten to match the actual `rule()` registration style. SDK directory structure updated to reflect `src/` layout with `.ts` extensions. Install command changed from `pip install` to `bun install -g`. Success metrics updated from `CLI installs (pip)` to `CLI installs (bun/npm)`. Provenance chain diagram updated to show the TypeScript `rule()` call instead of a Python function name.
 
 ---
 
@@ -183,6 +183,14 @@ Priority order based on ICP (seed/Series A AI startups selling into EU enterpris
 2. NIST AI RMF — required for US federal and enterprise sales
 3. Colorado SB 21-169 — first US state law with EU-like obligations
 4. NYC Local Law 144 — hiring AI, narrower but concrete
+5. China - Generative AI Interim Measures
+6. China - Algorithm Recommendation Provisions
+7. China - Deep Synthesis Provisions
+8. South Korea — AI Basic Act
+9. Singapore — Model AI Governance Framework / AI Verify
+10. Japan — AI Promotion Act 
+11. ASEAN AI Governance Framework
+12. OECD AI Principles
 
 Each framework needs the full Stage 1–4 pipeline treatment, not just test stubs.
 

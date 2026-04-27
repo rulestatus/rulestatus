@@ -268,141 +268,166 @@ assertions:
 
 **Output:** Executable test modules:
 
-```python
-# tests/eu_ai_act/article_9/test_risk_management.py
+```typescript
+// src/frameworks/euAiAct/article9.ts
 
-from Rulestatus import rule, evidence, severity
+import { ComplianceError } from "../../core/exceptions.js";
+import { rule } from "../../core/rule.js";
+import { CRITICAL } from "../../core/severity.js";
 
-@rule(
-    id="ASSERT-EU-AI-ACT-009-001-01",
-    framework="eu-ai-act",
-    article="9.1",
-    severity=severity.CRITICAL,
-    applies_to={"actor": "provider", "risk_level": "high-risk"},
-    title="Risk management system documentation exists",
-)
-def test_risk_management_doc_exists(system):
-    doc = system.evidence.find_document(
-        category="risk-management",
-        paths=["docs/risk-management/", "compliance/"],
-        formats=["pdf", "docx", "md"],
-    )
-    assert doc is not None, (
-        "No risk management document found. "
-        "Expected in docs/risk-management/ or compliance/"
-    )
-    assert doc.has_field("system_name"), "Document missing: system name"
-    assert doc.has_field("identified_risks"), "Document missing: identified risks"
-    assert doc.has_field("mitigation_measures"), "Document missing: mitigation measures"
-    assert doc.has_field("review_date"), "Document missing: review/update date"
-    assert doc.field("review_date").within_months(12), (
-        "Risk management document not reviewed in last 12 months"
-    )
+rule(
+  {
+    id: "ASSERT-EU-AI-ACT-009-001-01",
+    framework: "eu-ai-act",
+    article: "9.1",
+    severity: CRITICAL,
+    appliesTo: { actor: "provider", riskLevel: "high-risk" },
+    title: "Risk management system documentation exists",
+    obligation: "OBL-EU-AI-ACT-009-001",
+    legalText:
+      'Article 9(1): "A risk management system shall be established, implemented, documented and maintained..."',
+    remediation:
+      "Create a risk management document in docs/risk-management/ or compliance/. " +
+      "It must include: system_name, identified_risks, mitigation_measures, review_date.",
+  },
+  async (system) => {
+    const doc = await system.evidence.findDocument({
+      category: "risk-management",
+      paths: ["docs/risk-management/", "compliance/", "docs/compliance/"],
+      formats: ["yaml", "md", "pdf", "docx"],
+    });
+    if (!doc) {
+      throw new ComplianceError(
+        "No risk management document found. Expected in docs/risk-management/ or compliance/",
+      );
+    }
+    if (!doc.hasField("system_name")) throw new ComplianceError("Document missing: system name");
+    if (!doc.hasField("identified_risks")) throw new ComplianceError("Document missing: identified risks");
+    if (!doc.hasField("mitigation_measures")) throw new ComplianceError("Document missing: mitigation measures");
+    if (!doc.hasField("review_date")) throw new ComplianceError("Document missing: review date");
+    if (!doc.field("review_date").withinMonths(12)) {
+      throw new ComplianceError("Risk management document not reviewed in the last 12 months");
+    }
+  },
+);
 
+rule(
+  {
+    id: "ASSERT-EU-AI-ACT-009-002-A-01",
+    framework: "eu-ai-act",
+    article: "9.2",
+    severity: CRITICAL,
+    appliesTo: { actor: "provider", riskLevel: "high-risk" },
+    title: "Risk register covers health, safety, and fundamental rights dimensions",
+    obligation: "OBL-EU-AI-ACT-009-002-A",
+    legalText:
+      'Article 9(2)(a): "identification and analysis of the known and the reasonably foreseeable risks to health, safety or the fundamental rights..."',
+    remediation:
+      "Ensure your risk register contains at least one entry for each of: health, safety, fundamental_rights.",
+  },
+  async (system) => {
+    const register = await system.evidence.loadStructured("risk_register");
+    if (!register) throw new ComplianceError("No risk register found.");
 
-@rule(
-    id="ASSERT-EU-AI-ACT-009-002-A-01",
-    framework="eu-ai-act",
-    article="9.2.a",
-    severity=severity.CRITICAL,
-    applies_to={"actor": "provider", "risk_level": "high-risk"},
-    title="Risk register covers health, safety, and fundamental rights",
-)
-def test_risk_register_dimensions(system):
-    register = system.evidence.load_structured("risk_register")
-    assert register is not None, "No risk register found"
+    const risks = register.risks as Array<Record<string, unknown>> | undefined;
+    if (!risks || risks.length === 0) throw new ComplianceError("Risk register contains no entries.");
 
-    dimensions_covered = {r["dimension"] for r in register["risks"]}
-    required = {"health", "safety", "fundamental_rights"}
-    missing = required - dimensions_covered
+    const dimensions = new Set(risks.map((r) => String(r.dimension ?? "")));
+    const missing = ["health", "safety", "fundamental_rights"].filter((d) => !dimensions.has(d));
+    if (missing.length > 0) {
+      throw new ComplianceError(
+        `Risk register missing required dimensions: ${missing.join(", ")}. Art. 9(2)(a) requires all three.`,
+      );
+    }
+  },
+);
 
-    assert not missing, (
-        f"Risk register missing dimensions: {missing}. "
-        f"Art. 9(2)(a) requires all three."
-    )
+rule(
+  {
+    id: "ASSERT-EU-AI-ACT-013-001-01",
+    framework: "eu-ai-act",
+    article: "13.1",
+    severity: CRITICAL,
+    appliesTo: { actor: "provider", riskLevel: "high-risk" },
+    title: "AI system discloses that output is AI-generated",
+    obligation: "OBL-EU-AI-ACT-013-001",
+    remediation:
+      "Enable AI disclosure in config/transparency.yaml with `ai_disclosure.enabled: true`. " +
+      "Alternatively, ensure your API returns an X-AI-Disclosure header.",
+  },
+  async (system) => {
+    const config = await system.evidence.loadConfig("transparency");
+    if (config) {
+      const disclosure = config.ai_disclosure as Record<string, unknown> | undefined;
+      if (disclosure?.enabled === true) return;
+      throw new ComplianceError("AI disclosure is disabled in transparency config.");
+    }
 
-    for risk in register["risks"]:
-        assert risk.get("severity") in ("low", "medium", "high", "critical"), (
-            f"Risk '{risk['id']}' has invalid severity: {risk.get('severity')}"
-        )
-        assert risk.get("mitigation") is not None, (
-            f"Risk '{risk['id']}' has no mitigation measure documented"
-        )
+    if (system.hasApi()) {
+      const res = await system.evidence.probeApi("/api/health");
+      if (res) {
+        const hasHeader = "x-ai-disclosure" in res.headers;
+        const body = await res.body();
+        const hasBodyField = body && typeof body === "object" && "ai_disclosure" in (body as object);
+        if (hasHeader || hasBodyField) return;
+        throw new ComplianceError("API endpoint missing AI disclosure header or body field.");
+      }
+    }
 
-
-@rule(
-    id="ASSERT-EU-AI-ACT-013-001-01",
-    framework="eu-ai-act",
-    article="13.1",
-    severity=severity.CRITICAL,
-    applies_to={"actor": "provider", "risk_level": "high-risk"},
-    title="AI system provides transparency disclosure",
-)
-def test_ai_disclosure(system):
-    config = system.evidence.load_config("transparency")
-    if config:
-        assert config.get("ai_disclosure", {}).get("enabled") is True, (
-            "AI disclosure is disabled in transparency config"
-        )
-        return
-
-    if system.has_api():
-        response = system.api.probe("/api/health")
-        has_header = "X-AI-Disclosure" in response.headers
-        has_body = response.json().get("ai_disclosure") is not None
-        assert has_header or has_body, (
-            "API endpoint missing AI disclosure header or body field"
-        )
-        return
-
-    system.evidence.require_manual(
-        "Provide screenshot or documentation proving AI disclosure to users"
-    )
+    system.evidence.requireManual(
+      "Provide screenshot or documentation proving AI disclosure is shown to users.",
+    );
+  },
+);
 ```
 
 **The SDK structure:**
 
 ```
-Rulestatus/
+src/
   core/
-    engine.py          # Test runner, parallel execution, result aggregation
-    decorators.py      # @rule decorator with metadata
-    severity.py        # CRITICAL, MAJOR, MINOR, INFO
+    engine.ts          # Test runner, result aggregation
+    rule.ts            # rule() registration function + RULE_REGISTRY
+    severity.ts        # CRITICAL, MAJOR, MINOR, INFO
+    result.ts          # RuleResult, RunReport, exitCode
+    context.ts         # SystemContext — passed into every rule fn
+    exceptions.ts      # ComplianceError, ManualReviewRequired, SkipTest
   evidence/
+    registry.ts        # EvidenceRegistry — caching facade over collectors
     collectors/
-      filesystem.py    # Scan project dirs for docs, configs
-      api_probe.py     # Hit endpoints, check headers/responses
-      model_card.py    # Parse HuggingFace / custom model cards
-      config.py        # Read YAML/JSON/TOML config files
-      git.py           # Check commit history, review processes
-      manual.py        # Prompt for human-provided evidence
+      filesystem.ts    # Scan project dirs for docs, configs
+      apiProbe.ts      # Hit endpoints, check headers/responses
+      modelCard.ts     # Parse HuggingFace / custom model cards
+      config.ts        # Read YAML/JSON/TOML config files
+      manual.ts        # Trigger ManualReviewRequired
     schemas/           # JSON schemas for structured evidence
       risk_register_v1.json
       model_card_v1.json
       data_governance_v1.json
       bias_assessment_v1.json
   frameworks/
-    eu_ai_act/         # All EU AI Act test modules
-    colorado_ai/       # Colorado SB 21-169
-    iso_42001/         # ISO/IEC 42001
-    nist_ai_rmf/       # NIST AI Risk Management Framework
-    nyc_ll144/         # NYC Local Law 144 (hiring AI)
+    euAiAct/           # All EU AI Act rule modules
+    coloradoAi/        # Colorado SB 21-169
+    iso42001/          # ISO/IEC 42001
+    nistAiRmf/         # NIST AI Risk Management Framework
+    nycLl144/          # NYC Local Law 144 (hiring AI)
   reporters/
-    console.py         # Terminal output with pass/fail/warn
-    json.py            # Machine-readable results
-    pdf.py             # Audit-ready PDF report
-    sarif.py           # SARIF format for IDE/GitHub integration
-    badge.py           # Compliance badge SVG generator
-  plugins/
-    ci/
-      github_action/
-      gitlab_ci/
-      jenkins/
-    ide/
-      vscode/
+    console.ts         # Terminal output with pass/fail/warn
+    json.ts            # Machine-readable results
+    pdf.ts             # Audit-ready PDF report
+    sarif.ts           # SARIF format for IDE/GitHub integration
+    badge.ts           # Compliance badge SVG generator
+    junit.ts           # JUnit XML for CI test result ingestion
+  cli/
+    main.ts            # Entry point, Commander setup
+    cmdRun.ts
+    cmdInit.ts
+    cmdExplain.ts
+    cmdReport.ts
+    cmdBundle.ts
+    cmdAttest.ts
+    cmdGenerate.ts
 ```
-
-Note: Our code should be able to generate SDKs in various programming languages
 
 ---
 
@@ -463,8 +488,8 @@ severity_gate:
 **Developer experience:**
 
 ```bash
-# Install
-pip install rulestatus
+# Install (requires Bun ≥ 1.1)
+bun install -g rulestatus
 
 # Initialize project config
 rulestatus init --actor provider --risk-level high-risk --frameworks eu-ai-act
@@ -634,7 +659,7 @@ OBL-EU-AI-ACT-009-002-A           <- Extracted obligation
 ASSERT-EU-AI-ACT-009-002-A-01     <- Testable assertion
     |
     v
-test_risk_register_dimensions()    <- Executable test
+rule("ASSERT-EU-AI-ACT-009-002-A-01", async (system) => {...})  <- Executable test
     |
     v
 RESULT: PASS/FAIL + evidence       <- Auditable result with timestamp
@@ -741,7 +766,7 @@ When regulations change, new guidance is published, or courts issue relevant dec
 | Metric | 6-month target |
 |---|---|
 | GitHub stars | 2,000 |
-| CLI installs (pip) | 5,000 |
+| CLI installs (bun/npm) | 5,000 |
 | Paying teams | 50 |
 | Frameworks covered | 3 (EU AI Act, ISO 42001, NIST AI RMF) |
 | Tests in library | 200+ |

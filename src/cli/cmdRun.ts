@@ -80,12 +80,10 @@ async function dispatchReporters(
 ): Promise<void> {
   const resolved = resolve(outputDir);
 
-  await new ConsoleReporter().render(report);
-
   for (const fmt of formats) {
-    if (fmt === "console") continue;
-
-    if (fmt === "json") {
+    if (fmt === "console") {
+      await new ConsoleReporter().render(report);
+    } else if (fmt === "json") {
       await new JsonReporter().render(report, `${resolved}/${fw}-${dateStr}.json`);
     } else if (fmt === "sarif") {
       await new SarifReporter().render(report, `${resolved}/${fw}-${dateStr}.sarif`);
