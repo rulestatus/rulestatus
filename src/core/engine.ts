@@ -31,6 +31,8 @@ export class Engine {
     for (const fw of frameworks) {
       if (fw === "eu-ai-act") {
         await import("../frameworks/euAiAct/index.js");
+      } else if (fw === "iso-42001") {
+        await import("../frameworks/iso42001/index.js");
       }
     }
   }

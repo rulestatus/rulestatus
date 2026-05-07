@@ -165,11 +165,26 @@ $ rulestatus update
 
 ## Phase 3 — Platform & Expansion (Weeks 11–16+)
 
-### P3.1 — Additional frameworks
+### P3.1 — Additional frameworks ✓ ISO/IEC 42001 Done
 
-Priority order based on ICP (seed/Series A AI startups selling into EU enterprises):
+**ISO/IEC 42001:2023** — AI Management System standard added. 7 clause files covering all mandatory AIMS clauses:
 
-1. ISO/IEC 42001 — directly complementary to EU AI Act, auditors ask for both
+```
+src/frameworks/iso42001/
+  clause4.ts   — Context: AIMS scope, interested parties (2 rules)
+  clause5.ts   — Leadership: AI policy, roles and responsibilities (3 rules)
+  clause6.ts   — Planning: risks/opportunities, AI objectives (2 rules)
+  clause7.ts   — Support: competence, awareness, document control (3 rules)
+  clause8.ts   — Operation: risk assessment, impact assessment, lifecycle, controls (4 rules)
+  clause9.ts   — Performance evaluation: monitoring, audit program, management review (3 rules)
+  clause10.ts  — Improvement: corrective action, continual improvement (2 rules)
+```
+
+19 assertions, 18 obligations. Uses same builder DSL and executor as EU AI Act. `appliesTo: { actor: "provider" }` with no `riskLevel` — applies regardless of EU AI Act classification. Key AIMS artifacts: `aims-scope`, `ai-policy`, `aims-roles`, `ai-risk-assessment`, `ai-impact-assessment`, `ai-objectives`, `monitoring-plan`, `audit-program`, `management-review`, `corrective-action`.
+
+Priority order for remaining frameworks (seed/Series A AI startups selling into EU enterprises):
+
+1. ~~ISO/IEC 42001~~ — done
 2. NIST AI RMF — required for US federal and enterprise sales
 3. Colorado SB 21-169 — first US state law with EU-like obligations
 4. NYC Local Law 144 — hiring AI, narrower but concrete

@@ -14,6 +14,7 @@ export function cmdExportRegistry(): Command {
     .option("--framework <fw>", "Limit to one framework (e.g. eu-ai-act)")
     .action(async (opts: { output: string; framework?: string }) => {
       await import("../frameworks/euAiAct/index.js");
+      await import("../frameworks/iso42001/index.js");
 
       let rules = [...RULE_REGISTRY];
       if (opts.framework) rules = rules.filter((r) => r.framework === opts.framework);

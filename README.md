@@ -154,6 +154,34 @@ severity_gate:
 
 ## What's checked
 
+Add `iso-42001` to `frameworks` in `.rulestatus.yaml` to run ISO 42001 checks alongside EU AI Act:
+
+```yaml
+frameworks:
+  - eu-ai-act
+  - iso-42001
+```
+
+
+
+**EU AI Act** — 43 assertions for high-risk AI providers (Articles 6, 9, 10, 11, 13, 14, 15):
+
+**ISO/IEC 42001:2023** — 19 assertions for AI Management System providers (Clauses 4–10):
+
+| Clause | Checks |
+|---|---|
+| **Cl. 4** | AIMS scope, organizational context, interested parties |
+| **Cl. 5** | AI policy (purpose, commitments, approval), roles and responsibilities |
+| **Cl. 6** | AIMS-level risks and opportunities, measurable AI objectives |
+| **Cl. 7** | Competence requirements, awareness program, document control |
+| **Cl. 8** | AI risk assessment, AI impact assessment, lifecycle stages, operational controls |
+| **Cl. 9** | Monitoring and measurement, internal audit program, management review |
+| **Cl. 10** | Corrective action procedure, continual improvement plan |
+
+---
+
+## EU AI Act — what's checked
+
 EU AI Act obligations for **high-risk AI providers** (Articles 6, 9, 10, 11, 13, 14, 15). 43 assertions covering:
 
 | Article | Checks |
