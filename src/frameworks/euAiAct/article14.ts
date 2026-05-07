@@ -1,4 +1,4 @@
-import { anyOf, api, config, doc } from "../../core/check.js";
+import { anyOf, api, config, doc, manual } from "../../core/check.js";
 import { rule } from "../../core/rule.js";
 import { CRITICAL, MAJOR, MINOR } from "../../core/severity.js";
 
@@ -16,15 +16,18 @@ rule({
   legalText:
     'Article 14(1): "High-risk AI systems shall be designed and developed in such a way... that they can be effectively overseen by natural persons..."',
   remediation:
-    "Create config/human_oversight.yaml with `override.enabled: true` or document the mechanism.",
+    "Create config/human_oversight.yaml with `override.enabled: true`, document the mechanism, or attest manually with `rulestatus attest ASSERT-EU-AI-ACT-014-001-01`.",
   check: anyOf(
-    api("/api/override").expectStatusNot(404),
     config("human_oversight").requireNestedValue("override.enabled", true),
     config("human_oversight").requireAny("override_mechanism", "overrideMechanism"),
     doc("human-oversight")
       .inPaths(["docs/compliance/", "docs/", "compliance/"])
       .formats([...FMTS])
       .requireAny("override_mechanism", "human_override"),
+    api("/api/override").expectStatusNot(404),
+    manual(
+      "Provide documentation proving a human override mechanism exists and is accessible to oversight personnel.",
+    ),
   ),
 });
 
@@ -56,14 +59,17 @@ rule({
   legalText:
     "Article 14(4)(c): oversight persons must be able to interpret the AI system's output.",
   remediation:
-    "Add `enabled: true` to config/explainability.yaml or expose a /api/explain endpoint.",
+    "Add `enabled: true` to config/explainability.yaml, document explainability in technical docs, or attest manually with `rulestatus attest ASSERT-EU-AI-ACT-014-003-01`.",
   check: anyOf(
-    api("/api/explain").expectOk(),
     config("explainability").requireNestedValue("enabled", true),
     doc("technical-documentation")
       .inPaths(PATHS_TECH)
       .formats([...FMTS])
       .requireAny("explainability", "interpretability"),
+    api("/api/explain").expectOk(),
+    manual(
+      "Provide documentation proving explainability output is available to oversight personnel.",
+    ),
   ),
 });
 

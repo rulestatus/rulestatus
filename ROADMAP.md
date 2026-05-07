@@ -93,9 +93,9 @@ Without this, one wrong assertion gives auditors grounds to dismiss the tool ent
 
 Originally implemented as hand-written YAML files in `obligations/` and `assertions/`. Superseded: after P2.12 introduced the builder DSL, the YAML was redundant parallel maintenance. P2.13 replaced the static files with a generated export command.
 
-### P2.4 — Reduce runtime API probe surface
+### P2.4 — Reduce runtime API probe surface ✓ Done
 
-`apiProbe.ts` exists and Article 13/14 rules use it. In practice, most target systems don't expose clean local APIs in CI. Bias evidence collection toward document/config/schema checks (80%) with API probing as a fallback only. Where runtime checks are required, provide a `manual` fallback that marks the assertion as `MANUAL` rather than `FAIL`.
+Article 14 rules (`014-001-01`, `014-003-01`) previously had API probes as the first check in `anyOf`, causing spurious failures in CI where the system isn't running. Fixed: config/doc checks now come first, API probe moved to second-to-last, `manual()` added as final fallback. All-fail now yields `MANUAL` (human attestation required) instead of `FAIL`. Article 13's `013-001-01` fn escape hatch was already correct — it only probes the API when `hasApi()` is true and already falls through to `requireManual` when no response is returned.
 
 ### P2.6 — Legal review credential
 
