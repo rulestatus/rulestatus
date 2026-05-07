@@ -29,10 +29,16 @@ export class ConsoleReporter implements Reporter {
         const fmt = STATUS_FORMAT[r.status] ?? ((s: string) => s);
         const statusLabel = fmt(r.status.padEnd(6));
         const idLabel = chalk.dim(r.ruleId.padEnd(36));
-        console.log(`    ${statusLabel} ${idLabel} ${r.title}`);
+        const confLabel = r.status === "PASS" ? confidenceBadge(r.confidence) : "";
+        console.log(`    ${statusLabel} ${idLabel} ${r.title}${confLabel}`);
         if (r.message && (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")) {
           for (const line of r.message.split("\n").slice(0, 3)) {
             if (line.trim()) console.log(`      ${chalk.dim(`-> ${line.trim()}`)}`);
+          }
+        }
+        if (r.evidenceSources.length > 0) {
+          for (const src of r.evidenceSources) {
+            console.log(`      ${chalk.dim(`   ${src.filePath} [${src.sha256.slice(0, 8)}]`)}`);
           }
         }
       }
@@ -69,6 +75,12 @@ export class ConsoleReporter implements Reporter {
     );
     console.log();
   }
+}
+
+function confidenceBadge(c: RuleResult["confidence"]): string {
+  if (c === "strong") return "";
+  if (c === "moderate") return chalk.dim(" [moderate]");
+  return chalk.yellow(" [weak]");
 }
 
 function groupByArticle(results: RuleResult[]): Record<string, RuleResult[]> {

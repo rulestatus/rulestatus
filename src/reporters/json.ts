@@ -51,9 +51,11 @@ export class JsonReporter implements Reporter {
         article: r.article,
         severity: r.severity,
         status: r.status,
+        confidence: r.confidence,
         message: r.message ?? null,
         durationMs: r.durationMs,
         timestamp: r.timestamp.toISOString(),
+        evidenceSources: r.evidenceSources,
       })),
     };
 

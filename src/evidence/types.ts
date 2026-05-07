@@ -1,3 +1,11 @@
+export type Confidence = "strong" | "moderate" | "weak";
+
+export interface EvidenceSource {
+  filePath: string;
+  sha256: string;
+  redactedFields: number;
+}
+
 export interface FieldValue {
   /** Raw value. */
   raw: unknown;
@@ -11,6 +19,8 @@ export interface FieldValue {
 export interface Document {
   /** Path of the source file (for provenance). */
   sourcePath: string;
+  /** SHA-256 of file content at load time. */
+  sha256?: string | undefined;
   /** True if the document contains a non-empty field with this name. */
   hasField(name: string): boolean;
   /** Returns a FieldValue for the given field. Never throws. */

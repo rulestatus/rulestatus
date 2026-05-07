@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import yaml from "js-yaml";
@@ -38,18 +39,34 @@ export class FilesystemCollector implements EvidenceCollector {
   }
 
   async loadStructured(name: string): Promise<Record<string, unknown> | null> {
+    const result = await this.loadStructuredWithMeta(name);
+    return result?.data ?? null;
+  }
+
+  async loadStructuredWithMeta(
+    name: string,
+  ): Promise<{ data: Record<string, unknown>; filePath: string; sha256: string } | null> {
     for (const dir of [".", "docs", "compliance", "config"]) {
       for (const ext of ["json", "yaml", "yml"]) {
         const p = resolve(this.basePath, dir, `${name}.${ext}`);
         if (!existsSync(p)) continue;
-        const data = await parseStructuredFile(p);
-        if (data) return data;
+        const result = await parseStructuredFile(p);
+        if (result) return result;
       }
     }
     return null;
   }
 
   async loadStructuredAt(path: string): Promise<Record<string, unknown> | null> {
+    const resolved = resolve(this.basePath, path);
+    if (!existsSync(resolved)) return null;
+    const result = await parseStructuredFile(resolved);
+    return result?.data ?? null;
+  }
+
+  async loadStructuredAtWithMeta(
+    path: string,
+  ): Promise<{ data: Record<string, unknown>; filePath: string; sha256: string } | null> {
     const resolved = resolve(this.basePath, path);
     if (!existsSync(resolved)) return null;
     return parseStructuredFile(resolved);
@@ -64,15 +81,16 @@ async function loadPath(filePath: string): Promise<Document | null> {
   const ext = extname(filePath).toLowerCase();
   try {
     const text = await Bun.file(filePath).text();
+    const sha256 = createHash("sha256").update(text).digest("hex");
     if (ext === ".yaml" || ext === ".yml") {
       const data = yaml.load(text);
       if (data && typeof data === "object" && !Array.isArray(data)) {
-        return new DictDocument(data as Record<string, unknown>, filePath);
+        return new DictDocument(data as Record<string, unknown>, filePath, sha256);
       }
     } else if (ext === ".json") {
       const data = JSON.parse(text);
       if (data && typeof data === "object" && !Array.isArray(data)) {
-        return new DictDocument(data as Record<string, unknown>, filePath);
+        return new DictDocument(data as Record<string, unknown>, filePath, sha256);
       }
     } else if (ext === ".md") {
       // Try YAML front-matter first
@@ -82,11 +100,11 @@ async function loadPath(filePath: string): Promise<Document | null> {
           const fm = yaml.load(parts[1] ?? "");
           if (fm && typeof fm === "object" && !Array.isArray(fm)) {
             const data = { ...(fm as Record<string, unknown>), _body: parts.slice(2).join("---") };
-            return new DictDocument(data, filePath);
+            return new DictDocument(data, filePath, sha256);
           }
         }
       }
-      return new TextDocument(text, filePath);
+      return new TextDocument(text, filePath, sha256);
     }
   } catch {
     // Unreadable / unparseable files are silently skipped
@@ -94,19 +112,22 @@ async function loadPath(filePath: string): Promise<Document | null> {
   return null;
 }
 
-async function parseStructuredFile(filePath: string): Promise<Record<string, unknown> | null> {
+async function parseStructuredFile(
+  filePath: string,
+): Promise<{ data: Record<string, unknown>; filePath: string; sha256: string } | null> {
   const ext = extname(filePath).toLowerCase();
   try {
     const text = await Bun.file(filePath).text();
+    const sha256 = createHash("sha256").update(text).digest("hex");
     if (ext === ".json") {
       const data = JSON.parse(text);
       if (data && typeof data === "object" && !Array.isArray(data)) {
-        return data as Record<string, unknown>;
+        return { data: data as Record<string, unknown>, filePath, sha256 };
       }
     } else {
       const data = yaml.load(text);
       if (data && typeof data === "object" && !Array.isArray(data)) {
-        return data as Record<string, unknown>;
+        return { data: data as Record<string, unknown>, filePath, sha256 };
       }
     }
   } catch {

@@ -28,6 +28,7 @@ export class DictDocument implements Document {
   constructor(
     private readonly data: Record<string, unknown>,
     public readonly sourcePath: string,
+    public readonly sha256?: string,
   ) {}
 
   hasField(name: string): boolean {
@@ -52,6 +53,7 @@ export class TextDocument implements Document {
   constructor(
     private readonly text: string,
     public readonly sourcePath: string,
+    public readonly sha256?: string,
   ) {}
 
   hasField(name: string): boolean {

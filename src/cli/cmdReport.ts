@@ -63,6 +63,10 @@ function deserializeReport(data: unknown): RunReport {
     ...(r.message ? { message: String(r.message) } : {}),
     durationMs: Number(r.durationMs ?? 0),
     timestamp: new Date(String(r.timestamp)),
+    confidence: (r.confidence as "strong" | "moderate" | "weak") ?? "strong",
+    evidenceSources: Array.isArray(r.evidenceSources)
+      ? (r.evidenceSources as import("../evidence/types.js").EvidenceSource[])
+      : [],
   }));
 
   return {

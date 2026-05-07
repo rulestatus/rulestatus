@@ -11,10 +11,10 @@ Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encod
 - Audit trail: JSON report captures all rule IDs, timestamps, durations, and CI provenance block per run.
 
 **Genuine remaining gaps (addressed in Phase 2 below):**
-- No per-evidence-item hashing at collection time — attestation covers the output bundle, not individual source files evaluated during the run.
-- Binary pass/fail with no confidence or evidence strength model.
-- No per-rule evidence trace in results — `explain` shows static remediation, not what was found at runtime.
-- No secrets/PII redaction in evidence collectors.
+- ~~No per-evidence-item hashing at collection time~~ — closed by P2.9.
+- ~~Binary pass/fail with no confidence or evidence strength model~~ — closed by P2.10.
+- No per-rule evidence trace in results — `explain` shows static remediation, not what was found at runtime. (P1.2 added dynamic failure context; full per-rule trace now in `evidenceSources` via P2.9.)
+- ~~No secrets/PII redaction in evidence collectors~~ — closed by P2.11.
 
 ---
 
@@ -135,30 +135,19 @@ Deliverable: a written statement from the reviewer that can be referenced in rep
 
 `action.yml` has `attest` input (default `false`, requires `id_token: write`); when enabled, bundles and attests after each run.
 
-### P2.9 — Per-evidence-item hashing at collection time
+### P2.9 — Per-evidence-item hashing at collection time ✓ Done
 
-Current attestation covers the output bundle (`rulestatus attest bundle.tar.gz` → SHA-256 + Sigstore). What it cannot prove: which specific version of `docs/risk_register.json` was on disk when a rule evaluated it.
-
-Extend `EvidenceRegistry` to record a SHA-256 digest and file path for every document it loads. Attach this as an `evidenceSources` array to `RuleResult`. Include in JSON report output.
+`EvidenceRegistry` records a SHA-256 digest, file path, and `redactedFields` count for every document loaded. Attached as `evidenceSources: EvidenceSource[]` on `RuleResult`; included in JSON report output. SHA-256 computed at read time in `FilesystemCollector`. Per-rule tracking via `resetForRule()` / `snapshotSources()` on the registry — sources accumulate during rule execution, snapshot taken after.
 
 This closes the chain: `git commit` → `CI run` → `evidence hash per rule` → `bundle hash` → `Sigstore attestation`. Any auditor can verify that a specific file version produced a specific finding.
 
-### P2.10 — Evidence strength / confidence levels on findings
+### P2.10 — Evidence strength / confidence levels on findings ✓ Done
 
-The rule engine is binary: a document either exists and has the required fields or it doesn't. This misses the "weak signal" case where a file is present but barely satisfies the check (e.g. a risk register with one entry, a bias assessment covering one demographic).
+`confidence: "strong" | "moderate" | "weak"` added to `RuleResult`. Defaults to `"strong"`. Rules call `system.evidence.setConfidence("weak" | "moderate")` to downgrade before returning. Engine reads confidence via `registry.getConfidence()` after rule execution and resets per rule. Surfaced in console output (badge shown for non-strong results) and included in JSON report. Auditors can distinguish a robust control from a minimum-viable one.
 
-Add a `confidence` field to `RuleResult` with values `strong | moderate | weak`. Rules set confidence based on how thoroughly evidence satisfies the obligation, not just whether it's present. Surface in console output and PDF report. Auditors can then distinguish a robust control from a minimum-viable one without rejecting the tool's output entirely.
+### P2.11 — Secrets and PII redaction in evidence collectors ✓ Done
 
-### P2.11 — Secrets and PII redaction in evidence collectors
-
-`FilesystemCollector` reads files verbatim and their content flows into JSON reports and bundles. A risk register or model card containing API keys, connection strings, or personal data will be captured unfiltered.
-
-Add a redaction pass in `EvidenceRegistry` before any document content is serialized into a result or report:
-- Strip values matching common secret patterns (API key formats, connection strings, bearer tokens)
-- Flag fields named `password`, `secret`, `token`, `key` as `[REDACTED]`
-- Add a `redactedFields` count to the evidence source record so omissions are visible to auditors
-
-This is a data governance requirement before the tool can be run in regulated environments.
+`src/evidence/redact.ts` added. `redactData()` walks structured objects recursively: fields matching sensitive key names (`password`, `secret`, `token`, `key`, `api_key`, `credential`, etc.) and values matching secret patterns (OpenAI keys, GitHub tokens, JWTs, DB connection strings) are replaced with `"[REDACTED]"`. Applied in `EvidenceRegistry` when building `evidenceSources` records — rules still receive unredacted data for field checks, but the audit trail records `redactedFields` count per source so omissions are visible to auditors. Required before running in regulated environments.
 
 ### P2.5 — `rulestatus update` command
 

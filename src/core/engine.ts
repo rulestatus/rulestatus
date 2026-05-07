@@ -81,6 +81,9 @@ export class Engine {
   }
 
   private async execute(rule: RuleMeta): Promise<RuleResult> {
+    const registry = this.system.evidence;
+    registry.resetForRule();
+
     const base = {
       ruleId: rule.id,
       title: rule.title,
@@ -93,21 +96,58 @@ export class Engine {
     const t0 = performance.now();
     try {
       await rule.fn(this.system);
-      return { ...base, status: "PASS", durationMs: performance.now() - t0 };
+      const durationMs = performance.now() - t0;
+      return {
+        ...base,
+        status: "PASS",
+        durationMs,
+        confidence: registry.getConfidence(),
+        evidenceSources: registry.snapshotSources(),
+      };
     } catch (e) {
       const durationMs = performance.now() - t0;
+      const evidenceSources = registry.snapshotSources();
+      const confidence = registry.getConfidence();
       if (e instanceof ComplianceError) {
-        return { ...base, status: "FAIL", message: e.message, durationMs };
+        return {
+          ...base,
+          status: "FAIL",
+          message: e.message,
+          durationMs,
+          confidence,
+          evidenceSources,
+        };
       }
       if (e instanceof ManualReviewRequired) {
-        return { ...base, status: "MANUAL", message: e.message, durationMs };
+        return {
+          ...base,
+          status: "MANUAL",
+          message: e.message,
+          durationMs,
+          confidence,
+          evidenceSources,
+        };
       }
       if (e instanceof SkipTest) {
-        return { ...base, status: "SKIP", message: e.message, durationMs };
+        return {
+          ...base,
+          status: "SKIP",
+          message: e.message,
+          durationMs,
+          confidence,
+          evidenceSources,
+        };
       }
       // Unexpected errors are surfaced as failures with the full stack
       const msg = e instanceof Error ? `${e.message}\n${e.stack ?? ""}` : String(e);
-      return { ...base, status: "FAIL", message: `Internal error: ${msg}`, durationMs };
+      return {
+        ...base,
+        status: "FAIL",
+        message: `Internal error: ${msg}`,
+        durationMs,
+        confidence,
+        evidenceSources,
+      };
     }
   }
 }
