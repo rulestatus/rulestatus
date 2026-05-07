@@ -213,12 +213,22 @@ This should be reflected in:
 
 Real-time compliance linting as engineers write model cards, risk registers, and configs. Surface WARN/FAIL inline with squiggles. `explain` on hover. Low effort to implement given SARIF output already works — VS Code reads SARIF natively via the `errorlens`/`sarif-viewer` ecosystem.
 
-### P3.4 — Docs site + open-source launch
+### P3.4a — Docs site + open-source launch (rulestatus.com)
 
-- Framework reference: every assertion ID, its legal basis, its evidence spec
-- "Getting started in 5 minutes" (requires P1.1 generate command to be true)
-- Contribution guide: how to propose new assertions or flag incorrect ones
-- Methodology overview (public-facing version of P2.2)
+Full CLI and rule library are open-source (Apache 2.0). The docs site is the conversion surface — engineers find it, run it, then their company buys SaaS.
+
+Deliverables:
+- `rulestatus.com` landing page — ICP-targeted messaging: "your enterprise customer will ask for this before signing"
+- Framework reference: every assertion ID, legal basis, evidence spec (auto-generated from `export-registry`)
+- Getting started guide: `bun install -g rulestatus` → green run in under 10 minutes
+- Contribution guide: how to propose new assertions, flag incorrect ones, add a framework
+- Methodology overview: public-facing version of P2.2 — how law becomes a test
+
+Do this before adding more frameworks. Three frameworks is enough content for a credible docs site.
+
+### P3.4b — SaaS platform (Phase 4 track)
+
+Separate track from P3.4a. See Phase 4 below.
 
 ### P3.5 — Open question: LegalXML standard
 
@@ -226,9 +236,36 @@ Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligat
 
 ---
 
+## Phase 4 — SaaS Platform (post-launch)
+
+Commercial product built on top of the open-source CLI. Do not start until the CLI has ≥500 installs and ≥1 paying team — otherwise building before learning what buyers actually want.
+
+### P4.1 — Amendment service (first paid feature)
+
+When a regulation is amended, Pro+ teams get assertion updates within days. Free users get them on the next release cycle. This is the clearest standalone paid value: recurring, high-stakes, impossible to self-serve reliably.
+
+Requires: rule versioning system, release pipeline, notification service (email/webhook).
+
+### P4.2 — Dashboard
+
+Multi-project compliance overview, historical trend per framework, per-article drill-down, team activity. Auth + multi-tenant project storage + read API over run results. Single most important SaaS feature for team buyers.
+
+### P4.3 — Evidence vault
+
+Hosted secure storage for evidence bundles, attestations, and audit artifacts. Replaces the local `.rulestatus/` directory with a tamper-evident cloud store. Signed URLs for external auditor access (feeds P4.4).
+
+### P4.4 — Audit portal
+
+Read-only external access for auditors and enterprise customers doing vendor security reviews. Auditor gets a URL → logs in → sees compliance history, evidence bundles, attestations. No PDF email chain. This is the trigger for Team tier conversion.
+
+### P4.5 — Benchmark data + industry percentile scoring
+
+Anonymised, aggregated compliance scores across the user base. "Your system is in the 73rd percentile for EU AI Act readiness." Requires distribution (500+ teams). Build the data model in P4.2; surface the benchmarks in Auditor Platform tier once data exists.
+
+---
+
 ## Deferred / Under Evaluation
 
-- **SaaS dashboard** — multi-project view, team seats, evidence vault hosting. Only makes sense after CLI has paying users.
-- **Auditor Platform tier** — white-label reports, multi-client management. Requires at least one auditor partner engaged first.
-- **Obligation graph visualization** — the dependency graph from Stage 2 is powerful for understanding which obligations cascade. Useful for the dashboard but over-engineered for CLI.
-- **Benchmark data / percentile scoring** — "your system is in the 73rd percentile for EU AI Act readiness." Requires distribution (100+ teams running). Build the data model now, surface it later.
+- **Obligation graph visualization** — dependency graph showing which obligations cascade from others. Powerful for the dashboard, over-engineered for CLI. Revisit in P4.2.
+- **SaaS dashboard, evidence vault, audit portal, benchmark data** — all now scoped in Phase 4. Not deferred, just sequenced after CLI distribution is established.
+- **Auditor Platform tier** — requires at least one auditor partner engaged first. Start conversations once P3.4a (docs site) is live.

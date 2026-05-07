@@ -1,7 +1,7 @@
 # PRD: Rulestatus — AI Compliance Testing Pipeline
 
 **Product Requirement Document**
-Version 1.0 | April 2026
+Version 1.1 | May 2026
 
 ---
 
@@ -736,13 +736,32 @@ When regulations change, new guidance is published, or courts issue relevant dec
 
 ## 9. Revenue Model
 
+### Model: Open-core SaaS (Snyk/Semgrep pattern)
+
+The CLI and full rule library are open-source forever (Apache 2.0). Monetisation is a SaaS platform layered on top. Gating the rule library behind a paywall kills the adoption flywheel described in Section 12 — community contributions, auditor lock-in, and benchmark data all require distribution first.
+
+**What is open-source (free forever):**
+- Full engine: test runner, builder DSL, evidence collectors, result types
+- Full rule library: every assertion for every framework, including all future additions
+- All CLI commands: `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry`
+- All reporters: console, JSON, SARIF, JUnit, badge, PDF
+- GitHub Action
+
+**What is commercial (SaaS platform at rulestatus.com):**
+
 | Tier | Price | Includes |
 |---|---|---|
-| **Open Source CLI** | Free | Core engine, 15 basic tests per framework, console output |
-| **Pro** | $499/mo | Full test library, PDF reports, explain command, badge, 1 framework |
-| **Team** | $1,499/mo | All frameworks, SARIF/CI integration, evidence vault, 10 seats |
-| **Enterprise** | $5K-20K/mo | Custom rules, audit-ready reports, SSO, API, dedicated CSM |
-| **Auditor Platform** | $3K/mo/seat | Multi-client management, benchmarks, white-label reports |
+| **CLI** | Free | Full open-source CLI + rule library |
+| **Pro** | $79/mo per workspace | Dashboard, historical trends, amendment alerts, evidence vault |
+| **Team** | $399/mo | Multi-project, 10 seats, audit portal for external auditors, branded PDF |
+| **Enterprise** | $2K–10K/mo | SSO/SAML, custom private rules, legal-firm-stamped reports, SLA, dedicated CSM |
+| **Auditor Platform** | $2K/mo per seat | Multi-client management, benchmarks, industry percentile scoring, white-label reports |
+
+**The amendment service** (included in Pro+) is the clearest standalone paid value: regulation amendments create new/modified/deprecated assertions. Pro teams get updates within days of a regulation change; open-source users get updates on the next release cycle. This is recurring, high-value, and impossible to self-serve reliably.
+
+**The audit portal** (Team+) gives external auditors read-only access to a team's compliance history, evidence bundles, and attestations — the artefact that closes enterprise vendor security reviews. This is the primary Team upsell trigger.
+
+**Benchmark data** (Auditor Platform): anonymised, aggregated compliance scores across the user base. "Your system is in the 73rd percentile for EU AI Act readiness." Only possible with distribution — build the data model early, surface it once you have 500+ teams running.
 
 ---
 
@@ -757,7 +776,7 @@ When regulations change, new guidance is published, or courts issue relevant dec
 | 11 | GitHub Action, PDF reporter |
 | 12 | Docs site, landing page, open-source launch |
 
-**MVP = open-source CLI with EU AI Act high-risk provider tests.**
+**MVP = open-source CLI with full EU AI Act + ISO 42001 rule library, all reporters, GitHub Action.**
 
 ---
 
