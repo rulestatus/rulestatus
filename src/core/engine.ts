@@ -2,6 +2,7 @@ import type { RulestatusConfig } from "../config/schema.js";
 import { EvidenceRegistry } from "../evidence/registry.js";
 import { SystemContext } from "./context.js";
 import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
+import { executeCheck } from "./executor.js";
 import type { RuleResult, RunReport } from "./result.js";
 import { RULE_REGISTRY, type RuleMeta } from "./rule.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
@@ -95,7 +96,13 @@ export class Engine {
 
     const t0 = performance.now();
     try {
-      await rule.fn(this.system);
+      if (rule.check) {
+        await executeCheck(rule.check, this.system);
+      } else if (rule.fn) {
+        await rule.fn(this.system);
+      } else {
+        throw new ComplianceError(`Rule ${rule.id} has neither check nor fn defined.`);
+      }
       const durationMs = performance.now() - t0;
       return {
         ...base,

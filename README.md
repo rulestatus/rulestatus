@@ -69,6 +69,7 @@ After `init` and `generate --all`, your project will have the full document stru
 | `rulestatus run --severity critical` | Run only critical checks |
 | `rulestatus run --format pdf` | Output a PDF evidence readiness report |
 | `rulestatus explain <ASSERT-ID>` | Show legal basis, last run result, and fix guidance |
+| `rulestatus export-registry` | Generate obligation + assertion YAML registry from rule definitions |
 
 ### Templates
 
@@ -153,7 +154,7 @@ severity_gate:
 
 ## What's checked
 
-EU AI Act obligations for **high-risk AI providers** (Articles 6, 9, 10, 11, 13, 14, 15). ~40 assertions covering:
+EU AI Act obligations for **high-risk AI providers** (Articles 6, 9, 10, 11, 13, 14, 15). 43 assertions covering:
 
 | Article | Checks |
 |---|---|
@@ -163,7 +164,7 @@ EU AI Act obligations for **high-risk AI providers** (Articles 6, 9, 10, 11, 13,
 | **Art. 11** | Technical documentation (all 15 Annex IV sections), model architecture, performance metrics, versioning, applicable standards |
 | **Art. 13** | AI disclosure, instructions for use (intended purpose, limitations, performance), provider contact |
 | **Art. 14** | Human oversight mechanisms, override endpoints, meaningful intervention |
-| **Art. 15** | Monitoring, anomaly detection, post-market surveillance, logging |
+| **Art. 15** | Accuracy benchmarks, robustness testing (adversarial inputs), cybersecurity measures, access control, fallback plans, per-group fairness metrics, third-party security assessment |
 
 ---
 

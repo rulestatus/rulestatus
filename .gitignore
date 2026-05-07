@@ -8,3 +8,4 @@ compliance-badge.svg
 .DS_Store
 bun.lockb
 repomix-output.*
+.claude/settings.local.json
