@@ -33,6 +33,8 @@ export class Engine {
         await import("../frameworks/euAiAct/index.js");
       } else if (fw === "iso-42001") {
         await import("../frameworks/iso42001/index.js");
+      } else if (fw === "nist-ai-rmf") {
+        await import("../frameworks/nistAiRmf/index.js");
       }
     }
   }

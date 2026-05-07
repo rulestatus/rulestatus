@@ -154,15 +154,14 @@ severity_gate:
 
 ## What's checked
 
-Add `iso-42001` to `frameworks` in `.rulestatus.yaml` to run ISO 42001 checks alongside EU AI Act:
+Add frameworks to `.rulestatus.yaml` to run checks across multiple standards:
 
 ```yaml
 frameworks:
   - eu-ai-act
   - iso-42001
+  - nist-ai-rmf
 ```
-
-
 
 **EU AI Act** — 43 assertions for high-risk AI providers (Articles 6, 9, 10, 11, 13, 14, 15):
 
@@ -177,6 +176,15 @@ frameworks:
 | **Cl. 8** | AI risk assessment, AI impact assessment, lifecycle stages, operational controls |
 | **Cl. 9** | Monitoring and measurement, internal audit program, management review |
 | **Cl. 10** | Corrective action procedure, continual improvement plan |
+
+**NIST AI RMF 1.0** — 18 assertions covering all 4 core functions (GOVERN, MAP, MEASURE, MANAGE):
+
+| Function | Checks |
+|---|---|
+| **GOVERN** | AI risk policy, risk tolerance, roles and responsibilities, risk communication, third-party AI policy |
+| **MAP** | System context and intended use, external factors, capabilities and limitations, likelihood and impact documentation |
+| **MEASURE** | Evaluation criteria, performance documentation, fairness and bias metrics, security and adversarial robustness, third-party component risks |
+| **MANAGE** | Risk treatment plan, residual risks, incident response and escalation, production monitoring |
 
 ---
 

@@ -165,7 +165,7 @@ $ rulestatus update
 
 ## Phase 3 — Platform & Expansion (Weeks 11–16+)
 
-### P3.1 — Additional frameworks ✓ ISO/IEC 42001 Done
+### P3.1 — Additional frameworks ✓ ISO/IEC 42001 Done ✓ NIST AI RMF Done
 
 **ISO/IEC 42001:2023** — AI Management System standard added. 7 clause files covering all mandatory AIMS clauses:
 
@@ -182,10 +182,22 @@ src/frameworks/iso42001/
 
 19 assertions, 18 obligations. Uses same builder DSL and executor as EU AI Act. `appliesTo: { actor: "provider" }` with no `riskLevel` — applies regardless of EU AI Act classification. Key AIMS artifacts: `aims-scope`, `ai-policy`, `aims-roles`, `ai-risk-assessment`, `ai-impact-assessment`, `ai-objectives`, `monitoring-plan`, `audit-program`, `management-review`, `corrective-action`.
 
+**NIST AI RMF 1.0** — all 4 core functions added. 5 module files:
+
+```
+src/frameworks/nistAiRmf/
+  govern.ts  — GOVERN: AI risk policy, risk tolerance, roles, communication, third-party policy (5 rules)
+  map.ts     — MAP: system context/intended use, external factors, capabilities/limitations, likelihood/impact (4 rules)
+  measure.ts — MEASURE: eval criteria, performance docs, fairness/bias metrics, security/adversarial robustness, third-party components (5 rules)
+  manage.ts  — MANAGE: risk treatment plan, residual risks, incident response, production monitoring (4 rules)
+```
+
+18 assertions, 18 obligations. Same builder DSL. `appliesTo: { actor: "provider" }` with no `riskLevel`. Key artifacts: `ai-risk-policy`, `risk-tolerance`, `ai-rmf-roles`, `ai-system-card`, `bias-examination`, `security` docs, `risk-treatment-plan`, `incident-response`, `monitoring-plan`. All use `docs/ai-rmf/` as primary path.
+
 Priority order for remaining frameworks (seed/Series A AI startups selling into EU enterprises):
 
 1. ~~ISO/IEC 42001~~ — done
-2. NIST AI RMF — required for US federal and enterprise sales
+2. ~~NIST AI RMF~~ — done
 3. Colorado SB 21-169 — first US state law with EU-like obligations
 4. NYC Local Law 144 — hiring AI, narrower but concrete
 5. China - Generative AI Interim Measures
