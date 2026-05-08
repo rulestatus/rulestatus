@@ -9,3 +9,7 @@ compliance-badge.svg
 bun.lockb
 repomix-output.*
 .claude/settings.local.json
+
+# Astro
+packages/docs/.astro/
+packages/docs/dist/

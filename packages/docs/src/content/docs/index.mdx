@@ -1,0 +1,52 @@
+---
+title: Rulestatus
+description: ESLint for AI law. Run rulestatus run in CI and get a pass/fail evidence readiness report against the EU AI Act, ISO 42001, and NIST AI RMF.
+template: splash
+hero:
+  tagline: Executable compliance testing for AI regulations. Run it in CI. Fix the gaps. Ship with evidence.
+  actions:
+    - text: Quick Start
+      link: /getting-started/quickstart/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/rulestatus/rulestatus
+      icon: external
+      variant: secondary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What it does
+
+<CardGrid stagger>
+  <Card title="Checks your docs exist" icon="document">
+    Scans your repo for risk registers, model cards, bias assessments, and the 40+ other artifacts regulators and auditors look for.
+  </Card>
+  <Card title="Runs in CI" icon="github">
+    Drop a 5-line GitHub Actions config. Evidence gaps block your PR the same way failing tests do.
+  </Card>
+  <Card title="Three frameworks, one tool" icon="list-format">
+    EU AI Act (43 checks), ISO/IEC 42001 (19 checks), NIST AI RMF (18 checks). One config file, one report.
+  </Card>
+  <Card title="Fully open source" icon="open-book">
+    CLI, full rule library, all reporters, GitHub Action — Apache 2.0. No paywalled rules.
+  </Card>
+</CardGrid>
+
+## Install
+
+```bash
+bun install -g rulestatus
+```
+
+## Five-minute start
+
+```bash
+rulestatus init           # creates .rulestatus.yaml
+rulestatus generate --all # scaffolds all required docs
+# fill in the TODOs
+rulestatus run            # see what's missing
+```
+
+> **Disclaimer:** Rulestatus checks whether required documentation and configuration is present and correctly structured. Evidence present does not constitute a legal determination of compliance. Conformity assessment for high-risk AI systems may require evaluation by a notified body. Treat reports as due diligence documentation, not compliance certificates.

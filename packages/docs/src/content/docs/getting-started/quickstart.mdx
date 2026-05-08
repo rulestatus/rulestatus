@@ -1,0 +1,82 @@
+---
+title: Quick Start
+description: From zero to a passing rulestatus run in under 10 minutes.
+---
+
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Prerequisites
+
+- [Bun](https://bun.sh) ≥ 1.1
+
+## Install
+
+```bash
+bun install -g rulestatus
+```
+
+## Setup
+
+<Steps>
+
+1. **Create your config**
+
+   Run in your project root:
+
+   ```bash
+   rulestatus init
+   ```
+
+   Follow the prompts — you'll be asked for your system name, actor type (`provider` is most common), and risk level.
+
+   This creates `.rulestatus.yaml`.
+
+2. **Generate compliance templates**
+
+   ```bash
+   rulestatus generate --all
+   ```
+
+   Creates all required documentation stubs in `docs/` and `config/`. Each file has inline comments explaining what every field means and what auditors look for.
+
+3. **Fill in the TODOs**
+
+   Open the generated files and replace every `# TODO` with your actual system details. The more complete the information, the higher the evidence strength score.
+
+4. **Run checks**
+
+   ```bash
+   rulestatus run
+   ```
+
+   Output:
+   ```
+   Rulestatus v1.0 — EU AI Act (2024/1689)
+   System: My AI System v1.0
+   Actor: provider | Risk level: high-risk
+   ──────────────────────────────────────────────────
+
+   Art. 9 - Risk Management
+     PASS   ASSERT-EU-AI-ACT-009-001-01   Risk management system documentation exists
+     FAIL   ASSERT-EU-AI-ACT-009-002-B-01  Risk register includes emerging risks
+       -> No risk entries with source: emerging or category: misuse found.
+
+   ──────────────────────────────────────────────────
+   Results: 38 passed | 5 gaps | 0 warnings | 0 manual
+   ```
+
+5. **Fix each gap**
+
+   ```bash
+   rulestatus explain ASSERT-EU-AI-ACT-009-002-B-01
+   ```
+
+   Shows the legal basis, what was scanned, what was found, and exactly what to add.
+
+</Steps>
+
+## Next steps
+
+- [Configuration reference](/reference/config-schema/) — all `.rulestatus.yaml` fields
+- [GitHub Actions](/getting-started/github-actions/) — block PRs on evidence gaps
+- [EU AI Act checks](/frameworks/eu-ai-act/) — all 43 assertions explained
