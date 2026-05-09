@@ -7,12 +7,16 @@ import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) ≥ 1.1
+- [Bun](https://bun.sh) ≥ 1.1 **or** Node.js ≥ 18
 
 ## Install
 
 ```bash
+# with Bun
 bun install -g rulestatus
+
+# with npm / npx (no install needed)
+npx rulestatus init
 ```
 
 ## Setup
@@ -27,7 +31,7 @@ bun install -g rulestatus
    rulestatus init
    ```
 
-   Follow the prompts — you'll be asked for your system name, actor type (`provider` is most common), and risk level.
+   The first prompt asks what's driving the setup. Select the option that matches your situation — if an enterprise customer asked for EU AI Act compliance, pick that and the rest of the prompts will pre-fill the right defaults.
 
    This creates `.rulestatus.yaml`.
 
@@ -71,7 +75,7 @@ bun install -g rulestatus
    rulestatus explain ASSERT-EU-AI-ACT-009-002-B-01
    ```
 
-   Shows the legal basis, what was scanned, what was found, and exactly what to add.
+   Shows the legal basis, what was scanned, what was found, and exactly what to add. For EU AI Act rules it also shows **why that specific gap blocks enterprise deals** — useful context when you're fixing gaps ahead of a security review.
 
 </Steps>
 

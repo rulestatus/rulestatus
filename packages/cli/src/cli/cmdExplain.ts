@@ -44,12 +44,46 @@ function suggestGenerate(article: string): string | null {
   return null;
 }
 
+// What enterprise security reviews and procurement teams specifically look for,
+// framed around the deal context rather than the legal text.
+const ENTERPRISE_CONTEXT: Record<string, string> = {
+  "9": "Risk management documentation is one of the first things EU enterprise security teams request. A missing or outdated risk register is a common reason AI vendor deals stall in procurement.",
+  "9.1":
+    "Risk management documentation is one of the first things EU enterprise security teams request. A missing or outdated risk register is a common reason AI vendor deals stall in procurement.",
+  "9.2":
+    "Enterprise buyers need to see that you've identified risks to health, safety, and fundamental rights — not just technical risks. This is a standard checklist item in EU AI vendor security reviews.",
+  "9.3":
+    "Evidence of a continuous risk management process (not a one-off document) is what separates vendors who pass procurement from those who don't.",
+  "10": "Data governance documentation is consistently flagged in enterprise security reviews. Buyers need to know your training data is documented, representative, and bias-examined before they can sign off.",
+  "10.1":
+    "Training data documentation is a standard ask in EU enterprise security questionnaires. Undocumented training data is a common blocker.",
+  "10.2":
+    "Bias examination is one of the highest-signal items in an EU AI security review. Enterprise legal and compliance teams look for this specifically — its absence raises immediate red flags.",
+  "11": "Technical documentation (Annex IV) is what auditors and enterprise compliance teams read. Without it, a deal requiring formal AI Act readiness cannot close.",
+  "11.1":
+    "Technical documentation is what your enterprise customer's legal team will actually read. Model architecture, performance metrics, and version history need to be there before they sign.",
+  "13": "Transparency requirements — especially AI disclosure and instructions for use — are the most commonly cited gaps in vendor security reviews. Easy to fix, high cost of missing.",
+  "13.1":
+    "AI disclosure is a hard requirement. Enterprise customers with their own EU compliance obligations cannot onboard a vendor whose AI systems don't disclose they are AI.",
+  "13.2":
+    "Instructions for use are what your enterprise customer's compliance team hands to their auditor. Missing instructions-for-use is a common reason deals get deferred to a future quarter.",
+  "14": "Human oversight documentation is increasingly required by enterprise insurance and risk teams, especially for high-stakes decisions. Absence signals immaturity to enterprise buyers.",
+  "15": "Accuracy, robustness, and cybersecurity documentation round out what enterprise security reviewers check last. These are table stakes for regulated industry buyers.",
+};
+
+function enterpriseContext(article: string, framework: string): string | null {
+  if (framework !== "eu-ai-act") return null;
+  return ENTERPRISE_CONTEXT[article] ?? ENTERPRISE_CONTEXT[article.split(".")[0] ?? ""] ?? null;
+}
+
 export function cmdExplain(): Command {
   return new Command("explain")
     .description("Explain a failing assertion and how to fix it")
     .argument("<assert-id>", "Assertion ID (e.g. ASSERT-EU-AI-ACT-009-002-B-01)")
     .action(async (assertId: string) => {
       await import("../frameworks/euAiAct/index.js");
+      await import("../frameworks/iso42001/index.js");
+      await import("../frameworks/nistAiRmf/index.js");
 
       const rule = RULE_REGISTRY.find((r) => r.id === assertId);
       if (!rule) {
@@ -62,12 +96,21 @@ export function cmdExplain(): Command {
       console.log(chalk.bold.blue(`  ${rule.id}`));
       console.log(`  ${chalk.bold(rule.title)}`);
       console.log(
-        `  Severity: ${chalk.bold(rule.severity.toUpperCase())} | Framework: EU AI Act | Article: ${rule.article}`,
+        `  Severity: ${chalk.bold(rule.severity.toUpperCase())} | Framework: ${rule.framework} | Article: ${rule.article}`,
       );
       if (rule.obligation) {
         console.log(`  Obligation: ${chalk.dim(rule.obligation)}`);
       }
 
+      // ── Enterprise deal context ───────────────────────────────────────────
+      const dealContext = enterpriseContext(rule.article, rule.framework);
+      if (dealContext) {
+        console.log();
+        console.log(chalk.bold("  WHY THIS BLOCKS DEALS"));
+        console.log(`  ${chalk.yellow(dealContext)}`);
+      }
+
+      // ── Legal basis ───────────────────────────────────────────────────────
       if (rule.legalText) {
         console.log();
         console.log(chalk.bold("  LEGAL BASIS"));
@@ -76,7 +119,7 @@ export function cmdExplain(): Command {
         }
       }
 
-      // ── Last run context ──────────────────────────────────────────────────────
+      // ── Last run context ──────────────────────────────────────────────────
       const lastRun = loadLastRun();
       if (lastRun) {
         const result = lastRun.results.find((r) => r.ruleId === assertId);
@@ -138,9 +181,12 @@ export function cmdExplain(): Command {
 
       console.log();
       console.log(chalk.bold("  RESOURCES"));
-      console.log(
-        `  EU AI Act full text: https://eur-lex.europa.eu/eli/reg/2024/1689/oj#art_${rule.article.split(".")[0]}`,
-      );
+      if (rule.framework === "eu-ai-act") {
+        console.log(
+          `  EU AI Act full text: https://eur-lex.europa.eu/eli/reg/2024/1689/oj#art_${rule.article.split(".")[0]}`,
+        );
+      }
+      console.log(`  Docs: https://rulestatus.com/frameworks/${rule.framework}/`);
       console.log();
     });
 }

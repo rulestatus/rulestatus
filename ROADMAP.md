@@ -213,15 +213,14 @@ Priority order for remaining frameworks (seed/Series A AI startups selling into 
 
 Each framework needs the full Stage 1–4 pipeline treatment, not just test stubs.
 
-### P3.2 — Explicit ICP targeting
+### P3.2 — Explicit ICP targeting ✓ Done
 
 The first paying user is: a seed/Series A AI startup selling into EU enterprises, being asked for EU AI Act readiness in security reviews. They have no compliance team, their engineers can fix FAIL messages, and they will pay to avoid a $30M/1.5%-of-revenue fine.
 
-This should be reflected in:
-- `rulestatus init` flow (ask about enterprise sales context, not just actor/risk-level)
-- `explain` output (frame remediation in terms of "what your enterprise customer will ask for")
-- Landing page messaging
-- Pricing page (the fear is regulatory risk, not compliance overhead)
+- ✓ `rulestatus init` — opens with "What's driving this?" context question; enterprise-review path pre-selects correct defaults and ends with a list of the four articles enterprise security reviews focus on
+- ✓ `explain` — new "WHY THIS BLOCKS DEALS" section per article, framed around procurement friction not legal text; also fixed to load all three frameworks
+- ✓ Landing page messaging — ICP-targeted hero copy ("your enterprise customer will ask for this before signing")
+- Pricing page — deferred to P3.4b (SaaS platform track)
 
 ### P3.3 — VS Code extension
 

@@ -12,11 +12,15 @@ rulestatus init
 rulestatus init --actor provider --risk-level high-risk --frameworks eu-ai-act
 ```
 
+The first prompt asks **what's driving the setup** — enterprise security review, EU market deployment, internal audit, or exploring. The answer pre-selects the right defaults and produces a context-aware summary at the end.
+
+For the enterprise security review path, the outro lists the four articles most commonly requested in EU AI vendor security reviews (Articles 9, 10, 11, 13) and the exact commands to fix each gap.
+
 | Option | Default | Description |
 |---|---|---|
-| `--actor` | `provider` | Actor type: `provider`, `deployer`, `importer`, `distributor` |
-| `--risk-level` | `high-risk` | Risk level: `prohibited`, `high-risk`, `limited-risk`, `minimal-risk` |
-| `--frameworks` | `eu-ai-act` | Comma-separated frameworks to enable |
+| `--actor` | context-dependent | Actor type: `provider`, `deployer`, `importer`, `distributor` |
+| `--risk-level` | context-dependent | Risk level: `prohibited`, `high-risk`, `limited-risk`, `minimal-risk` |
+| `--frameworks` | context-dependent | Comma-separated frameworks to enable |
 | `--name` | (prompt) | AI system name |
 
 ---
@@ -74,7 +78,7 @@ Show legal basis, last-run context, and remediation steps for a specific asserti
 rulestatus explain ASSERT-EU-AI-ACT-009-001-01
 ```
 
-Prints the legal text, what the last run found (or didn't find), and the exact fix to apply.
+Prints the legal text, what the last run found (or didn't find), and the exact fix to apply. For EU AI Act rules, also shows **WHY THIS BLOCKS DEALS** — a plain-English explanation of why that specific gap stalls enterprise procurement.
 
 ---
 
