@@ -2,7 +2,9 @@
 
 ## Current State (May 2026)
 
-Core engine is functional: EU AI Act Articles 6, 9, 10, 11, 13, 14, 15 are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
+Core engine is functional and publicly launched. EU AI Act (43 assertions), ISO/IEC 42001 (19 assertions), and NIST AI RMF (18 assertions) are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
+
+Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.4a complete.
 
 **What is already audit-grade (not gaps):**
 - Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
@@ -225,18 +227,23 @@ This should be reflected in:
 
 Real-time compliance linting as engineers write model cards, risk registers, and configs. Surface WARN/FAIL inline with squiggles. `explain` on hover. Low effort to implement given SARIF output already works — VS Code reads SARIF natively via the `errorlens`/`sarif-viewer` ecosystem.
 
-### P3.4a — Docs site + open-source launch (rulestatus.com)
+### P3.4a — Docs site + open-source launch (rulestatus.com) ✓ Done
 
 Full CLI and rule library are open-source (Apache 2.0). The docs site is the conversion surface — engineers find it, run it, then their company buys SaaS.
 
 Deliverables:
-- `rulestatus.com` landing page — ICP-targeted messaging: "your enterprise customer will ask for this before signing"
-- Framework reference: every assertion ID, legal basis, evidence spec (auto-generated from `export-registry`)
-- Getting started guide: `bun install -g rulestatus` → green run in under 10 minutes
-- Contribution guide: how to propose new assertions, flag incorrect ones, add a framework
-- Methodology overview: public-facing version of P2.2 — how law becomes a test
+- ✓ `rulestatus.com` landing page — ICP-targeted messaging: "your enterprise customer will ask for this before signing"
+- ✓ Framework reference: every assertion ID, legal basis, evidence spec — auto-generated at build time from `RULE_REGISTRY` via `packages/docs/scripts/generate-docs.ts`. Never manually maintained.
+- ✓ Getting started guide: `bun install -g rulestatus` → green run in under 10 minutes
+- ✓ Contribution guide (`CONTRIBUTING.md`): how to propose new assertions, flag incorrect ones, add a framework, review criteria
+- ✓ Methodology overview: public-facing pipeline — how law becomes a test, evidence model, assertion ID conventions
+- ✓ Deployed on Netlify with auto-deploy on push to main and deploy previews on PRs
 
-Do this before adding more frameworks. Three frameworks is enough content for a credible docs site.
+Implementation notes:
+- Astro Starlight (`packages/docs/`) with `netlify.toml` at `base = packages/docs`
+- `bun run build` runs `generate-docs.ts` first, which imports `RULE_REGISTRY` directly — framework pages are always in sync with the rule source
+- Hand-written pages: quickstart, configuration, GitHub Actions, output formats, all methodology pages
+- Auto-generated pages: all three framework reference pages, commands reference, config schema reference
 
 ### P3.4b — SaaS platform (Phase 4 track)
 

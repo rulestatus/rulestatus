@@ -1,11 +1,11 @@
 ---
 title: Rulestatus
-description: ESLint for AI law. Run rulestatus run in CI and get a pass/fail evidence readiness report against the EU AI Act, ISO 42001, and NIST AI RMF.
+description: Your enterprise customer will ask for EU AI Act compliance before signing. Rulestatus tells you exactly what's missing — and how to fix it.
 template: splash
 hero:
-  tagline: Executable compliance testing for AI regulations. Run it in CI. Fix the gaps. Ship with evidence.
+  tagline: Your enterprise customer will ask for EU AI Act compliance before signing. Know what's missing before they do.
   actions:
-    - text: Quick Start
+    - text: Get started in 5 minutes
       link: /getting-started/quickstart/
       icon: right-arrow
       variant: primary
@@ -17,36 +17,82 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## What it does
+## The problem
+
+You're an AI startup closing an enterprise deal. Their security review comes back with a questionnaire: *EU AI Act compliance, ISO 42001, NIST AI RMF.*
+
+You don't have a compliance team. You have engineers and a deadline.
+
+Rulestatus is a CLI that scans your repo for the 80+ documentation artifacts regulators and enterprise procurement teams look for — risk registers, model cards, bias assessments, technical documentation, human oversight configs — and tells you exactly what's missing and how to add it.
+
+Run it in CI. Fix the gaps. Ship with evidence.
 
 <CardGrid stagger>
-  <Card title="Checks your docs exist" icon="document">
-    Scans your repo for risk registers, model cards, bias assessments, and the 40+ other artifacts regulators and auditors look for.
+  <Card title="Know what's missing" icon="document">
+    43 EU AI Act checks, 19 ISO 42001 checks, 18 NIST AI RMF checks. Every gap gets an assertion ID, the legal article it covers, and the exact file to create.
   </Card>
-  <Card title="Runs in CI" icon="github">
-    Drop a 5-line GitHub Actions config. Evidence gaps block your PR the same way failing tests do.
+  <Card title="Engineers fix it, not lawyers" icon="approve-check">
+    Each failing check tells you which file to create, which fields to add, and links to a generated template. No legal background required.
   </Card>
-  <Card title="Three frameworks, one tool" icon="list-format">
-    EU AI Act (43 checks), ISO/IEC 42001 (19 checks), NIST AI RMF (18 checks). One config file, one report.
+  <Card title="Blocks PRs like a test suite" icon="github">
+    One GitHub Actions config. Evidence gaps fail the build the same way a broken test does. The audit trail is automatic.
   </Card>
   <Card title="Fully open source" icon="open-book">
-    CLI, full rule library, all reporters, GitHub Action — Apache 2.0. No paywalled rules.
+    CLI, all 80 rules, all reporters, GitHub Action — Apache 2.0. No paywalled checks, no subscription to run it locally.
   </Card>
 </CardGrid>
+
+## What a run looks like
+
+```
+$ rulestatus run
+
+Rulestatus v1.0 — EU AI Act (Regulation 2024/1689)
+System: Acme Fraud Detection v2.1  |  provider  |  high-risk
+
+  Art. 9 — Risk Management
+  ✓  PASS    ASSERT-EU-AI-ACT-009-001-01  Risk management system documentation exists
+  ✗  FAIL    ASSERT-EU-AI-ACT-009-002-B-01  Risk register includes emerging risks
+             → No risk entries with source: emerging or category: misuse found.
+             → Run: rulestatus generate risk-register
+
+  Art. 10 — Data Governance
+  ✓  PASS    ASSERT-EU-AI-ACT-010-002-01  Bias examination documented
+  ✗  FAIL    ASSERT-EU-AI-ACT-010-002-02  Bias examination covers ≥3 protected characteristics
+             → Found: [gender, race]. Missing at least one of: age, disability, nationality.
+
+  ...
+
+Results: 38 passed  |  5 evidence gaps  |  0 warnings  |  2 manual attestations required
+```
+
+Each gap links to the legal article and tells you exactly what to add.
 
 ## Install
 
 ```bash
 bun install -g rulestatus
+# or
+npm install -g rulestatus
 ```
 
 ## Five-minute start
 
 ```bash
 rulestatus init           # creates .rulestatus.yaml
-rulestatus generate --all # scaffolds all required docs
-# fill in the TODOs
+rulestatus generate --all # scaffolds all required docs with inline comments
+# fill in the TODO fields
 rulestatus run            # see what's missing
 ```
 
-> **Disclaimer:** Rulestatus checks whether required documentation and configuration is present and correctly structured. Evidence present does not constitute a legal determination of compliance. Conformity assessment for high-risk AI systems may require evaluation by a notified body. Treat reports as due diligence documentation, not compliance certificates.
+## Frameworks
+
+| Framework | Checks | Applies to |
+|---|---|---|
+| [EU AI Act](/frameworks/eu-ai-act/) | 43 | High-risk AI providers under Regulation (EU) 2024/1689 |
+| [ISO/IEC 42001](/frameworks/iso-42001/) | 19 | AI Management System providers |
+| [NIST AI RMF](/frameworks/nist-ai-rmf/) | 18 | AI risk management across GOVERN, MAP, MEASURE, MANAGE |
+
+---
+
+> **Disclaimer:** Rulestatus checks whether required documentation and configuration is present and correctly structured. Evidence present does not constitute a legal determination of compliance. Conformity assessment for high-risk AI systems may require evaluation by a notified body. Treat outputs as due diligence documentation, not compliance certificates.
