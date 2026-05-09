@@ -8,6 +8,7 @@ import { cmdGenerate } from "./cmdGenerate.js";
 import { cmdInit } from "./cmdInit.js";
 import { cmdReport } from "./cmdReport.js";
 import { cmdRun } from "./cmdRun.js";
+import { cmdUpdate } from "./cmdUpdate.js";
 
 const program = new Command();
 
@@ -25,5 +26,6 @@ program.addCommand(cmdReport());
 program.addCommand(cmdBundle());
 program.addCommand(cmdAttest());
 program.addCommand(cmdExportRegistry());
+program.addCommand(cmdUpdate());
 
 program.parse();
