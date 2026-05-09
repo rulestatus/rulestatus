@@ -1,0 +1,325 @@
+---
+title: "ISO/IEC 42001"
+description: "Executable assertions for AI Management System providers under ISO/IEC 42001:2023."
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+ISO/IEC 42001:2023 is the international standard for AI Management Systems (AIMS).
+It follows the same high-level structure (HLS) as ISO 27001 and ISO 9001, covering context, leadership,
+planning, support, operation, performance evaluation, and improvement.
+
+Rulestatus encodes all mandatory AIMS clauses. Checks apply to `actor: provider` regardless of EU AI Act risk level.
+
+## Summary
+
+| | |
+|---|---|
+| Total assertions | **19** |
+| Critical | 6 |
+| Major | 11 |
+| Minor | 2 |
+
+## Assertions by Clause
+
+### Clause 4.1
+
+#### `ASSERT-ISO-42001-004-001-01`
+
+**Organizational context and AIMS scope are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 4.1–4.3: The organization shall determine external and internal issues relevant to its purpose, understand the needs and expectations of interested parties, and document the scope of the AIMS.
+
+**How to fix:** Create docs/aims/aims-scope.yaml with: scope, organizational_context, interested_parties fields.
+
+---
+
+### Clause 4.2
+
+#### `ASSERT-ISO-42001-004-002-01`
+
+**Interested parties and their AI-relevant requirements are identified**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 4.2: The organization shall determine the interested parties that are relevant to the AIMS and their relevant requirements.
+
+**How to fix:** Add an `interested_parties` field to your aims-scope document listing stakeholders and their requirements.
+
+---
+
+### Clause 5.2
+
+#### `ASSERT-ISO-42001-005-001-01`
+
+**AI policy exists and includes required commitments**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 5.2: Top management shall establish an AI policy that includes a commitment to satisfy applicable requirements and to continual improvement of the AIMS.
+
+**How to fix:** Create docs/aims/ai-policy.yaml with: purpose, scope, commitments, approved_by, effective_date.
+
+---
+
+#### `ASSERT-ISO-42001-005-001-02`
+
+**AI policy is approved by top management**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 5.2: The AI policy shall be available as documented information and be communicated within the organization.
+
+**How to fix:** Add `approved_by` and `effective_date` fields to your AI policy document.
+
+---
+
+### Clause 5.3
+
+#### `ASSERT-ISO-42001-005-002-01`
+
+**Roles and responsibilities for AI management are assigned**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 5.3: Top management shall assign responsibility and authority for ensuring the AIMS conforms to the requirements of ISO/IEC 42001.
+
+**How to fix:** Create docs/aims/aims-roles.yaml with: roles, responsibilities, and accountable_person fields.
+
+---
+
+### Clause 6.1
+
+#### `ASSERT-ISO-42001-006-001-01`
+
+**AIMS-level risks and opportunities are identified and documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 6.1.1: The organization shall determine the risks and opportunities that need to be addressed to give assurance that the AIMS can achieve its intended outcome(s).
+
+**How to fix:** Create docs/aims/aims-risk-assessment.yaml with: identified_risks, opportunities, and treatment_plan fields.
+
+---
+
+### Clause 6.2
+
+#### `ASSERT-ISO-42001-006-002-01`
+
+**AI management objectives are documented and measurable**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 6.2: The organization shall establish AI management objectives at relevant functions, levels, and processes. Objectives shall be measurable and have a target date.
+
+**How to fix:** Create docs/aims/ai-objectives.yaml with: objectives (each with target, measure, review_date).
+
+---
+
+### Clause 7.2
+
+#### `ASSERT-ISO-42001-007-001-01`
+
+**Competence requirements for AI roles are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 7.2: The organization shall determine the necessary competence of persons doing work under its control that affects its AI performance, ensure they are competent, and retain documented information as evidence.
+
+**How to fix:** Create docs/aims/competence-requirements.yaml with: roles, required_competencies, and evidence_of_competence fields.
+
+---
+
+### Clause 7.3
+
+#### `ASSERT-ISO-42001-007-002-01`
+
+**Awareness program for AI policy and AIMS exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 7.3: Persons doing work under the organization's control shall be aware of the AI policy, their contribution to AIMS effectiveness, and the implications of not conforming.
+
+**How to fix:** Create docs/training/ or docs/aims/ awareness documentation covering AI policy and AIMS obligations.
+
+---
+
+### Clause 7.5
+
+#### `ASSERT-ISO-42001-007-003-01`
+
+**Document control procedure for AIMS documented information exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider |
+
+> Clause 7.5: The organization shall control documented information required by the AIMS, including creation, update, and availability controls.
+
+**How to fix:** Create docs/aims/document-control.yaml defining how AIMS documents are created, reviewed, approved, and retained.
+
+---
+
+### Clause 8.1
+
+#### `ASSERT-ISO-42001-008-004-01`
+
+**Operational planning and control procedures are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 8.1: The organization shall plan, implement, control, evaluate, and maintain the processes needed to meet requirements for the provision of AI systems.
+
+**How to fix:** Create docs/aims/operational-procedures.yaml documenting development controls, review gates, and deployment approval process.
+
+---
+
+### Clause 8.2
+
+#### `ASSERT-ISO-42001-008-001-01`
+
+**AI risk assessment process is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 8.2 + Annex A.5.1: The organization shall implement and maintain an AI risk assessment process including identification of risks, analysis, and evaluation against risk acceptance criteria.
+
+**How to fix:** Create docs/aims/ai-risk-assessment.yaml with: risk_criteria, assessment_methodology, identified_risks.
+
+---
+
+### Clause 8.3
+
+#### `ASSERT-ISO-42001-008-002-01`
+
+**AI impact assessment is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 8.3 + Annex A.5.2: The organization shall conduct and document an AI impact assessment covering potential impacts on individuals, groups, and society.
+
+**How to fix:** Create docs/aims/ai-impact-assessment.yaml with: impacted_groups, potential_harms, severity_ratings, mitigations.
+
+---
+
+### Clause 8.4
+
+#### `ASSERT-ISO-42001-008-003-01`
+
+**AI system lifecycle stages are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 8.4 + Annex A.6.1: The organization shall plan and control processes for the AI system lifecycle, including design, development, testing, deployment, monitoring, and decommissioning.
+
+**How to fix:** Add a `lifecycle_stages` or `development_process` field to your technical documentation or create docs/aims/lifecycle.yaml.
+
+---
+
+### Clause 9.1
+
+#### `ASSERT-ISO-42001-009-001-01`
+
+**Monitoring and measurement program for AIMS is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 9.1: The organization shall monitor, measure, analyse and evaluate the AIMS. It shall determine what needs to be monitored and measured, and when results shall be analysed.
+
+**How to fix:** Create docs/aims/monitoring-plan.yaml with: metrics, measurement_frequency, responsible_party, review_schedule.
+
+---
+
+### Clause 9.2
+
+#### `ASSERT-ISO-42001-009-002-01`
+
+**Internal audit program for the AIMS is established**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> Clause 9.2: The organization shall conduct internal audits at planned intervals to provide information on whether the AIMS conforms to requirements and is effectively implemented.
+
+**How to fix:** Create docs/aims/audit-program.yaml with: audit_schedule, audit_scope, auditor_qualifications, last_audit_date.
+
+---
+
+### Clause 9.3
+
+#### `ASSERT-ISO-42001-009-003-01`
+
+**Management review of the AIMS is conducted and recorded**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 9.3: Top management shall review the AIMS at planned intervals to ensure its continuing suitability, adequacy and effectiveness.
+
+**How to fix:** Create docs/aims/management-review.yaml with: review_date, attendees, decisions, improvement_actions.
+
+---
+
+### Clause 10.1
+
+#### `ASSERT-ISO-42001-010-001-01`
+
+**Nonconformity and corrective action procedure exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> Clause 10.1: When a nonconformity occurs, the organization shall take action to control and correct it, evaluate the need for action to eliminate the causes, and implement corrective action as needed.
+
+**How to fix:** Create docs/aims/corrective-action.yaml with: nonconformity_process, root_cause_analysis, corrective_action_log.
+
+---
+
+### Clause 10.2
+
+#### `ASSERT-ISO-42001-010-002-01`
+
+**Continual improvement of the AIMS is planned**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider |
+
+> Clause 10.2: The organization shall continually improve the suitability, adequacy and effectiveness of the AIMS.
+
+**How to fix:** Add a `continual_improvement` or `improvement_plan` field to your AIMS scope or AI objectives document.
+
+---

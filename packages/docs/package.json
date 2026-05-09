@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "generate": "bun scripts/generate-docs.ts",
+    "dev": "bun scripts/generate-docs.ts && astro dev",
+    "build": "bun scripts/generate-docs.ts && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

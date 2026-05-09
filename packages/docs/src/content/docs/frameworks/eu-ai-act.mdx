@@ -1,0 +1,688 @@
+---
+title: "EU AI Act"
+description: "Executable assertions for high-risk AI providers under Regulation (EU) 2024/1689."
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+The EU AI Act (Regulation (EU) 2024/1689) is the world's first comprehensive AI law.
+It applies primarily to **providers** of **high-risk AI systems** as defined in Annex III.
+Rulestatus encodes the documentation and evidence obligations from Articles 6, 9, 10, 11, 13, 14, and 15
+as executable checks.
+
+All checks apply to `actor: provider, riskLevel: high-risk` unless otherwise noted.
+
+## Summary
+
+| | |
+|---|---|
+| Total assertions | **43** |
+| Critical | 15 |
+| Major | 18 |
+| Minor | 9 |
+
+## Assertions by Article
+
+### Article 6
+
+#### `ASSERT-EU-AI-ACT-006-001-01`
+
+**System is classified under a defined risk level**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 6 — Classification rules for high-risk AI systems
+
+**How to fix:** Add a `risk_level` field in .rulestatus.yaml under `system:`. Valid values: prohibited, high-risk, limited-risk, minimal-risk.
+
+---
+
+#### `ASSERT-EU-AI-ACT-006-002-01`
+
+**High-risk system identifies its Annex III category**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 6(2) and Annex III — High-risk AI systems referred to in Article 6(2)
+
+**How to fix:** Add an 'annex_iii_category' field to your system config. Valid categories: biometric, critical-infrastructure, education, employment, essential-services, law-enforcement, migration, justice.
+
+---
+
+#### `ASSERT-EU-AI-ACT-006-003-01`
+
+**Prohibited use cases documented as not applicable**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="INFO" variant="tip" /> | actor: provider, riskLevel: high-risk |
+
+> Article 5 — Prohibited AI practices
+
+**How to fix:** Create a prohibited-uses document in docs/compliance/ that explicitly states which Article 5 practices are not applicable.
+
+---
+
+### Article 9.1
+
+#### `ASSERT-EU-AI-ACT-009-001-01`
+
+**Risk management system documentation exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(1): "A risk management system shall be established, implemented, documented and maintained in relation to high-risk AI systems."
+
+**How to fix:** Create a risk management document in docs/risk-management/ or compliance/. Must include: system_name, identified_risks, mitigation_measures, review_date.
+
+---
+
+#### `ASSERT-EU-AI-ACT-009-001-02`
+
+**Risk management document covers intended use cases**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(1): risk management must be maintained in relation to the AI system's intended purpose.
+
+**How to fix:** Add an `intended_use` or `use_cases` field to your risk management document.
+
+---
+
+### Article 9.2
+
+#### `ASSERT-EU-AI-ACT-009-002-A-01`
+
+**Risk register covers health, safety, and fundamental rights dimensions**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(2)(a): "identification and analysis of the known and the reasonably foreseeable risks to health, safety or the fundamental rights..."
+
+**How to fix:** Add a `dimension` field to each risk entry. Required values: health, safety, fundamental_rights.
+
+---
+
+#### `ASSERT-EU-AI-ACT-009-002-B-01`
+
+**Risk register includes emerging risks and foreseeable misuse scenarios**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(2)(b): "estimation and evaluation of the risks that may emerge when the high-risk AI system is used in accordance with its intended purpose and under conditions of reasonably foreseeable misuse."
+
+**How to fix:** Add risk entries with `source: emerging` or `category: misuse`.
+
+---
+
+### Article 9.3
+
+#### `ASSERT-EU-AI-ACT-009-003-01`
+
+**Risk management is described as a continuous iterative process**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(1): "The risk management system shall be understood as a continuous iterative process..."
+
+**How to fix:** Add a `review_cycle` field (e.g. 'quarterly') to your risk management document.
+
+---
+
+### Article 9.4
+
+#### `ASSERT-EU-AI-ACT-009-004-01`
+
+**Testing procedures with representative data are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(4)(a): "testing of the high-risk AI system... shall be performed on the basis of data relevant for the intended purpose."
+
+**How to fix:** Create a test plan document with `representative_data` field.
+
+---
+
+### Article 9.5
+
+#### `ASSERT-EU-AI-ACT-009-005-01`
+
+**Residual risks are identified and documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9(2)(c): "evaluation of other possibly arising risks based on the analysis of data gathered from the post-market monitoring system."
+
+**How to fix:** Add residual risk entries with `status: residual` or a `residual_risk` field.
+
+---
+
+### Article 9.8
+
+#### `ASSERT-EU-AI-ACT-009-008-01`
+
+**Serious incident reporting procedure is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 9 + Article 73: providers must establish procedures for reporting serious incidents.
+
+**How to fix:** Create docs/incident-response.md or config/incident_response.yaml.
+
+---
+
+### Article 10.1
+
+#### `ASSERT-EU-AI-ACT-010-001-01`
+
+**Training data documentation exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(1): "High-risk AI systems... shall be developed on the basis of training, validation and testing data sets that meet the quality criteria..."
+
+**How to fix:** Create a data governance document in docs/compliance/ or docs/data-governance/, or include training data details in your model card.
+
+---
+
+### Article 10.2
+
+#### `ASSERT-EU-AI-ACT-010-002-01`
+
+**Bias examination is documented for training data**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(2)(f): "examination in view of possible biases, that are likely to affect health and safety or lead to the violation of fundamental rights."
+
+**How to fix:** Create docs/bias_assessment.yaml or docs/compliance/bias-examination.md.
+
+---
+
+#### `ASSERT-EU-AI-ACT-010-002-02`
+
+**Bias assessment covers at least 3 protected characteristics**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(2)(f): bias examination must cover characteristics that could affect fundamental rights.
+
+**How to fix:** Include at least 3 of: gender, race, age, disability, nationality, religion, ethnicity in characteristics_evaluated.
+
+---
+
+### Article 10.3
+
+#### `ASSERT-EU-AI-ACT-010-003-01`
+
+**Data relevance and representativeness are justified**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(3): "Training, validation and testing data sets shall be relevant, sufficiently representative..."
+
+**How to fix:** Add `data_sources` and `representativeness` fields to your data governance document or model card.
+
+---
+
+### Article 10.4
+
+#### `ASSERT-EU-AI-ACT-010-004-01`
+
+**Special category data handling is documented if applicable**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(5): "...the providers of such systems may process special categories of personal data..."
+
+**How to fix:** If your system processes special category data, add `special_category_legal_basis` field.
+
+---
+
+### Article 10.5
+
+#### `ASSERT-EU-AI-ACT-010-005-01`
+
+**Data minimisation principle is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(3): data sets must have appropriate statistical properties.
+
+**How to fix:** Add a `data_minimisation` field to your data governance document.
+
+---
+
+### Article 10.6
+
+#### `ASSERT-EU-AI-ACT-010-006-01`
+
+**Data quality criteria are defined**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 10(3): training, validation and testing data sets must meet quality criteria for their intended purpose.
+
+**How to fix:** Add a `data_quality_criteria` field to your data governance document.
+
+---
+
+### Article 11.1
+
+#### `ASSERT-EU-AI-ACT-011-001-01`
+
+**Technical documentation exists with system description**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 11(1): "The technical documentation of a high-risk AI system shall be drawn up before that system is placed on the market..."
+
+**How to fix:** Create technical documentation in docs/technical/ or docs/compliance/. Must include system_name and general_description.
+
+---
+
+#### `ASSERT-EU-AI-ACT-011-001-02`
+
+**Technical documentation covers required Annex IV sections**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 11 and Annex IV — Technical documentation required for high-risk AI systems.
+
+**How to fix:** Ensure your technical documentation includes at least 10 of the 15 Annex IV sections.
+
+---
+
+#### `ASSERT-EU-AI-ACT-011-001-03`
+
+**Technical documentation includes model architecture description**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Annex IV, point 1(c): technical documentation must include the design specifications, including general logic and algorithms.
+
+**How to fix:** Add `model_architecture` to your technical documentation or `model_type` to your model card.
+
+---
+
+#### `ASSERT-EU-AI-ACT-011-001-04`
+
+**Performance metrics are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Annex IV, point 2(f): technical documentation must include performance metrics.
+
+**How to fix:** Add `performance_metrics` to your technical documentation or `metrics` to your model card.
+
+---
+
+#### `ASSERT-EU-AI-ACT-011-001-05`
+
+**Technical documentation is versioned and dated**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 11(2): technical documentation must be kept up to date.
+
+**How to fix:** Add `version` and `date` fields to your technical documentation.
+
+---
+
+### Article 11.2
+
+#### `ASSERT-EU-AI-ACT-011-002-01`
+
+**Technical documentation references relevant standards**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Annex IV, point 4: technical documentation must list the relevant standards applied.
+
+**How to fix:** Add a `standards` field listing applicable standards (e.g. ISO 42001, IEC 62443).
+
+---
+
+### Article 13.1
+
+#### `ASSERT-EU-AI-ACT-013-001-01`
+
+**AI system discloses that output is AI-generated**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(1): "High-risk AI systems shall be designed and developed in such a way to ensure that their operation is sufficiently transparent..."
+
+**How to fix:** Enable AI disclosure in config/transparency.yaml with `ai_disclosure.enabled: true`.
+
+---
+
+### Article 13.2
+
+#### `ASSERT-EU-AI-ACT-013-002-01`
+
+**Instructions for use documentation exists**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(2): "High-risk AI systems shall be accompanied by instructions for use in an appropriate digital or other format."
+
+**How to fix:** Create docs/compliance/instructions-for-use.md.
+
+---
+
+#### `ASSERT-EU-AI-ACT-013-002-02`
+
+**Instructions for use include intended purpose and known limitations**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(3)(b): instructions must specify the intended purpose and known limitations.
+
+**How to fix:** Add `intended_purpose` and `known_limitations` fields to your instructions-for-use document.
+
+---
+
+#### `ASSERT-EU-AI-ACT-013-002-03`
+
+**Instructions for use include performance characteristics**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(3)(b)(iv): instructions must specify the level of accuracy, robustness and cybersecurity.
+
+**How to fix:** Add `performance_metrics` or `accuracy` field to your instructions-for-use document.
+
+---
+
+### Article 13.3
+
+#### `ASSERT-EU-AI-ACT-013-003-01`
+
+**System capabilities and limitations are disclosed to deployers**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(3)(b): instructions must include the capabilities and limitations of the system.
+
+**How to fix:** Add `limitations` or `capabilities` field to instructions for use or technical documentation.
+
+---
+
+### Article 13.4
+
+#### `ASSERT-EU-AI-ACT-013-004-01`
+
+**Provider contact information is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 13(3)(a): instructions must include the name and registered address of the provider.
+
+**How to fix:** Add `provider_contact` to instructions for use or system config.
+
+---
+
+### Article 14.1
+
+#### `ASSERT-EU-AI-ACT-014-001-01`
+
+**Human override mechanism exists or is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 14(1): "High-risk AI systems shall be designed and developed in such a way... that they can be effectively overseen by natural persons..."
+
+**How to fix:** Create config/human_oversight.yaml with `override.enabled: true`, document the mechanism, or attest manually with `rulestatus attest ASSERT-EU-AI-ACT-014-001-01`.
+
+---
+
+### Article 14.2
+
+#### `ASSERT-EU-AI-ACT-014-002-01`
+
+**Human oversight measures are specified in technical documentation**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 14(2): oversight measures must be built into the system or identified for implementation by the deployer.
+
+**How to fix:** Add a `human_oversight_measures` field to your technical documentation.
+
+---
+
+### Article 14.3
+
+#### `ASSERT-EU-AI-ACT-014-003-01`
+
+**Explainability output is available to oversight personnel**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 14(4)(c): oversight persons must be able to interpret the AI system's output.
+
+**How to fix:** Add `enabled: true` to config/explainability.yaml, document explainability in technical docs, or attest manually with `rulestatus attest ASSERT-EU-AI-ACT-014-003-01`.
+
+---
+
+### Article 14.4
+
+#### `ASSERT-EU-AI-ACT-014-004-01`
+
+**System can be paused or stopped by human operator**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 14(4)(e): oversight persons must be able to decide not to use the AI system or override its output.
+
+**How to fix:** Add `pause_capability: true` to config/human_oversight.yaml.
+
+---
+
+### Article 14.5
+
+#### `ASSERT-EU-AI-ACT-014-005-01`
+
+**Human oversight training materials exist**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 14(3): oversight persons must have the necessary competence, training and authority.
+
+**How to fix:** Create docs/training/ or docs/oversight/ documentation for oversight personnel.
+
+---
+
+### Article 14.6
+
+#### `ASSERT-EU-AI-ACT-014-006-01`
+
+**Audit logs are accessible to oversight personnel**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 12: high-risk AI systems shall have logging capabilities for monitoring purposes.
+
+**How to fix:** Add `audit_log.enabled: true` to config/logging.yaml.
+
+---
+
+### Article 15.1
+
+#### `ASSERT-EU-AI-ACT-015-001-01`
+
+**Accuracy benchmarks are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(1): "High-risk AI systems shall be designed and developed in such a way that they achieve, in the light of their intended purpose, an appropriate level of accuracy, robustness and cybersecurity..."
+
+**How to fix:** Add `metrics` to your model card or `performance_metrics` to your technical documentation.
+
+---
+
+### Article 15.2
+
+#### `ASSERT-EU-AI-ACT-015-002-01`
+
+**Robustness testing is documented, including adversarial inputs**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(3): AI systems shall be resilient against attempts to alter their use or performance by third parties exploiting vulnerabilities.
+
+**How to fix:** Create a robustness testing document in docs/ or add robustness test results to your test results file.
+
+---
+
+### Article 15.3
+
+#### `ASSERT-EU-AI-ACT-015-003-01`
+
+**Cybersecurity measures are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(4): "High-risk AI systems shall be resilient as regards attempts by unauthorised third parties to alter their use, outputs or performance by exploiting the system's vulnerabilities."
+
+**How to fix:** Create a security document in docs/security/ or a security config in config/security.yaml.
+
+---
+
+#### `ASSERT-EU-AI-ACT-015-003-02`
+
+**Access control policy is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(4): systems must include technical measures to protect against unauthorised access.
+
+**How to fix:** Add an `access_control` field to your security config or security documentation.
+
+---
+
+### Article 15.4
+
+#### `ASSERT-EU-AI-ACT-015-004-01`
+
+**Fallback plan for technical failures is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(3): AI systems must include fallback plans and fail-safe measures for when errors occur.
+
+**How to fix:** Create a fallback-plan document in docs/ or add a `fallback_plan` field to your technical documentation.
+
+---
+
+### Article 15.5
+
+#### `ASSERT-EU-AI-ACT-015-005-01`
+
+**Accuracy is measured per relevant population groups (fairness metrics)**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15(1): accuracy levels must be declared in the instructions of use and the system must address relevant disaggregated metrics.
+
+**How to fix:** Add per-group performance metrics to your bias assessment. Each group should have its own accuracy/performance entry.
+
+---
+
+### Article 15.6
+
+#### `ASSERT-EU-AI-ACT-015-006-01`
+
+**Third-party security assessment is conducted or planned**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: provider, riskLevel: high-risk |
+
+> Article 15 and recital 74: providers are encouraged to carry out security assessments.
+
+**How to fix:** Add a `security_assessment` field to your security documentation or create a security_audit structured file.
+
+---

@@ -1,119 +1,171 @@
 ---
 title: Commands
-description: Complete CLI command reference.
+description: Complete CLI command reference for rulestatus.
 ---
 
 ## `rulestatus init`
 
-Interactive setup wizard. Creates `.rulestatus.yaml` in the current directory.
+Interactively creates a `.rulestatus.yaml` configuration file.
 
 ```bash
 rulestatus init
+rulestatus init --actor provider --risk-level high-risk --frameworks eu-ai-act
 ```
 
-Prompts for: system name, actor type, risk level, domain, intended use, frameworks to enable.
+| Option | Default | Description |
+|---|---|---|
+| `--actor` | `provider` | Actor type: `provider`, `deployer`, `importer`, `distributor` |
+| `--risk-level` | `high-risk` | Risk level: `prohibited`, `high-risk`, `limited-risk`, `minimal-risk` |
+| `--frameworks` | `eu-ai-act` | Comma-separated frameworks to enable |
+| `--name` | (prompt) | AI system name |
 
 ---
 
 ## `rulestatus run`
 
-Run all evidence checks and output a report.
+Run compliance checks and print results to the console (and optionally write report files).
 
 ```bash
-rulestatus run [options]
+rulestatus run
+rulestatus run --framework eu-ai-act --format console,json,sarif
+rulestatus run --article 9 --severity critical
 ```
 
-| Option | Description |
-|---|---|
-| `--framework <fw>` | Limit to one framework: `eu-ai-act`, `iso-42001`, `nist-ai-rmf` |
-| `--article <n>` | Limit to one article (e.g. `--article 9`) |
-| `--severity <s>` | Minimum severity: `critical`, `major`, `minor` |
-| `--format <fmt>` | Output format: `console`, `json`, `sarif`, `junit`, `pdf`, `badge` |
-| `--output <dir>` | Output directory (default: `./compliance-reports/`) |
-
-Exit codes: `0` = no gaps at gate severity, `1` = gaps found or internal error.
-
----
-
-## `rulestatus explain <ASSERT-ID>`
-
-Show legal basis, last run result, and fix guidance for a specific assertion.
-
-```bash
-rulestatus explain ASSERT-EU-AI-ACT-009-002-B-01
-```
-
-Output includes: article, legal text, what was scanned, what was found, and exact remediation steps.
-
----
-
-## `rulestatus generate [template]`
-
-Generate a compliance artifact template.
-
-```bash
-rulestatus generate risk-register
-rulestatus generate --all
-```
-
-| Template | Article | Output |
+| Option | Default | Description |
 |---|---|---|
-| `risk-register` | Art. 9.2 | `docs/risk_register.yaml` |
-| `risk-management` | Art. 9.1–9.3 | `docs/risk-management/risk-management.yaml` |
-| `model-card` | Art. 10, 11 | `model/model_card.yaml` |
-| `data-governance` | Art. 10 | `docs/compliance/data-governance.yaml` |
-| `bias-assessment` | Art. 10.2 | `docs/bias_assessment.yaml` |
-| `technical-doc` | Art. 11 | `docs/compliance/technical-documentation.yaml` |
-| `transparency-config` | Art. 13.1 | `config/transparency.yaml` |
-| `instructions-for-use` | Art. 13.2–13.4 | `docs/compliance/instructions-for-use.yaml` |
+| `--framework` | all | Limit to one framework (e.g. `eu-ai-act`, `iso-42001`, `nist-ai-rmf`) |
+| `--article` | all | Run only rules for this article/clause number |
+| `--severity` | all | Run only rules at this severity or higher |
+| `--format` | `console` | Output formats: `console`, `json`, `sarif`, `pdf`, `badge`, `junit` |
+| `--output` | `./compliance-reports` | Output directory for report files |
+
+Exits non-zero when any result at or above `severity_gate.fail_on` fails.
 
 ---
 
-## `rulestatus attest`
+## `rulestatus generate`
 
-Two modes:
+Scaffold a compliance artifact template with inline field explanations.
 
-**Assertion attestation** — generate a structured YAML template for manual attestation:
 ```bash
-rulestatus attest ASSERT-EU-AI-ACT-013-001-01
+rulestatus generate                      # interactive picker
+rulestatus generate risk-register
+rulestatus generate --all                # scaffold everything at once
 ```
-Creates `.rulestatus/attestations/<ASSERT-ID>.yaml`. Fill in and commit to git.
 
-**File attestation** — hash a bundle and optionally submit to Sigstore:
-```bash
-rulestatus attest bundle.tar.gz [--provider github|cosign]
-```
+| Template | Output path | Covers |
+|---|---|---|
+| `risk-register` | `docs/risk_register.yaml` | Art. 9.2 |
+| `risk-management` | `docs/risk-management/risk-management.yaml` | Art. 9.1–9.3 |
+| `model-card` | `model/model_card.yaml` | Art. 10, 11 |
+| `data-governance` | `docs/compliance/data-governance.yaml` | Art. 10 |
+| `bias-assessment` | `docs/bias_assessment.yaml` | Art. 10.2 |
+| `technical-doc` | `docs/compliance/technical-documentation.yaml` | Art. 11 (Annex IV) |
+| `transparency-config` | `config/transparency.yaml` | Art. 13.1, 13.4 |
+| `instructions-for-use` | `docs/compliance/instructions-for-use.yaml` | Art. 13.2–13.4 |
 
 ---
 
-## `rulestatus bundle`
+## `rulestatus explain`
 
-Package all compliance artifacts into a `.tar.gz` archive.
+Show legal basis, last-run context, and remediation steps for a specific assertion.
 
 ```bash
-rulestatus bundle [--output <path>]
+rulestatus explain ASSERT-EU-AI-ACT-009-001-01
 ```
 
-Output: `.rulestatus/<system-name>-<timestamp>.tar.gz` containing `manifest.json` + all evidence files.
+Prints the legal text, what the last run found (or didn't find), and the exact fix to apply.
 
 ---
 
 ## `rulestatus report`
 
-Re-render a previous JSON report in a different format.
+Re-render a saved JSON results file in another format without re-running checks.
 
 ```bash
-rulestatus report --input compliance-reports/report.json --format pdf
+rulestatus report compliance-reports/eu-ai-act-2025-01-01.json --format pdf
+rulestatus report results.json --format sarif --output my-report.sarif
 ```
+
+| Option | Default | Description |
+|---|---|---|
+| `--format` | `pdf` | Output format: `console`, `pdf`, `sarif`, `junit`, `badge` |
+| `--output` | `compliance-report.<ext>` | Output file path |
+
+---
+
+## `rulestatus bundle`
+
+Package all compliance artifacts into an audit-ready `.tar.gz` archive.
+
+```bash
+rulestatus bundle
+rulestatus bundle --output artifacts/my-system-2025-01-01.tar.gz
+```
+
+The archive contains:
+- `manifest.json` — system metadata, framework list, last-run summary
+- `evidence/` — all docs, config, model card, risk register files from your config paths
+- `reports/last-run.json` — last run results with evidence hashes
+
+| Option | Default | Description |
+|---|---|---|
+| `--output` | `.rulestatus/<name>-<timestamp>.tar.gz` | Output path |
+| `--name` | system name from config | Bundle name prefix |
+
+---
+
+## `rulestatus attest`
+
+Cryptographically sign a compliance artifact, or generate a manual sign-off template for a specific assertion.
+
+```bash
+# Cryptographic attestation of a bundle file
+rulestatus attest .rulestatus/my-system-2025-01-01.tar.gz
+rulestatus attest bundle.tar.gz --provider github   # Sigstore via gh CLI (CI)
+rulestatus attest bundle.tar.gz --provider cosign
+
+# Manual sign-off template for a MANUAL-status assertion
+rulestatus attest ASSERT-EU-AI-ACT-013-001-01
+```
+
+In **file mode**, writes `<file>.sha256` and `<file>.attestation.json`. With `--provider github` or `cosign`, submits to Sigstore/Rekor for OIDC-backed proof.
+
+In **ASSERT-ID mode**, writes `.rulestatus/attestations/<ASSERT-ID>.yaml` — a YAML template you fill in and commit. The git commit provides identity, timestamp, and immutability.
+
+| Option | Default | Description |
+|---|---|---|
+| `--provider` | `github` in CI, `none` otherwise | Signing provider: `github`, `cosign`, `none` |
+| `--output` | `<file>.attestation.json` | Output path for attestation JSON |
 
 ---
 
 ## `rulestatus export-registry`
 
-Export the full obligation and assertion registry as YAML. Used to generate the assertion reference in this docs site.
+Export all assertions and obligations as YAML files for legal review or integration.
 
 ```bash
-rulestatus export-registry [--framework eu-ai-act] [--output registry/]
+rulestatus export-registry
+rulestatus export-registry --framework eu-ai-act --output ./my-registry
 ```
 
-Output: `registry/<framework>/assertions.yaml` and `obligations.yaml`.
+Outputs per framework:
+- `registry/<framework>/assertions.yaml` — one entry per assertion with full metadata
+- `registry/<framework>/obligations.yaml` — deduplicated obligations listing their assertion IDs
+
+| Option | Default | Description |
+|---|---|---|
+| `--output` | `registry/` | Output directory |
+| `--framework` | all | Limit to one framework |
+
+These files are generated — never edit them manually. Regenerate after any rule change.
+
+---
+
+## Global options
+
+| Option | Description |
+|---|---|
+| `--config <path>` | Path to `.rulestatus.yaml` (default: auto-detected) |
+| `--version` | Print version |
+| `--help` | Show help |

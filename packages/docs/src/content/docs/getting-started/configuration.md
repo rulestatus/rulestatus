@@ -73,3 +73,7 @@ Paths to your compliance artifacts. All paths are relative to the project root.
 ### `severity_gate`
 
 `fail_on: critical` causes `rulestatus run` to exit with code 1 if any critical gap is found — useful for blocking CI pipelines.
+
+---
+
+For the complete field-by-field reference including all defaults and valid values, see [Configuration Schema](/reference/config-schema/).
