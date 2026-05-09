@@ -2,9 +2,9 @@
 
 ## Current State (May 2026)
 
-Core engine is functional and publicly launched. EU AI Act (43 assertions), ISO/IEC 42001 (19 assertions), and NIST AI RMF (18 assertions) are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
+Core engine is functional and publicly launched. EU AI Act (43 assertions), ISO/IEC 42001 (19 assertions), NIST AI RMF (18 assertions), and Colorado AI Act / SB 24-205 (12 assertions) are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
 
-Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All three frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
+Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All four frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
 
 **What is already audit-grade (not gaps):**
 - Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
@@ -198,7 +198,7 @@ Priority order for remaining frameworks (seed/Series A AI startups selling into 
 
 1. ~~ISO/IEC 42001~~ — done
 2. ~~NIST AI RMF~~ — done
-3. Colorado SB 21-169 — first US state law with EU-like obligations
+3. ~~Colorado SB 24-205~~ — done
 4. NYC Local Law 144 — hiring AI, narrower but concrete
 5. China - Generative AI Interim Measures
 6. China - Algorithm Recommendation Provisions

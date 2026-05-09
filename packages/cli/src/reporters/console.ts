@@ -7,6 +7,7 @@ const FRAMEWORK_LABEL: Record<string, string> = {
   "eu-ai-act": "EU AI Act",
   "iso-42001": "ISO 42001",
   "nist-ai-rmf": "NIST AI RMF",
+  "colorado-sb24-205": "Colorado AI Act (SB 24-205)",
 };
 
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
@@ -175,7 +176,7 @@ function groupByFramework(results: RuleResult[]): Record<string, RuleResult[]> {
   const groups: Record<string, RuleResult[]> = {};
   for (const r of results) {
     if (!groups[r.framework]) groups[r.framework] = [];
-    groups[r.framework].push(r);
+    (groups[r.framework] as RuleResult[]).push(r);
   }
   return groups;
 }

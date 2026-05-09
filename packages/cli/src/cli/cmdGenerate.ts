@@ -7,7 +7,7 @@ import { loadAndExtract, renderTemplate } from "../core/templateExtractor.js";
 
 // ── Framework list ────────────────────────────────────────────────────────────
 
-const ALL_FRAMEWORKS = ["eu-ai-act", "iso-42001", "nist-ai-rmf"];
+const ALL_FRAMEWORKS = ["eu-ai-act", "iso-42001", "nist-ai-rmf", "colorado-sb24-205"];
 
 // ── Command ───────────────────────────────────────────────────────────────────
 

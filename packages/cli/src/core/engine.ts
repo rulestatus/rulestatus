@@ -36,6 +36,8 @@ export class Engine {
         await import("../frameworks/iso42001/index.js");
       } else if (fw === "nist-ai-rmf") {
         await import("../frameworks/nistAiRmf/index.js");
+      } else if (fw === "colorado-sb24-205") {
+        await import("../frameworks/coloradoSb24205/index.js");
       }
     }
   }
