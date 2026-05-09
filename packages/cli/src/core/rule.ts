@@ -13,6 +13,18 @@ export interface RuleMeta {
   obligation?: string;
   remediation?: string;
   legalText?: string;
+  /**
+   * Cross-framework obligation cluster — groups assertions from different frameworks
+   * that address the same underlying requirement. Used to derive interoperability
+   * annotations at runtime. Rule files are the single source of truth for this mapping.
+   *
+   * Defined clusters:
+   *   ai-risk-management      ai-policy-governance   roles-responsibilities
+   *   incident-response       training-data          bias-fairness
+   *   technical-documentation performance-monitoring security-robustness
+   *   transparency-disclosure human-oversight        impact-assessment
+   */
+  cluster?: string | undefined;
   /** Builder DSL check — used by executor. Mutually exclusive with fn. */
   check?: CheckNode;
   /** Imperative implementation — escape hatch for complex logic. */

@@ -3,6 +3,12 @@ import type { RuleResult, RunReport } from "../core/result.js";
 import { attested, failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
+const FRAMEWORK_LABEL: Record<string, string> = {
+  "eu-ai-act": "EU AI Act",
+  "iso-42001": "ISO 42001",
+  "nist-ai-rmf": "NIST AI RMF",
+};
+
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
   PASS: chalk.bold.green,
   FAIL: chalk.bold.red,
@@ -14,42 +20,24 @@ const STATUS_FORMAT: Record<string, (s: string) => string> = {
 
 export class ConsoleReporter implements Reporter {
   async render(report: RunReport): Promise<void> {
-    const fw = report.framework === "all" ? "All Frameworks" : `EU AI Act (2024/1689)`;
+    const multiFramework = report.framework === "all";
+    const fwLabel = multiFramework ? "All Frameworks" : frameworkLabel(report.framework);
     console.log();
-    console.log(`  ${chalk.bold("Rulestatus v1.0")} — ${fw}`);
+    console.log(`  ${chalk.bold("Rulestatus v1.0")} — ${fwLabel}`);
     console.log(`  System: ${report.systemName}`);
     console.log(`  Actor: ${report.actor} | Risk level: ${report.riskLevel}`);
     console.log(`  ${"─".repeat(50)}`);
 
-    // Group by article prefix (e.g. "9", "10")
-    const byArticle = groupByArticle(report.results);
+    const crossRef = multiFramework ? buildCrossFrameworkMap(report.results) : new Map();
 
-    for (const [article, results] of Object.entries(byArticle).sort(articleSort)) {
-      console.log(`\n  ${chalk.bold(`Art. ${article}`)}`);
-      for (const r of results) {
-        const fmt = STATUS_FORMAT[r.status] ?? ((s: string) => s);
-        const statusLabel = fmt(r.status.padEnd(6));
-        const idLabel = chalk.dim(r.ruleId.padEnd(36));
-        const confLabel = r.status === "PASS" ? confidenceBadge(r.confidence) : "";
-        console.log(`    ${statusLabel} ${idLabel} ${r.title}${confLabel}`);
-        if (r.status === "ATTESTED") {
-          console.log(
-            `      ${chalk.dim(`-> Attested by: ${r.attestedBy} on ${r.attestedAt} (expires ${r.attestationExpiresAt})`)}`,
-          );
-        } else if (
-          r.message &&
-          (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")
-        ) {
-          for (const line of r.message.split("\n").slice(0, 3)) {
-            if (line.trim()) console.log(`      ${chalk.dim(`-> ${line.trim()}`)}`);
-          }
-        }
-        if (r.evidenceSources.length > 0) {
-          for (const src of r.evidenceSources) {
-            console.log(`      ${chalk.dim(`   ${src.filePath} [${src.sha256.slice(0, 8)}]`)}`);
-          }
-        }
+    if (multiFramework) {
+      const byFramework = groupByFramework(report.results);
+      for (const [fw, fwResults] of Object.entries(byFramework).sort()) {
+        console.log(`\n  ${chalk.bold(frameworkLabel(fw))}`);
+        renderArticleGroups(fwResults, crossRef);
       }
+    } else {
+      renderArticleGroups(report.results, crossRef);
     }
 
     const p = passed(report).length;
@@ -91,10 +79,105 @@ export class ConsoleReporter implements Reporter {
   }
 }
 
+function renderArticleGroups(results: RuleResult[], crossRef: Map<string, RuleResult[]>): void {
+  const byArticle = groupByArticle(results);
+
+  for (const [article, articleResults] of Object.entries(byArticle).sort(articleSort)) {
+    console.log(`\n    ${chalk.bold(`Art. ${article}`)}`);
+    for (const r of articleResults) {
+      const fmt = STATUS_FORMAT[r.status] ?? ((s: string) => s);
+      const statusLabel = fmt(r.status.padEnd(6));
+      const idLabel = chalk.dim(r.ruleId.padEnd(36));
+      const confLabel = r.status === "PASS" ? confidenceBadge(r.confidence) : "";
+      console.log(`      ${statusLabel} ${idLabel} ${r.title}${confLabel}`);
+      if (r.status === "ATTESTED") {
+        console.log(
+          `        ${chalk.dim(`-> Attested by: ${r.attestedBy} on ${r.attestedAt} (expires ${r.attestationExpiresAt})`)}`,
+        );
+      } else if (
+        r.message &&
+        (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")
+      ) {
+        for (const line of r.message.split("\n").slice(0, 3)) {
+          if (line.trim()) console.log(`        ${chalk.dim(`-> ${line.trim()}`)}`);
+        }
+      }
+      if (r.evidenceSources.length > 0) {
+        for (const src of r.evidenceSources) {
+          console.log(`        ${chalk.dim(`   ${src.filePath} [${src.sha256.slice(0, 8)}]`)}`);
+        }
+      }
+    }
+
+    // Collect unique cross-framework peers for the whole article group
+    const peers = collectArticlePeers(articleResults, crossRef);
+    if (peers.length > 0) {
+      const peerStr = peers
+        .map((p) => chalk.cyan(`${frameworkLabel(p.framework)} ${p.article}`))
+        .join(", ");
+      console.log(`      ${chalk.dim("↳ Also satisfies:")} ${peerStr}`);
+    }
+  }
+}
+
+/** For each PASS/ATTESTED rule in the group, collect unique peer rules from other frameworks. */
+function collectArticlePeers(
+  results: RuleResult[],
+  crossRef: Map<string, RuleResult[]>,
+): RuleResult[] {
+  const seen = new Set<string>();
+  const peers: RuleResult[] = [];
+  for (const r of results) {
+    for (const peer of crossRef.get(r.ruleId) ?? []) {
+      const key = `${peer.framework}:${peer.article.split(".")[0]}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        peers.push(peer);
+      }
+    }
+  }
+  return peers;
+}
+
+/**
+ * Builds a map from ruleId → peer rules from other frameworks that share the same cluster
+ * and are also PASS or ATTESTED. Only includes rules that have at least one cross-framework peer.
+ */
+function buildCrossFrameworkMap(results: RuleResult[]): Map<string, RuleResult[]> {
+  const clusterMap = new Map<string, RuleResult[]>();
+  for (const r of results) {
+    if (!r.cluster || (r.status !== "PASS" && r.status !== "ATTESTED")) continue;
+    const arr = clusterMap.get(r.cluster) ?? [];
+    arr.push(r);
+    clusterMap.set(r.cluster, arr);
+  }
+
+  const result = new Map<string, RuleResult[]>();
+  for (const r of results) {
+    if (!r.cluster || (r.status !== "PASS" && r.status !== "ATTESTED")) continue;
+    const peers = (clusterMap.get(r.cluster) ?? []).filter((m) => m.framework !== r.framework);
+    if (peers.length > 0) result.set(r.ruleId, peers);
+  }
+  return result;
+}
+
+function frameworkLabel(fw: string): string {
+  return FRAMEWORK_LABEL[fw] ?? fw;
+}
+
 function confidenceBadge(c: RuleResult["confidence"]): string {
   if (c === "strong") return "";
   if (c === "moderate") return chalk.dim(" [moderate]");
   return chalk.yellow(" [weak]");
+}
+
+function groupByFramework(results: RuleResult[]): Record<string, RuleResult[]> {
+  const groups: Record<string, RuleResult[]> = {};
+  for (const r of results) {
+    if (!groups[r.framework]) groups[r.framework] = [];
+    groups[r.framework].push(r);
+  }
+  return groups;
 }
 
 function groupByArticle(results: RuleResult[]): Record<string, RuleResult[]> {
@@ -108,5 +191,8 @@ function groupByArticle(results: RuleResult[]): Record<string, RuleResult[]> {
 }
 
 function articleSort(a: [string, unknown], b: [string, unknown]): number {
-  return Number.parseInt(a[0], 10) - Number.parseInt(b[0], 10);
+  const aNum = Number.parseInt(a[0], 10);
+  const bNum = Number.parseInt(b[0], 10);
+  if (!Number.isNaN(aNum) && !Number.isNaN(bNum)) return aNum - bNum;
+  return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
 }

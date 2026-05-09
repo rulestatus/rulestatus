@@ -26,6 +26,7 @@ const ANNEX_IV_FIELDS = [
 rule({
   id: "ASSERT-EU-AI-ACT-011-001-01",
   framework: "eu-ai-act",
+  cluster: "technical-documentation",
   article: "11.1",
   severity: CRITICAL,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -44,6 +45,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-011-001-02",
   framework: "eu-ai-act",
+  cluster: "technical-documentation",
   article: "11.1",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -60,6 +62,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-011-001-03",
   framework: "eu-ai-act",
+  cluster: "technical-documentation",
   article: "11.1",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -81,6 +84,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-011-001-04",
   framework: "eu-ai-act",
+  cluster: "performance-monitoring",
   article: "11.1",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -101,6 +105,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-011-001-05",
   framework: "eu-ai-act",
+  cluster: "technical-documentation",
   article: "11.1",
   severity: MINOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -118,6 +123,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-011-002-01",
   framework: "eu-ai-act",
+  cluster: "technical-documentation",
   article: "11.2",
   severity: MINOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },

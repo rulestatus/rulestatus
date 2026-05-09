@@ -96,6 +96,7 @@ export class Engine {
       framework: rule.framework,
       article: rule.article,
       severity: rule.severity,
+      cluster: rule.cluster,
       timestamp: new Date(),
     };
 

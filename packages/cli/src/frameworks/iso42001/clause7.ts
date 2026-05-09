@@ -9,6 +9,7 @@ const FMTS = ["yaml", "md", "pdf", "docx"] as const;
 rule({
   id: "ASSERT-ISO-42001-007-001-01",
   framework: "iso-42001",
+  cluster: "roles-responsibilities",
   article: "7.2",
   severity: MAJOR,
   appliesTo: { actor: "provider" },
@@ -28,6 +29,7 @@ rule({
 rule({
   id: "ASSERT-ISO-42001-007-002-01",
   framework: "iso-42001",
+  cluster: "roles-responsibilities",
   article: "7.3",
   severity: MAJOR,
   appliesTo: { actor: "provider" },
@@ -52,6 +54,7 @@ rule({
 rule({
   id: "ASSERT-ISO-42001-007-003-01",
   framework: "iso-42001",
+  cluster: "technical-documentation",
   article: "7.5",
   severity: MINOR,
   appliesTo: { actor: "provider" },

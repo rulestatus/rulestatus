@@ -58,6 +58,7 @@ rule(
 rule({
   id: "ASSERT-EU-AI-ACT-013-001-02",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.1",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -76,6 +77,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-013-002-01",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.2",
   severity: CRITICAL,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -92,6 +94,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-013-002-02",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.2",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -111,6 +114,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-013-002-03",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.2",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -129,6 +133,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-013-003-01",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.3",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -153,6 +158,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-013-004-01",
   framework: "eu-ai-act",
+  cluster: "transparency-disclosure",
   article: "13.4",
   severity: MINOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },

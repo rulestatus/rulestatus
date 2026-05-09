@@ -4,7 +4,7 @@
 
 Core engine is functional and publicly launched. EU AI Act (43 assertions), ISO/IEC 42001 (19 assertions), and NIST AI RMF (18 assertions) are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
 
-Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.4a complete.
+Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All three frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
 
 **What is already audit-grade (not gaps):**
 - Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
@@ -266,20 +266,20 @@ Tiers:
 - **Pro** — unlimited systems, Confluence + Google Drive connectors, PDF reports with provider branding, amendment notifications
 - **Enterprise** — all connectors, audit portal (P4.4), SSO, SLA
 
-### P3.5 — Framework interoperability layer
+### P3.5 — Framework interoperability layer ✓ Done
 
 EU AI Act, ISO 42001, and NIST AI RMF overlap significantly. A user running all three today sees three separate reports with redundant gaps. The interoperability layer maps assertions across frameworks and surfaces shared coverage.
 
 ```
-  Art. 9 (Risk Management) — PASS
-    Also satisfies: ISO 42001 Cl. 8.2 (AI Risk Assessment), NIST MAP 2.2
-    No duplicate remediation needed.
+  EU AI Act
+    Art. 9 (Risk Management)
+      PASS   ASSERT-EU-AI-ACT-009-002-A-01   Risk register exists and is populated
+      ↳ Also satisfies: ISO 42001 8.2, NIST AI RMF MAP 5.1
 ```
 
-Deliverables:
-- Cross-framework assertion mapping table (which assertions address the same underlying obligation)
-- `rulestatus run --all` consolidated report showing per-obligation coverage across frameworks — one gap, not three
-- Efficiency score: "Your Art. 9 evidence also satisfies 4 NIST MAP controls"
+Implementation: `cluster?: string | undefined` added to `RuleMeta` and `RuleResult`. Each rule file is the single source of truth — no secondary mapping table. 12 obligation clusters span all three frameworks: `ai-risk-management`, `incident-response`, `training-data`, `bias-fairness`, `technical-documentation`, `performance-monitoring`, `security-robustness`, `ai-policy-governance`, `roles-responsibilities`, `transparency-disclosure`, `human-oversight`, `impact-assessment`. The engine passes `cluster` through to results; the console reporter derives cross-framework annotations at render time by grouping PASS/ATTESTED results by cluster and finding peers from other frameworks.
+
+Console multi-framework output groups by framework → article. After each article group, if any passing rule has cluster peers in other frameworks, a `↳ Also satisfies:` line is printed. Adding a new framework with cluster-tagged rules automatically participates — no reporter changes needed.
 
 This is the main argument against "framework fatigue" and makes the multi-framework value prop clear to buyers who are asked about both EU AI Act and ISO 42001 in the same security review.
 

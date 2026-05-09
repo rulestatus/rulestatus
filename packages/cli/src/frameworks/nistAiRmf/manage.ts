@@ -8,6 +8,7 @@ const FMTS = ["yaml", "md", "pdf", "docx"] as const;
 rule({
   id: "ASSERT-NIST-AIRMF-MG-001-01",
   framework: "nist-ai-rmf",
+  cluster: "ai-risk-management",
   article: "MANAGE 1.1",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -32,6 +33,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-MG-002-01",
   framework: "nist-ai-rmf",
+  cluster: "ai-risk-management",
   article: "MANAGE 1.3",
   severity: MAJOR,
   appliesTo: { actor: "provider" },
@@ -56,6 +58,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-MG-003-01",
   framework: "nist-ai-rmf",
+  cluster: "incident-response",
   article: "MANAGE 2.2",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -81,6 +84,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-MG-004-01",
   framework: "nist-ai-rmf",
+  cluster: "performance-monitoring",
   article: "MANAGE 2.4",
   severity: MAJOR,
   appliesTo: { actor: "provider" },

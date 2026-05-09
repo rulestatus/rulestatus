@@ -8,6 +8,7 @@ const FMTS = ["yaml", "md", "pdf", "docx"] as const;
 rule({
   id: "ASSERT-ISO-42001-008-001-01",
   framework: "iso-42001",
+  cluster: "ai-risk-management",
   article: "8.2",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -32,6 +33,7 @@ rule({
 rule({
   id: "ASSERT-ISO-42001-008-002-01",
   framework: "iso-42001",
+  cluster: "impact-assessment",
   article: "8.3",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -53,6 +55,7 @@ rule({
 rule({
   id: "ASSERT-ISO-42001-008-003-01",
   framework: "iso-42001",
+  cluster: "training-data",
   article: "8.4",
   severity: MAJOR,
   appliesTo: { actor: "provider" },
@@ -77,6 +80,7 @@ rule({
 rule({
   id: "ASSERT-ISO-42001-008-004-01",
   framework: "iso-42001",
+  cluster: "human-oversight",
   article: "8.1",
   severity: MAJOR,
   appliesTo: { actor: "provider" },

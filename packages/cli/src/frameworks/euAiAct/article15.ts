@@ -9,6 +9,7 @@ const FMTS = ["yaml", "md", "pdf", "docx"] as const;
 rule({
   id: "ASSERT-EU-AI-ACT-015-001-01",
   framework: "eu-ai-act",
+  cluster: "performance-monitoring",
   article: "15.1",
   severity: CRITICAL,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -30,6 +31,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-002-01",
   framework: "eu-ai-act",
+  cluster: "security-robustness",
   article: "15.2",
   severity: CRITICAL,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -52,6 +54,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-003-01",
   framework: "eu-ai-act",
+  cluster: "security-robustness",
   article: "15.3",
   severity: CRITICAL,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -72,6 +75,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-003-02",
   framework: "eu-ai-act",
+  cluster: "security-robustness",
   article: "15.3",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -92,6 +96,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-004-01",
   framework: "eu-ai-act",
+  cluster: "security-robustness",
   article: "15.4",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -115,6 +120,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-005-01",
   framework: "eu-ai-act",
+  cluster: "bias-fairness",
   article: "15.5",
   severity: MAJOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },
@@ -132,6 +138,7 @@ rule({
 rule({
   id: "ASSERT-EU-AI-ACT-015-006-01",
   framework: "eu-ai-act",
+  cluster: "security-robustness",
   article: "15.6",
   severity: MINOR,
   appliesTo: { actor: "provider", riskLevel: "high-risk" },

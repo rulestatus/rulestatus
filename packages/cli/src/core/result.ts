@@ -10,7 +10,8 @@ export interface RuleResult {
   article: string;
   severity: SeverityLevel;
   status: RuleStatus;
-  message?: string;
+  cluster?: string | undefined;
+  message?: string | undefined;
   durationMs: number;
   timestamp: Date;
   confidence: Confidence;

@@ -8,6 +8,7 @@ const FMTS = ["yaml", "md", "pdf", "docx"] as const;
 rule({
   id: "ASSERT-NIST-AIRMF-GV-001-01",
   framework: "nist-ai-rmf",
+  cluster: "ai-policy-governance",
   article: "GOVERN 1.1",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -32,6 +33,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-GV-002-01",
   framework: "nist-ai-rmf",
+  cluster: "ai-policy-governance",
   article: "GOVERN 1.5",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -53,6 +55,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-GV-003-01",
   framework: "nist-ai-rmf",
+  cluster: "roles-responsibilities",
   article: "GOVERN 2.1",
   severity: CRITICAL,
   appliesTo: { actor: "provider" },
@@ -72,6 +75,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-GV-004-01",
   framework: "nist-ai-rmf",
+  cluster: "transparency-disclosure",
   article: "GOVERN 4.1",
   severity: MAJOR,
   appliesTo: { actor: "provider" },
@@ -90,6 +94,7 @@ rule({
 rule({
   id: "ASSERT-NIST-AIRMF-GV-005-01",
   framework: "nist-ai-rmf",
+  cluster: "security-robustness",
   article: "GOVERN 6.1",
   severity: MINOR,
   appliesTo: { actor: "provider" },
