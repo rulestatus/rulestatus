@@ -1,7 +1,7 @@
 import type { Confidence, EvidenceSource } from "../evidence/types.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
 
-export type RuleStatus = "PASS" | "FAIL" | "WARN" | "SKIP" | "MANUAL";
+export type RuleStatus = "PASS" | "FAIL" | "WARN" | "SKIP" | "MANUAL" | "ATTESTED";
 
 export interface RuleResult {
   ruleId: string;
@@ -15,6 +15,9 @@ export interface RuleResult {
   timestamp: Date;
   confidence: Confidence;
   evidenceSources: EvidenceSource[];
+  attestedBy?: string | undefined;
+  attestedAt?: string | undefined;
+  attestationExpiresAt?: string | undefined;
 }
 
 export interface RunReport {
@@ -45,6 +48,10 @@ export function skipped(report: RunReport): RuleResult[] {
 
 export function manual(report: RunReport): RuleResult[] {
   return report.results.filter((r) => r.status === "MANUAL");
+}
+
+export function attested(report: RunReport): RuleResult[] {
+  return report.results.filter((r) => r.status === "ATTESTED");
 }
 
 /**

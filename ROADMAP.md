@@ -152,7 +152,7 @@ Each assertion entry includes: id, obligationId, article, title, severity, appli
 
 Rules previously expressed logic as imperative `async (system) => { ... }` functions. All six EU AI Act article files (`article6.ts`, `article9.ts`, `article10.ts`, `article11.ts`, `article13.ts`, `article14.ts`, `article15.ts`) migrated to a declarative builder DSL. `src/core/check.ts` provides builder classes (`Doc`, `Structured`, `Config`, `ModelCard`, `Api`, `AnyOf`, etc.) with factory functions (`doc()`, `structured()`, `config()`, `modelCard()`, `api()`, `anyOf()`). `src/core/executor.ts` interprets the resulting `CheckNode` tree at runtime. Rules with conditional logic that cannot be expressed declaratively (hard-fail if config present but disabled; skip-if-field-absent) retain an `fn` escape hatch. The DSL is both executable and statically inspectable — the YAML registries from P2.3 can now be generated from the same `CheckNode` tree rather than maintained separately.
 
-### P2.5 — `rulestatus update` command
+### P2.5 — `rulestatus update` command ✓ Done
 
 Check for new versions of the rule library. Regulation amendments create new/modified/deprecated assertions. Teams need to know when to re-run and what changed.
 
@@ -261,6 +261,13 @@ Implementation notes:
 
 Separate track from P3.4a. See Phase 4 below.
 
+**Pricing model (decided now, implemented in Phase 4):** charge per AI system (asset), not per seat. One AI system = one `.rulestatus.yaml`. Rationale: the unit of value is "this system is evidence-ready for regulators," not "this engineer ran a command." Per-attestation pricing is an alternative for high-volume use cases (e.g. a consultancy running audits for clients). Do not charge per seat — compliance tools with per-seat pricing die in procurement because the buyer (legal/compliance) isn't the user (engineering).
+
+Tiers:
+- **Free** — 1 AI system, filesystem collector, CLI only
+- **Pro** — unlimited systems, Confluence + Google Drive connectors, PDF reports with provider branding, amendment notifications
+- **Enterprise** — all connectors, audit portal (P4.4), SSO, SLA
+
 ### P3.5 — Framework interoperability layer
 
 EU AI Act, ISO 42001, and NIST AI RMF overlap significantly. A user running all three today sees three separate reports with redundant gaps. The interoperability layer maps assertions across frameworks and surfaces shared coverage.
@@ -278,7 +285,29 @@ Deliverables:
 
 This is the main argument against "framework fatigue" and makes the multi-framework value prop clear to buyers who are asked about both EU AI Act and ISO 42001 in the same security review.
 
-### P3.6 — Open question: LegalXML standard
+### P3.6 — MANUAL check workflow ✓ Done
+
+`rulestatus run` currently surfaces MANUAL results but has no way to track them across runs. After `rulestatus attest ASSERT-ID`, the attestation file is written — but the next `rulestatus run` still shows MANUAL with no indication it has been attested. If 30% of checks are MANUAL and none of them resolve, the tool feels broken.
+
+The fix: after each run, cross-reference MANUAL results against existing attestation files in `.rulestatus/attestations/`. If a valid attestation exists, surface it as `ATTESTED` (not MANUAL) with the attestation date and attester identity. If the attestation is older than a configurable threshold (`attest_expiry`), downgrade back to MANUAL with a "re-attest required" message.
+
+```
+  Art. 14 - Human Oversight
+    ATTESTED  ASSERT-EU-AI-ACT-014-001-01  Human oversight mechanisms documented
+      -> Attested by: philipp@company.com on 2026-04-01 (expires 2026-10-01)
+    MANUAL    ASSERT-EU-AI-ACT-014-002-01  Override endpoint documented
+      -> No attestation found. Run: rulestatus attest ASSERT-EU-AI-ACT-014-002-01
+```
+
+Deliverables:
+- ✓ `ATTESTED` result status in the runner and all reporters
+- ✓ Attestation lookup in `engine.ts` — checks `.rulestatus/attestations/<ASSERT-ID>.yaml` after MANUAL result; upgrades to ATTESTED if valid, shows expiry warning if expired
+- ✓ Default expiry 365 days — configurable via `attestExpiry` on config; expired attestations revert to MANUAL with message pointing to `rulestatus attest <ID>`
+- ✓ SARIF: ATTESTED mapped to `level: "none"` so it doesn't trigger PR blocks
+- ✓ Summary line includes attested count only when > 0: `3 passed | 1 gap | 2 attested | 0 manual`
+- ✓ `src/core/attestation.ts` — pure loader with TODO-value detection; 11 unit tests in `tests/unit/attestation.test.ts`
+
+### P3.7 — Open question: LegalXML standard
 
 Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligation registry format or keep a custom YAML schema. Decision affects interoperability with legal tools and how legal analysts import regulation text. Needs input from whoever the first legal analyst partner is.
 
@@ -287,6 +316,8 @@ Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligat
 ## Phase 4 — SaaS Platform (post-launch)
 
 Commercial product built on top of the open-source CLI. Do not start until the CLI has ≥500 installs and ≥1 paying team — otherwise building before learning what buyers actually want.
+
+**Strategic direction — Evidence Pipeline, not Validator:** The CLI is a validator (it checks what exists). The SaaS product must be an evidence pipeline (it helps teams produce, store, route, and prove evidence). The difference: a validator tells you what's missing; a pipeline closes the loop by ingesting evidence from where it actually lives (Confluence, Jira, Google Docs), tracking it over time, and delivering it to whoever needs it (auditors, enterprise procurement, notified bodies). Every Phase 4 feature should move the product further along the pipeline, not just add more checks.
 
 ### P4.0 — Evidence ingestion connectors
 
@@ -304,25 +335,36 @@ Pricing: connectors are the first natural paid feature. Free tier: filesystem on
 
 Do not start until: CLI has ≥200 installs and at least one team has hit the "we have the docs but not in YAML" blocker in a sales conversation.
 
-### P4.1 — Amendment service (first paid feature)
+### P4.1 — Policy editor
+
+A web UI that visualizes the `CheckNode` tree for each assertion and lets compliance officers adjust thresholds, mark exceptions, and annotate results — without touching the CLI or YAML files. This is the bridge between the engineer ICP (who runs the CLI) and the compliance officer buyer (who owns the outcome).
+
+Key views:
+- Per-assertion detail: legal text → CheckNode tree → last run result → evidence files examined
+- Exception workflow: mark an assertion as "accepted risk" with justification and expiry date — surfaces as `EXCEPTED` in CLI runs (similar to ATTESTED for MANUAL checks)
+- Threshold editor: for numeric checks (e.g. bias assessment requires ≥3 protected characteristics), allow org-level overrides with audit trail
+
+This is what makes the product defensible against "we'll just use the CLI for free." The editor requires the SaaS backend for state storage and audit trail.
+
+### P4.2 — Amendment service (first paid feature)
 
 When a regulation is amended, Pro+ teams get assertion updates within days. Free users get them on the next release cycle. This is the clearest standalone paid value: recurring, high-stakes, impossible to self-serve reliably.
 
 Requires: rule versioning system, release pipeline, notification service (email/webhook).
 
-### P4.2 — Dashboard
+### P4.3 — Dashboard
 
 Multi-project compliance overview, historical trend per framework, per-article drill-down, team activity. Auth + multi-tenant project storage + read API over run results. Single most important SaaS feature for team buyers.
 
-### P4.3 — Evidence vault
+### P4.4 — Evidence vault
 
 Hosted secure storage for evidence bundles, attestations, and audit artifacts. Replaces the local `.rulestatus/` directory with a tamper-evident cloud store. Signed URLs for external auditor access (feeds P4.4).
 
-### P4.4 — Audit portal
+### P4.5 — Audit portal
 
 Read-only external access for auditors and enterprise customers doing vendor security reviews. Auditor gets a URL → logs in → sees compliance history, evidence bundles, attestations. No PDF email chain. This is the trigger for Team tier conversion.
 
-### P4.5 — Benchmark data + industry percentile scoring
+### P4.6 — Benchmark data + industry percentile scoring
 
 Anonymised, aggregated compliance scores across the user base. "Your system is in the 73rd percentile for EU AI Act readiness." Requires distribution (500+ teams). Build the data model in P4.2; surface the benchmarks in Auditor Platform tier once data exists.
 

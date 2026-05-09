@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import type { RunReport } from "../core/result.js";
-import { failed, warned } from "../core/result.js";
+import { attested, failed, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 const SARIF_LEVEL: Record<string, string> = {
@@ -13,7 +13,8 @@ const SARIF_LEVEL: Record<string, string> = {
 
 export class SarifReporter implements Reporter {
   async render(report: RunReport, outputPath = "rulestatus-results.sarif"): Promise<void> {
-    const actionable = [...failed(report), ...warned(report)];
+    // ATTESTED results appear as notes (not warnings/errors) so they don't block PRs
+    const actionable = [...failed(report), ...warned(report), ...attested(report)];
 
     const ruleIds = new Set(actionable.map((r) => r.ruleId));
     const allRules = report.results.filter((r) => ruleIds.has(r.ruleId));
@@ -39,8 +40,13 @@ export class SarifReporter implements Reporter {
 
     const sarifResults = actionable.map((r) => ({
       ruleId: r.ruleId,
-      level: SARIF_LEVEL[r.severity] ?? "warning",
-      message: { text: r.message ?? r.title },
+      level: r.status === "ATTESTED" ? "none" : (SARIF_LEVEL[r.severity] ?? "warning"),
+      message: {
+        text:
+          r.status === "ATTESTED"
+            ? `Attested by ${r.attestedBy} on ${r.attestedAt} (expires ${r.attestationExpiresAt})`
+            : (r.message ?? r.title),
+      },
       locations: [
         {
           physicalLocation: {

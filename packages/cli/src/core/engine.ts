@@ -1,5 +1,6 @@
 import type { RulestatusConfig } from "../config/schema.js";
 import { EvidenceRegistry } from "../evidence/registry.js";
+import { loadAttestation } from "./attestation.js";
 import { SystemContext } from "./context.js";
 import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
 import { executeCheck } from "./executor.js";
@@ -130,10 +131,27 @@ export class Engine {
         };
       }
       if (e instanceof ManualReviewRequired) {
+        const expiryDays = (this.config as { attestExpiry?: number }).attestExpiry ?? 365;
+        const attestation = loadAttestation(rule.id, process.cwd(), expiryDays);
+        if (attestation && !attestation.expired) {
+          return {
+            ...base,
+            status: "ATTESTED",
+            message: e.message,
+            durationMs,
+            confidence,
+            evidenceSources,
+            attestedBy: attestation.record.attestedBy,
+            attestedAt: attestation.record.attestedAt,
+            attestationExpiresAt: attestation.expiresAt.toISOString().split("T")[0],
+          };
+        }
         return {
           ...base,
           status: "MANUAL",
-          message: e.message,
+          message: attestation?.expired
+            ? `Attestation expired on ${attestation.expiresAt.toISOString().split("T")[0]}. Re-attest: rulestatus attest ${rule.id}`
+            : e.message,
           durationMs,
           confidence,
           evidenceSources,

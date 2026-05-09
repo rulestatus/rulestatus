@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import type { RuleResult, RunReport } from "../core/result.js";
-import { failed, manual, passed, skipped, warned } from "../core/result.js";
+import { attested, failed, manual, passed, skipped, warned } from "../core/result.js";
 import type { Reporter } from "./types.js";
 
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
@@ -9,6 +9,7 @@ const STATUS_FORMAT: Record<string, (s: string) => string> = {
   WARN: chalk.bold.yellow,
   SKIP: chalk.dim,
   MANUAL: chalk.bold.blue,
+  ATTESTED: chalk.bold.cyan,
 };
 
 export class ConsoleReporter implements Reporter {
@@ -31,7 +32,14 @@ export class ConsoleReporter implements Reporter {
         const idLabel = chalk.dim(r.ruleId.padEnd(36));
         const confLabel = r.status === "PASS" ? confidenceBadge(r.confidence) : "";
         console.log(`    ${statusLabel} ${idLabel} ${r.title}${confLabel}`);
-        if (r.message && (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")) {
+        if (r.status === "ATTESTED") {
+          console.log(
+            `      ${chalk.dim(`-> Attested by: ${r.attestedBy} on ${r.attestedAt} (expires ${r.attestationExpiresAt})`)}`,
+          );
+        } else if (
+          r.message &&
+          (r.status === "FAIL" || r.status === "WARN" || r.status === "MANUAL")
+        ) {
           for (const line of r.message.split("\n").slice(0, 3)) {
             if (line.trim()) console.log(`      ${chalk.dim(`-> ${line.trim()}`)}`);
           }
@@ -49,12 +57,18 @@ export class ConsoleReporter implements Reporter {
     const w = warned(report).length;
     const s = skipped(report).length;
     const m = manual(report).length;
+    const a = attested(report).length;
 
     console.log(`\n  ${"─".repeat(50)}`);
-    console.log(
-      `  Results: ${chalk.green(`${p} passed`)} | ${chalk.red(`${f} failed`)} | ` +
-        `${chalk.yellow(`${w} warnings`)} | ${chalk.dim(`${s} skipped`)} | ${chalk.blue(`${m} manual`)}`,
-    );
+    const parts = [
+      chalk.green(`${p} passed`),
+      chalk.red(`${f} failed`),
+      chalk.yellow(`${w} warnings`),
+      chalk.dim(`${s} skipped`),
+      ...(a > 0 ? [chalk.cyan(`${a} attested`)] : []),
+      chalk.blue(`${m} manual`),
+    ];
+    console.log(`  Results: ${parts.join(" | ")}`);
 
     const criticalFails = failed(report).filter((r) => r.severity === "critical");
     if (criticalFails.length > 0) {

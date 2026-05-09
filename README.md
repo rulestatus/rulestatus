@@ -22,7 +22,7 @@ When an enterprise customer asks for EU AI Act readiness, you don't send them a 
       -> Found: [gender, race]. Missing at least one of: age, disability, nationality.
 
   ──────────────────────────────────────────────────
-  Results: 38 passed | 5 gaps | 0 warnings | 2 manual
+  Results: 38 passed | 5 gaps | 0 warnings | 2 attested | 1 manual
   Critical evidence gaps: 2 — pipeline BLOCKED
   Note: evidence present ≠ legally compliant. Not legal advice or a conformity assessment.
 ```
@@ -109,6 +109,7 @@ The signed bundle contains a manifest, all evidence files, and the last-run summ
 | `rulestatus attest <file\|ASSERT-ID>` | Sign a bundle or generate a manual attestation |
 | `rulestatus bundle` | Package all compliance artifacts into an audit-ready `.tar.gz` |
 | `rulestatus report <file>` | Re-render a saved JSON results file in another format |
+| `rulestatus update` | Check for a newer version of the rule library |
 | `rulestatus export-registry` | Export obligation + assertion YAML registry from rule definitions |
 
 ### Templates (`rulestatus generate`)
