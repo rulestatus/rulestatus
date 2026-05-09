@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import yaml from "js-yaml";
 import { DictDocument, TextDocument } from "../document.js";
@@ -80,7 +80,7 @@ export class FilesystemCollector implements EvidenceCollector {
 async function loadPath(filePath: string): Promise<Document | null> {
   const ext = extname(filePath).toLowerCase();
   try {
-    const text = await Bun.file(filePath).text();
+    const text = readFileSync(filePath, "utf-8");
     const sha256 = createHash("sha256").update(text).digest("hex");
     if (ext === ".yaml" || ext === ".yml") {
       const data = yaml.load(text);
@@ -117,7 +117,7 @@ async function parseStructuredFile(
 ): Promise<{ data: Record<string, unknown>; filePath: string; sha256: string } | null> {
   const ext = extname(filePath).toLowerCase();
   try {
-    const text = await Bun.file(filePath).text();
+    const text = readFileSync(filePath, "utf-8");
     const sha256 = createHash("sha256").update(text).digest("hex");
     if (ext === ".json") {
       const data = JSON.parse(text);

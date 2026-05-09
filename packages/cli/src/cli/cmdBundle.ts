@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { gzipSync } from "node:zlib";
 import { Command } from "commander";
 import { findConfig, loadConfig } from "../config/loader.js";
 import type { RulestatusConfig } from "../config/schema.js";
@@ -62,7 +63,7 @@ function buildTarGz(entries: Array<{ path: string; data: Uint8Array }>): Uint8Ar
     offset += block.length;
   }
 
-  return Bun.gzipSync(tar);
+  return gzipSync(tar);
 }
 
 // ── file collection ──────────────────────────────────────────────────────────

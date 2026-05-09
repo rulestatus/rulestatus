@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import yaml from "js-yaml";
 import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
@@ -28,7 +28,7 @@ export class ConfigCollector implements EvidenceCollector {
       if (!existsSync(filePath)) continue;
 
       try {
-        const text = await Bun.file(filePath).text();
+        const text = readFileSync(filePath, "utf-8");
         if (ext === "yaml" || ext === "yml") {
           const data = yaml.load(text);
           if (data && typeof data === "object" && !Array.isArray(data)) {

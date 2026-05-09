@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import yaml from "js-yaml";
 import { RulestatusConfigError } from "../core/exceptions.js";
@@ -28,7 +28,7 @@ export async function loadConfig(configPath?: string): Promise<RulestatusConfig>
 
   let raw: Record<string, unknown>;
   try {
-    const text = await Bun.file(resolved).text();
+    const text = readFileSync(resolved, "utf-8");
     const parsed = yaml.load(text);
     raw = (parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {}) as Record<
       string,

@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
@@ -10,9 +11,9 @@ function sha256hex(data: Buffer): string {
   return createHash("sha256").update(data).digest("hex");
 }
 
-function spawnProvider(args: string[]): boolean {
-  const result = Bun.spawnSync(args, { stdout: "inherit", stderr: "inherit" });
-  return result.exitCode === 0;
+function spawnProvider([cmd, ...cmdArgs]: string[]): boolean {
+  const result = spawnSync(cmd ?? "", cmdArgs, { stdio: "inherit" });
+  return result.status === 0;
 }
 
 export function cmdAttest(): Command {

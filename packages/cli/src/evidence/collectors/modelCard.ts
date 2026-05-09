@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import yaml from "js-yaml";
 import { DictDocument } from "../document.js";
@@ -39,7 +39,7 @@ export class ModelCardCollector implements EvidenceCollector {
     for (const filePath of candidates) {
       if (!existsSync(filePath)) continue;
       try {
-        const text = await Bun.file(filePath).text();
+        const text = readFileSync(filePath, "utf-8");
         const ext = filePath.split(".").pop()?.toLowerCase();
 
         if (ext === "yaml" || ext === "yml") {
