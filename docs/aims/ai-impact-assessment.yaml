@@ -1,0 +1,5 @@
+# ai-impact-assessment — ISO/IEC 42001:2023 8.3
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-008-002-01: AI impact assessment is documented
+impacted_groups: "TODO: ..."  # aliases accepted: impacts, potential_harms, impactedGroups

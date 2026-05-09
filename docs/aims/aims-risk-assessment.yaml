@@ -1,0 +1,10 @@
+# aims-risk-assessment — ISO/IEC 42001:2023 6.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-006-001-01: AIMS-level risks and opportunities are identified and documented
+identified_risks:  # aliases accepted: risks
+  - "TODO: item 1"
+  - "TODO: item 2"
+
+# ASSERT-ISO-42001-006-001-01: AIMS-level risks and opportunities are identified and documented
+treatment_plan: "TODO: Describe ..."  # aliases accepted: treatmentPlan, opportunities

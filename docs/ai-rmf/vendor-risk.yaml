@@ -1,0 +1,10 @@
+# vendor-risk — NIST AI RMF 1.0 GOVERN 6.1, MEASURE 2.9
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-NIST-AIRMF-GV-005-01: Third-party AI risk management policies are established
+third_party_policy: "TODO: Describe ..."  # aliases accepted: supply_chain_risk, provenance
+
+# ASSERT-NIST-AIRMF-MS-005-01: Risks from third-party AI components and data are documented
+third_party_components:  # aliases accepted: ai_components, component_risks
+  - "TODO: item 1"
+  - "TODO: item 2"

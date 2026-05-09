@@ -1,0 +1,10 @@
+# aims-roles — ISO/IEC 42001:2023 5.3
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-005-002-01: Roles and responsibilities for AI management are assigned
+roles:  # aliases accepted: responsibilities
+  - "TODO: item 1"
+  - "TODO: item 2"
+
+# ASSERT-ISO-42001-005-002-01: Roles and responsibilities for AI management are assigned
+accountable_person: "TODO: ..."  # aliases accepted: accountablePerson, ai_owner, responsible_person

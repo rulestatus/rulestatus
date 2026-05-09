@@ -29,15 +29,13 @@ Focus: make the tool actually usable on a real project from a cold start.
 The single biggest adoption blocker. Running on a real project today returns FAIL for everything because no artifacts exist. The generate command creates compliant templates so teams have a path from red to green.
 
 ```
-rulestatus generate risk-register       → docs/risk_register.json
-rulestatus generate model-card          → model/model_card.yaml
-rulestatus generate data-governance     → docs/data_governance.yaml
-rulestatus generate technical-doc       → docs/technical_documentation.yaml
-rulestatus generate transparency-config → config/transparency.yaml
-rulestatus generate risk-entry          → (appends entry to existing risk_register.json)
+rulestatus generate --framework eu-ai-act   → 16 templates (docs/, model/, config/)
+rulestatus generate --framework iso-42001   → ~10 templates (docs/aims/, docs/iso42001/)
+rulestatus generate --framework nist-ai-rmf → ~9 templates (docs/nist-ai-rmf/)
+rulestatus generate --all                   → all frameworks at once
 ```
 
-Each generated file must include inline comments explaining what each field means and what auditors look for. Emit a message like `Run rulestatus run to see which fields still need filling in.`
+Templates are auto-derived from rule definitions via `templateExtractor.ts` — the same DSL that the engine executes also drives template generation. Adding a new rule automatically adds its fields to the relevant output file. All three node kinds are handled: `Doc` (path-based documents), `Structured` (YAML with required array shape), `ModelCard` (`model/model_card.yaml`), and `Config` (`config/*.yaml`). Each generated file includes inline comments with the assertion ID that requires each field.
 
 ### P1.2 — Enrich `explain` with dynamic failure context ✓ Done
 

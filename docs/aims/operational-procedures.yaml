@@ -1,0 +1,5 @@
+# operational-procedures — ISO/IEC 42001:2023 8.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-008-004-01: Operational planning and control procedures are documented
+development_controls: "TODO: ..."  # aliases accepted: review_gates, deployment_approval, controls

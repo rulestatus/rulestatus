@@ -1,0 +1,5 @@
+# training-materials — ISO/IEC 42001:2023 7.3
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-007-002-01: Awareness program for AI policy and AIMS exists
+ai_policy: "TODO: Describe ..."  # aliases accepted: aims_obligations, awareness

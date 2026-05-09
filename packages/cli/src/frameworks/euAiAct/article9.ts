@@ -57,6 +57,7 @@ rule({
   remediation:
     "Add a `dimension` field to each risk entry. Required values: health, safety, fundamental_rights.",
   check: structured("risk_register")
+    .withOutputPath("docs/risk_register.yaml")
     .requireArray("risks")
     .coversDimensions(["health", "safety", "fundamental_rights"]),
 });

@@ -14,7 +14,7 @@ When an enterprise customer asks for EU AI Act readiness, you don't send them a 
     PASS   ASSERT-EU-AI-ACT-009-001-01   Risk management system documentation exists
     FAIL   ASSERT-EU-AI-ACT-009-002-B-01  Risk register includes emerging risks
       -> No risk entries with source: emerging or category: misuse found.
-      -> Run: rulestatus generate risk-register
+      -> Run: rulestatus generate --framework eu-ai-act
 
   Art. 10 - Data Governance
     PASS   ASSERT-EU-AI-ACT-010-002-01   Bias examination documented
@@ -103,8 +103,8 @@ The signed bundle contains a manifest, all evidence files, and the last-run summ
 | `rulestatus run --article 9` | Run checks for a specific article |
 | `rulestatus run --severity critical` | Run only critical checks |
 | `rulestatus run --format pdf` | Output a PDF evidence readiness report |
-| `rulestatus generate [template]` | Generate a compliance artifact template |
-| `rulestatus generate --all` | Generate all 8 templates at once |
+| `rulestatus generate --framework <fw>` | Generate all templates for one framework |
+| `rulestatus generate --all` | Generate all templates for all frameworks |
 | `rulestatus explain <ASSERT-ID>` | Show legal basis, last run result, and fix guidance |
 | `rulestatus attest <file\|ASSERT-ID>` | Sign a bundle or generate a manual attestation |
 | `rulestatus bundle` | Package all compliance artifacts into an audit-ready `.tar.gz` |
@@ -114,16 +114,15 @@ The signed bundle contains a manifest, all evidence files, and the last-run summ
 
 ### Templates (`rulestatus generate`)
 
-| Template | Covers | Output path |
+Templates are auto-derived from rule definitions — adding a new rule automatically adds its fields to the relevant template. Run `--framework <fw>` to see what gets generated for your framework:
+
+| Framework | Templates generated | Key outputs |
 |---|---|---|
-| `risk-register` | Art. 9.2 | `docs/risk_register.yaml` |
-| `risk-management` | Art. 9.1–9.3 | `docs/risk-management/risk-management.yaml` |
-| `model-card` | Art. 10, 11 | `model/model_card.yaml` |
-| `data-governance` | Art. 10 | `docs/compliance/data-governance.yaml` |
-| `bias-assessment` | Art. 10.2 | `docs/bias_assessment.yaml` |
-| `technical-doc` | Art. 11 (Annex IV) | `docs/compliance/technical-documentation.yaml` |
-| `transparency-config` | Art. 13.1, 13.4 | `config/transparency.yaml` |
-| `instructions-for-use` | Art. 13.2–13.4 | `docs/compliance/instructions-for-use.yaml` |
+| `eu-ai-act` | 16 templates | `docs/risk_register.yaml`, `model/model_card.yaml`, `config/transparency.yaml`, `docs/compliance/technical-documentation.yaml`, and more |
+| `iso-42001` | ~10 templates | `docs/aims/aims-scope.yaml`, `docs/iso42001/ai-policy.yaml`, and more |
+| `nist-ai-rmf` | ~9 templates | `docs/nist-ai-rmf/govern.yaml`, `docs/nist-ai-rmf/map.yaml`, and more |
+
+Each generated file includes inline comments showing which assertion ID requires each field and what auditors look for.
 
 ---
 

@@ -98,12 +98,18 @@ export class Doc {
 export class Structured {
   readonly kind = "structured" as const;
   name: string;
+  outputPath?: string | undefined;
   reqs: FieldReq[] = [];
   arrayReqs: ArrayReq[] = [];
   private _last: FieldReq | null = null;
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  withOutputPath(path: string): this {
+    this.outputPath = path;
+    return this;
   }
 
   require(field: string): this {
@@ -173,12 +179,18 @@ export class ArrayBuilder {
 export class Config {
   readonly kind = "config" as const;
   name: string;
+  outputPath?: string | undefined;
   reqs: FieldReq[] = [];
   valueChecks: { path: string; value: unknown }[] = [];
   valueInChecks: { fields: string[]; values: readonly string[] }[] = [];
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  withOutputPath(path: string): this {
+    this.outputPath = path;
+    return this;
   }
 
   require(field: string): this {
@@ -208,6 +220,7 @@ export class Config {
 
 export class ModelCard {
   readonly kind = "model-card" as const;
+  readonly outputPath = "model/model_card.yaml";
   reqs: FieldReq[] = [];
 
   require(field: string): this {

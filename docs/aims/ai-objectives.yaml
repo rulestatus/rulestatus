@@ -1,0 +1,10 @@
+# ai-objectives — ISO/IEC 42001:2023 6.2, 10.2
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-006-002-01: AI management objectives are documented and measurable
+objectives:  # aliases accepted: aims_objectives, aiObjectives
+  - "TODO: item 1"
+  - "TODO: item 2"
+
+# ASSERT-ISO-42001-010-002-01: Continual improvement of the AIMS is planned
+continual_improvement: "TODO: ..."  # aliases accepted: improvement_plan, improvement_cycle

@@ -1,0 +1,5 @@
+# document-control — ISO/IEC 42001:2023 7.5
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-007-003-01: Document control procedure for AIMS documented information exists
+review_cycle: "TODO: ..."  # aliases accepted: review_frequency, retention_period, reviewCycle

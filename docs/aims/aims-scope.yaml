@@ -1,0 +1,16 @@
+# aims-scope — ISO/IEC 42001:2023 4.1, 4.2, 10.2
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-004-001-01: Organizational context and AIMS scope are documented
+scope: "TODO: Describe ..."  # aliases accepted: aims_scope, system_scope
+
+# ASSERT-ISO-42001-004-001-01: Organizational context and AIMS scope are documented
+organizational_context: "TODO: ..."  # aliases accepted: context
+
+# ASSERT-ISO-42001-004-002-01: Interested parties and their AI-relevant requirements are identified
+interested_parties:  # aliases accepted: interestedParties, stakeholders
+  - "TODO: item 1"
+  - "TODO: item 2"
+
+# ASSERT-ISO-42001-010-002-01: Continual improvement of the AIMS is planned
+continual_improvement: "TODO: ..."  # aliases accepted: improvement_plan, improvementPlan

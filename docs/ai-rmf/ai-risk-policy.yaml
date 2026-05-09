@@ -1,0 +1,17 @@
+# ai-risk-policy — NIST AI RMF 1.0 GOVERN 1.1, GOVERN 1.5, GOVERN 4.1, GOVERN 6.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-NIST-AIRMF-GV-001-01: AI risk management policy is documented
+scope: "TODO: Describe ..."  # aliases accepted: governance_structure
+
+# ASSERT-NIST-AIRMF-GV-001-01: AI risk management policy is documented
+risk_management_commitment: "TODO: ..."  # aliases accepted: commitment
+
+# ASSERT-NIST-AIRMF-GV-002-01: Organizational AI risk tolerance is defined
+risk_tolerance: "TODO: ..."  # aliases accepted: riskTolerance, acceptable_risk
+
+# ASSERT-NIST-AIRMF-GV-004-01: AI risk and benefits are communicated to relevant stakeholders
+communication_plan: "TODO: Describe ..."  # aliases accepted: stakeholder_communication, communicationPlan
+
+# ASSERT-NIST-AIRMF-GV-005-01: Third-party AI risk management policies are established
+third_party_policy: "TODO: Describe ..."  # aliases accepted: supply_chain_risk, vendor_risk

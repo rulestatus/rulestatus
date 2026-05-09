@@ -1,0 +1,10 @@
+# ai-roles — NIST AI RMF 1.0 GOVERN 2.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-NIST-AIRMF-GV-003-01: Roles and responsibilities for AI risk management are assigned
+roles:  # aliases accepted: responsibilities
+  - "TODO: item 1"
+  - "TODO: item 2"
+
+# ASSERT-NIST-AIRMF-GV-003-01: Roles and responsibilities for AI risk management are assigned
+accountable_person: "TODO: ..."  # aliases accepted: accountablePerson, ai_owner, responsible_party

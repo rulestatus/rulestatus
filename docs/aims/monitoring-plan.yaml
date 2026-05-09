@@ -1,0 +1,8 @@
+# monitoring-plan — ISO/IEC 42001:2023 9.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-009-001-01: Monitoring and measurement program for AIMS is documented
+metrics: "TODO: ..."  # aliases accepted: kpis, measurements
+
+# ASSERT-ISO-42001-009-001-01: Monitoring and measurement program for AIMS is documented
+measurement_frequency: "TODO: ..."  # aliases accepted: review_schedule, monitoring_cadence

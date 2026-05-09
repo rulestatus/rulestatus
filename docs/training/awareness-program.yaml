@@ -1,0 +1,5 @@
+# awareness-program — ISO/IEC 42001:2023 7.3
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-007-002-01: Awareness program for AI policy and AIMS exists
+ai_policy_awareness: "TODO: Describe ..."  # aliases accepted: policy_awareness, aims_awareness

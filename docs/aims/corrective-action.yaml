@@ -1,0 +1,5 @@
+# corrective-action — ISO/IEC 42001:2023 10.1
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-010-001-01: Nonconformity and corrective action procedure exists
+nonconformity_process: "TODO: Describe ..."  # aliases accepted: corrective_action_process, process

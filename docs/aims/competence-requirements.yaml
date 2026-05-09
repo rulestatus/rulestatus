@@ -1,0 +1,10 @@
+# competence-requirements — ISO/IEC 42001:2023 7.2
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-007-001-01: Competence requirements for AI roles are documented
+required_competencies: "TODO: ..."  # aliases accepted: competencies, requiredCompetencies
+
+# ASSERT-ISO-42001-007-001-01: Competence requirements for AI roles are documented
+roles:  # aliases accepted: ai_roles
+  - "TODO: item 1"
+  - "TODO: item 2"

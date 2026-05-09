@@ -1,0 +1,8 @@
+# audit-program — ISO/IEC 42001:2023 9.2
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-009-002-01: Internal audit program for the AIMS is established
+audit_schedule: "TODO: ..."  # aliases accepted: schedule, auditSchedule
+
+# ASSERT-ISO-42001-009-002-01: Internal audit program for the AIMS is established
+audit_scope: "TODO: ..."  # aliases accepted: scope

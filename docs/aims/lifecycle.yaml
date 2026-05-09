@@ -1,0 +1,7 @@
+# lifecycle — ISO/IEC 42001:2023 8.4
+# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+
+# ASSERT-ISO-42001-008-003-01: AI system lifecycle stages are documented
+lifecycle_stages:  # aliases accepted: development_stages, lifecycleStages
+  - "TODO: item 1"
+  - "TODO: item 2"

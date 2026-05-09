@@ -56,6 +56,24 @@ rule(
 );
 
 rule({
+  id: "ASSERT-EU-AI-ACT-013-001-02",
+  framework: "eu-ai-act",
+  article: "13.1",
+  severity: MAJOR,
+  appliesTo: { actor: "provider", riskLevel: "high-risk" },
+  title: "Transparency configuration documents AI disclosure and provider contact",
+  obligation: "OBL-EU-AI-ACT-013-001",
+  legalText:
+    "Article 13(1): operation must be sufficiently transparent; Article 13(3)(a): instructions must include provider name and address.",
+  remediation:
+    "Create config/transparency.yaml with `ai_disclosure` (enabled: true, mechanism) and `provider_contact` fields.",
+  check: config("transparency")
+    .withOutputPath("config/transparency.yaml")
+    .require("ai_disclosure")
+    .requireAny("provider_contact", "providerContact"),
+});
+
+rule({
   id: "ASSERT-EU-AI-ACT-013-002-01",
   framework: "eu-ai-act",
   article: "13.2",
