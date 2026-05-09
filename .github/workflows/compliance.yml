@@ -1,0 +1,37 @@
+name: Compliance Check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rulestatus
+        run: npm install -g rulestatus
+
+      - name: Run compliance checks
+        id: compliance
+        run: rulestatus run --format sarif,json,pdf
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: compliance-reports/
+
+      - name: Upload compliance reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compliance-reports
+          path: compliance-reports/
+          retention-days: 365

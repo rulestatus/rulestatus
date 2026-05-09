@@ -1,0 +1,76 @@
+# Risk Register — EU AI Act Article 9(2)(a)(b)(c)
+version: "1.0"
+system: "Rulestatus CLI v1.0"
+
+risks:
+  - id: RISK-001
+    dimension: health
+    source: known
+    description: >
+      Incorrect assertion (false PASS) leads a user to believe their AI system is evidence-ready
+      when it is not, resulting in a failed conformity assessment or regulatory action.
+    severity: high
+    likelihood: medium
+    mitigation: >
+      All assertions reviewed against regulation text before shipping. Legal disclaimer on every
+      output surface. Evidence-readiness language used throughout (not "compliant"). P2.6 legal
+      review credential planned.
+    status: monitored
+
+  - id: RISK-002
+    dimension: safety
+    source: known
+    description: >
+      Tool run in CI blocks a deployment pipeline incorrectly (false FAIL), delaying a
+      time-sensitive AI system release.
+    severity: medium
+    likelihood: low
+    mitigation: >
+      Severity gate is user-configurable (fail_on: critical). Users can override individual
+      assertions via manual attestation. Exit code 0 on WARN-only results.
+    status: mitigated
+
+  - id: RISK-003
+    dimension: fundamental_rights
+    source: known
+    description: >
+      Tool gives false confidence about bias assessment coverage (Art. 10.2), leading to
+      under-examined protected characteristics in the underlying AI system.
+    severity: high
+    likelihood: low
+    mitigation: >
+      Bias check verifies ≥3 protected characteristics are explicitly documented. MANUAL fallback
+      requires human attestation. Disclaimer notes evidence presence ≠ legal compliance.
+    status: monitored
+
+  - id: RISK-004
+    dimension: safety
+    source: emerging
+    category: misuse
+    description: >
+      Users treat a green rulestatus run as a "compliance certificate" and present it to
+      regulators or notified bodies without further legal review.
+    severity: high
+    likelihood: medium
+    mitigation: >
+      Hardcoded disclaimer on every output surface and in every PDF report footer.
+      Attestation JSON includes disclaimer field. README and docs site explicitly state
+      results are not legal advice and do not constitute a conformity assessment.
+    status: monitored
+
+  - id: RISK-005
+    dimension: fundamental_rights
+    source: emerging
+    description: >
+      Regulatory interpretation drift — the EU AI Act is amended or new implementing acts
+      are issued, making existing assertions incorrect without users being aware.
+    severity: high
+    likelihood: high
+    mitigation: >
+      Assertion review status tracked in export-registry output. P2.5 update command
+      will notify users of rule library changes. P4.1 amendment service planned for
+      Pro tier with fast-track updates on regulatory changes.
+    status: residual
+    residual_risk: >
+      No automated regulatory monitoring is in place yet. Users must manually check for
+      new releases. Residual until P4.1 amendment service is live.

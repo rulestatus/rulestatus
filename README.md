@@ -1,6 +1,8 @@
 # Rulestatus
 
-**ESLint for AI law.** Run `rulestatus run` in CI and get a pass/fail evidence readiness report against the EU AI Act, ISO 42001, and NIST AI RMF.
+**Find AI compliance errors before they block your enterprise deals.**
+
+When an enterprise customer asks for EU AI Act readiness, you don't send them a consultant's report — you send them a signed attestation generated from your CI pipeline.
 
 ```
   Rulestatus v1.0 — EU AI Act (2024/1689)
@@ -25,6 +27,10 @@
   Note: evidence present ≠ legally compliant. Not legal advice or a conformity assessment.
 ```
 
+Rulestatus is a CI/CD tool for AI compliance. It runs executable checks against your documentation and configuration, fails the build when required evidence is missing, and produces a signed attestation your legal and procurement teams can hand to auditors.
+
+Think of it as **"Terraform plan for AI law"** — the diff between what your system documents and what the regulation requires.
+
 > **Disclaimer:** Rulestatus checks whether required documentation and configuration is present and correctly structured. Evidence present does not constitute a legal determination of compliance. Conformity assessment for high-risk AI systems under Article 43 may require evaluation by a notified body. Treat reports as due diligence documentation, not compliance certificates.
 
 **Docs:** [rulestatus.com](https://rulestatus.com)
@@ -46,24 +52,44 @@ npm install -g rulestatus
 ## Quick start
 
 ```bash
-# 1. Create .rulestatus.yaml in your project root
-#    init scans for existing compliance artifacts and pre-fills paths
+# 1. Create .rulestatus.yaml — scans for existing compliance docs and pre-fills paths
 rulestatus init
 
-# 2. Generate only the missing compliance document templates
-#    (if you already have some docs, init tells you which ones to skip)
+# 2. Generate templates for whatever's missing
 rulestatus generate --all
 
-# 3. Fill in every TODO field in the generated files, then run
+# 3. Fill in every TODO, then run
 rulestatus run
 
 # 4. Drill into any gap
 rulestatus explain ASSERT-EU-AI-ACT-009-002-B-01
+
+# 5. Produce a signed attestation for your enterprise customer
+rulestatus attest --bundle
 ```
 
-`init` scans your repo for existing compliance artifacts (risk registers, model cards, bias assessments, etc.) before asking questions — it pre-fills evidence paths from what it finds and suggests only the `generate` commands for what's missing.
+`init` scans your repo for existing compliance artifacts (risk registers, model cards, bias assessments, etc.), pre-fills evidence paths from what it finds, and suggests only the `generate` commands for what's missing.
 
-After `init` and `generate`, your project will have the full document structure regulators and enterprise procurement teams look for. Fill in the TODOs and `rulestatus run` will turn green.
+Once `rulestatus run` passes, `rulestatus attest` produces a cryptographically signed bundle your enterprise customer or auditor can verify — no PDF email chain required.
+
+---
+
+## The attestation workflow
+
+The most valuable output Rulestatus produces isn't the console report — it's the attestation.
+
+```bash
+# Package all compliance artifacts into an audit-ready archive
+rulestatus bundle
+
+# Sign it (uses Sigstore — no key management required)
+rulestatus attest .rulestatus/acme-fraud-model-2025-01-15.tar.gz
+
+# Or generate a manual attestation for a specific check
+rulestatus attest ASSERT-EU-AI-ACT-009-001-01
+```
+
+The signed bundle contains a manifest, all evidence files, and the last-run summary with SHA-256 hashes. When a customer's security team asks for evidence, you send them the bundle URL — not a screenshot.
 
 ---
 
@@ -80,9 +106,9 @@ After `init` and `generate`, your project will have the full document structure 
 | `rulestatus generate [template]` | Generate a compliance artifact template |
 | `rulestatus generate --all` | Generate all 8 templates at once |
 | `rulestatus explain <ASSERT-ID>` | Show legal basis, last run result, and fix guidance |
-| `rulestatus report <file>` | Re-render a saved JSON results file in another format |
+| `rulestatus attest <file\|ASSERT-ID>` | Sign a bundle or generate a manual attestation |
 | `rulestatus bundle` | Package all compliance artifacts into an audit-ready `.tar.gz` |
-| `rulestatus attest <file\|ASSERT-ID>` | Sign a bundle cryptographically or generate a manual attestation |
+| `rulestatus report <file>` | Re-render a saved JSON results file in another format |
 | `rulestatus export-registry` | Export obligation + assertion YAML registry from rule definitions |
 
 ### Templates (`rulestatus generate`)
@@ -101,6 +127,8 @@ After `init` and `generate`, your project will have the full document structure 
 ---
 
 ## GitHub Actions
+
+Add this to your repo and compliance gaps show up as PR annotations — the same way linting errors do.
 
 ```yaml
 # .github/workflows/compliance.yml

@@ -222,7 +222,20 @@ The first paying user is: a seed/Series A AI startup selling into EU enterprises
 - ✓ Landing page messaging — ICP-targeted hero copy ("your enterprise customer will ask for this before signing")
 - Pricing page — deferred to P3.4b (SaaS platform track)
 
-### P3.3 — VS Code extension
+### P3.3 — Demo repo ("the sales deck repo") ✓ Done (dogfooding)
+
+A public GitHub repository that runs Rulestatus against a realistic high-risk AI system (fraud detection model) and publishes the results. The product sells itself when a prospect can fork it and see their own situation reflected.
+
+Deliverables:
+- Public repo with a realistic but fictional fraud detection model — model card, risk register, bias assessment, technical docs, all pre-filled with plausible content
+- GitHub Actions workflow running `rulestatus run --format sarif,pdf` on every push
+- SARIF output uploaded to GitHub Code Scanning (gaps visible as PR annotations)
+- PDF evidence readiness report published as a GitHub Pages artifact
+- README explaining what each gap means and how to fix it — mirrors the enterprise review conversation
+
+This is marketing infrastructure, not a code feature. It should be the first link sent to any prospect asking "can you show me what this looks like on a real project?"
+
+### P3.3b — VS Code extension
 
 Real-time compliance linting as engineers write model cards, risk registers, and configs. Surface WARN/FAIL inline with squiggles. `explain` on hover. Low effort to implement given SARIF output already works — VS Code reads SARIF natively via the `errorlens`/`sarif-viewer` ecosystem.
 
@@ -248,7 +261,24 @@ Implementation notes:
 
 Separate track from P3.4a. See Phase 4 below.
 
-### P3.5 — Open question: LegalXML standard
+### P3.5 — Framework interoperability layer
+
+EU AI Act, ISO 42001, and NIST AI RMF overlap significantly. A user running all three today sees three separate reports with redundant gaps. The interoperability layer maps assertions across frameworks and surfaces shared coverage.
+
+```
+  Art. 9 (Risk Management) — PASS
+    Also satisfies: ISO 42001 Cl. 8.2 (AI Risk Assessment), NIST MAP 2.2
+    No duplicate remediation needed.
+```
+
+Deliverables:
+- Cross-framework assertion mapping table (which assertions address the same underlying obligation)
+- `rulestatus run --all` consolidated report showing per-obligation coverage across frameworks — one gap, not three
+- Efficiency score: "Your Art. 9 evidence also satisfies 4 NIST MAP controls"
+
+This is the main argument against "framework fatigue" and makes the multi-framework value prop clear to buyers who are asked about both EU AI Act and ISO 42001 in the same security review.
+
+### P3.6 — Open question: LegalXML standard
 
 Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligation registry format or keep a custom YAML schema. Decision affects interoperability with legal tools and how legal analysts import regulation text. Needs input from whoever the first legal analyst partner is.
 
@@ -257,6 +287,22 @@ Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligat
 ## Phase 4 — SaaS Platform (post-launch)
 
 Commercial product built on top of the open-source CLI. Do not start until the CLI has ≥500 installs and ≥1 paying team — otherwise building before learning what buyers actually want.
+
+### P4.0 — Evidence ingestion connectors
+
+The `FilesystemCollector` assumes structured YAML/JSON exists in the repo. In practice, evidence lives in Confluence, Notion, Google Docs, Jira, and Slack. Until connectors exist, the tool requires engineers to manually maintain YAML files — which is fine for the ICP (engineers) but blocks expansion to compliance officer buyers.
+
+Connectors extract structured evidence fields from unstructured sources using an LLM extraction layer. Each connector maps to the same `EvidenceRegistry` interface — no changes to rules or reporters required.
+
+Priority order:
+1. Confluence — most common enterprise wiki, holds most policy documents
+2. Google Drive / Docs — common at seed/Series A
+3. Jira — for risk register and incident tracking evidence
+4. Notion — common at startups
+
+Pricing: connectors are the first natural paid feature. Free tier: filesystem only. Pro: Confluence + Google Drive. Enterprise: all connectors + custom mapping.
+
+Do not start until: CLI has ≥200 installs and at least one team has hit the "we have the docs but not in YAML" blocker in a sales conversation.
 
 ### P4.1 — Amendment service (first paid feature)
 

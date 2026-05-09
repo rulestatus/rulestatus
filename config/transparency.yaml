@@ -1,0 +1,15 @@
+# Transparency Configuration — EU AI Act Article 13
+
+ai_disclosure:
+  enabled: true
+  mechanism: >
+    Every output surface includes a mandatory disclaimer: "Evidence present does not
+    constitute a legal determination of compliance. Results are not legal advice and
+    do not constitute a conformity assessment." Displayed in console output, PDF reports,
+    JSON report disclaimer field, and attestation JSON.
+
+provider_contact:
+  name: "Rulestatus"
+  address: "Germany"
+  email: "philipp.nagel@mako365.com"
+  eu_representative: "Philipp Nagel"

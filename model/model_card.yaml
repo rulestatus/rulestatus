@@ -1,0 +1,59 @@
+# Model Card — EU AI Act Articles 10, 11
+# Satisfies: training data documentation (10.1), representativeness (10.3),
+#             model architecture (11.1), performance metrics (11.1)
+
+model_type: "Rule-based static analysis engine (no ML model)"
+model_name: "Rulestatus CLI"
+version: "1.0"
+date: "2026-05-01"
+provider: "Rulestatus (philippnagel)"
+
+intended_use: >
+  CLI tool for AI compliance teams and developers. Checks whether an AI system's
+  documentation and configuration satisfies the evidence requirements of the EU AI Act,
+  ISO/IEC 42001, and NIST AI RMF. Outputs evidence readiness reports for use in
+  internal audits and enterprise security reviews.
+
+limitations:
+  - "Checks for presence and structure of documentation — does not verify accuracy of content"
+  - "Assertion library reflects one interpretation of the regulation; not a substitute for legal advice"
+  - "FilesystemCollector only; does not ingest Confluence, Google Docs, or other unstructured sources"
+  - "Manual checks (MANUAL) require human attestation and are not auto-verifiable"
+
+# Article 10.1 — Training data documentation
+training_data:
+  sources:
+    - "No training data — rule-based system with no ML components"
+  size: "N/A"
+  time_period: "N/A"
+
+# Article 10.3 — Representativeness
+dataset_info:
+  representativeness: "N/A — no statistical model; rules are derived from regulatory text"
+  special_category_data: false
+
+# Article 11.1 — Performance metrics
+metrics:
+  precision: null
+  recall: null
+  f1: null
+  auc_roc: null
+
+model_performance:
+  benchmark: "Manual validation against EU AI Act text and sample compliance projects"
+  accuracy: null
+
+# Article 11.1 — Model architecture
+model_architecture: >
+  TypeScript CLI using a declarative builder DSL (check.ts) to encode legal obligations
+  as executable CheckNode trees. Evidence collected via FilesystemCollector, ConfigCollector,
+  ModelCardCollector, and ApiProbeCollector. Results scored with evidence strength
+  (strong/moderate/weak) and confidence levels. Output: console, SARIF, JSON, PDF, badge,
+  JUnit XML.
+
+# Article 11.2 — Applicable standards
+standards:
+  - "EU AI Act (2024/1689)"
+  - "ISO/IEC 42001:2023"
+  - "NIST AI RMF 1.0"
+  - "SARIF 2.1.0 (OASIS standard for static analysis output)"

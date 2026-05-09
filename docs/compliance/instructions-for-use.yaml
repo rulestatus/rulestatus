@@ -1,0 +1,42 @@
+# Instructions for Use — EU AI Act Article 13(2)(3)
+
+system_name: "Rulestatus CLI"
+version: "1.0"
+
+intended_purpose: >
+  Rulestatus is intended for use by AI system providers and deployers who need to assess
+  whether their documentation satisfies the evidence requirements of the EU AI Act,
+  ISO/IEC 42001, or NIST AI RMF. It is designed for use in CI/CD pipelines and by
+  compliance engineers preparing for audits or enterprise security reviews.
+
+capabilities: >
+  Runs 80 executable assertions across 3 frameworks. Detects missing or malformed compliance
+  documentation. Outputs evidence readiness reports in console, SARIF, JSON, PDF, badge,
+  and JUnit XML formats. Generates compliant document templates. Produces cryptographically
+  signed evidence bundles.
+
+known_limitations:
+  - "Checks documentation structure and presence — does not verify the accuracy of content"
+  - "Results are not legal advice and do not constitute a conformity assessment under Article 43"
+  - "Assertion library reflects one interpretation of the regulation — legal review (P2.6) pending"
+  - "Only reads files from the local filesystem — no Confluence, Google Docs, or Jira connectors"
+  - "Manual checks (MANUAL) cannot be auto-verified and require human attestation"
+
+performance_metrics:
+  accuracy: "N/A — rule-based, not statistical"
+  precision: "N/A"
+  recall: "N/A"
+
+provider_contact:
+  name: "Rulestatus"
+  address: "Germany"
+  email: "philipp.nagel@mako365.com"
+
+human_oversight_requirements: >
+  Users must review MANUAL-flagged assertions and provide explicit human attestation
+  via `rulestatus attest`. Rulestatus results should be reviewed by a qualified legal
+  professional before submission to regulators or notified bodies.
+
+deployer_support: >
+  File bugs and feature requests at https://github.com/philippnagel/rulestatus/issues.
+  Documentation at https://rulestatus.com.

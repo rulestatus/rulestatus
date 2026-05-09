@@ -1,0 +1,30 @@
+# Bias Assessment — EU AI Act Article 10(2)(f)
+# Article 10(2)(f): examination of biases likely to affect health/safety or fundamental rights
+# Minimum 3 protected characteristics required (ASSERT-EU-AI-ACT-010-002-02)
+
+system: "TODO: AI system name"
+assessment_date: "TODO: YYYY-MM-DD"
+assessor: "TODO: Name or team responsible for assessment"
+
+# Minimum 3 characteristics required; include all that are applicable
+characteristics_evaluated:
+  - gender
+  - race
+  - age
+  - disability        # TODO: remove any that are not applicable
+  - nationality       # TODO: add others: religion, ethnicity, sexual_orientation, socioeconomic_status
+
+methodology: "TODO: Describe how bias was measured (e.g. equalised odds, demographic parity, disparate impact)"
+
+findings:
+  - characteristic: gender
+    metric: "TODO: e.g. Equal opportunity difference"
+    value: 0.0          # TODO: measured value
+    threshold: 0.05     # TODO: acceptable threshold for your use case
+    status: "TODO: pass | fail | under investigation"
+    notes: "TODO: Any notes or caveats on this finding"
+
+mitigation_measures:
+  - "TODO: Describe any corrective measures applied (e.g. re-weighting, fairness constraints, data augmentation)"
+
+next_review_date: "TODO: YYYY-MM-DD"

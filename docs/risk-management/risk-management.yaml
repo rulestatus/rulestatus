@@ -1,0 +1,27 @@
+# Risk Management System — EU AI Act Article 9(1)(2)(3)
+# Must be reviewed within the last 12 months (review_date) and describe a continuous process (review_cycle)
+
+# Article 9.1 — System identification
+system_name: "TODO: Your AI system name"
+
+# Article 9.1 — Intended use (satisfies 9.1 intended_use check)
+intended_use: "TODO: Describe the intended use of this AI system"
+use_cases:
+  - "TODO: Specific use case 1"
+  - "TODO: Specific use case 2"
+
+# Article 9.1 — Identified risks (summary; see docs/risk_register.yaml for full register)
+identified_risks:
+  - "TODO: Risk category 1 — brief description"
+  - "TODO: Risk category 2 — brief description"
+
+# Article 9.1 — Mitigation measures
+mitigation_measures:
+  - "TODO: Mitigation measure 1"
+  - "TODO: Mitigation measure 2"
+
+# Article 9.1 — Review date (must be within last 12 months to pass ASSERT-EU-AI-ACT-009-001-01)
+review_date: "TODO: YYYY-MM-DD"
+
+# Article 9.3 — Continuous iterative process
+review_cycle: quarterly       # quarterly | semi-annual | annual | continuous

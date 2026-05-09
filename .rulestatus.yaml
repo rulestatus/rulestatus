@@ -1,0 +1,32 @@
+system:
+  name: Rulestatus CLI v1.0
+  actor: provider
+  risk_level: limited-risk
+  domain: developer-tools
+  intended_use: >
+    CLI tool that checks whether AI system documentation and configuration satisfies
+    the evidence requirements of the EU AI Act, ISO/IEC 42001, and NIST AI RMF.
+    Outputs evidence readiness reports for use in audits and enterprise security reviews.
+
+frameworks:
+  - eu-ai-act
+  - iso-42001
+  - nist-ai-rmf
+
+evidence:
+  docs_path: ./docs/compliance/
+  model_card: ./model/model_card.yaml
+  risk_register: ./docs/risk_register.yaml
+  config_path: ./config/
+
+reporting:
+  format:
+    - console
+    - sarif
+    - json
+  output_dir: ./compliance-reports/
+  badge: true
+
+severity_gate:
+  fail_on: critical
+  warn_on: major

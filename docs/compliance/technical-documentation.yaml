@@ -1,0 +1,88 @@
+# Technical Documentation — EU AI Act Article 11 + Annex IV
+system_name: "Rulestatus CLI"
+version: "1.0"
+date: "2026-05-01"
+
+general_description: >
+  Rulestatus is a CLI tool that runs executable evidence checks against AI system
+  documentation and configuration. It outputs pass/fail/warn/manual results per assertion,
+  mapped to specific articles of the EU AI Act, ISO/IEC 42001, and NIST AI RMF.
+  Not an AI system itself — a rule-based static analysis engine.
+
+intended_purpose: >
+  To help AI system providers and deployers determine whether their documentation satisfies
+  the evidence requirements of AI regulations, ahead of audits, enterprise security reviews,
+  or conformity assessment. Intended for use in CI/CD pipelines and by compliance engineers.
+
+development_process: >
+  Open-source TypeScript monorepo (Bun.js). Rules encoded using a declarative builder DSL
+  (check.ts). Assertions derived from regulatory text with manual review. Published to npm.
+  CI via GitHub Actions; lint via Biome; release via tagged GitHub releases.
+
+training_methodology: "N/A — no machine learning model"
+
+performance_metrics:
+  assertion_count: 80
+  frameworks_covered: 3
+  false_positive_rate: "under review (P2.2 methodology spec)"
+
+monitoring: >
+  GitHub Issues for bug reports. npm download metrics tracked. Rule review status
+  exposed via export-registry command. No automated production monitoring of assertion
+  correctness — residual risk documented in risk register (RISK-005).
+
+robustness:
+  adversarial_testing: >
+    Rule logic tested against sample compliance projects with known PASS/FAIL outcomes.
+    Edge cases (missing files, malformed YAML, empty fields) handled with graceful
+    fallback to MANUAL result rather than incorrect PASS or crash.
+  distribution_shift: "N/A — no statistical model"
+
+accuracy: null
+
+cybersecurity:
+  pen_testing: "N/A — CLI tool with no network endpoints or user data storage"
+  access_control: >
+    No authentication layer. Tool runs locally against the user's own files.
+    No data transmitted off-device unless --provider github/cosign attest is invoked.
+
+human_oversight: >
+  MANUAL results require explicit human attestation via rulestatus attest. Users must
+  fill in attestation YAML and commit it — providing identity, timestamp, and rationale.
+  No check auto-passes without evidence; ambiguous cases surface as MANUAL not PASS.
+
+limitations:
+  - "Checks documentation structure, not content accuracy"
+  - "FilesystemCollector only — no Confluence, Google Docs, or Jira connectors"
+  - "Rule interpretations not yet formally reviewed by a named law firm (P2.6 pending)"
+  - "Limited-risk classification — most Annex III checks not applicable"
+
+standards:
+  - "EU AI Act (2024/1689)"
+  - "ISO/IEC 42001:2023"
+  - "NIST AI RMF 1.0"
+  - "SARIF 2.1.0"
+  - "Apache 2.0 license"
+
+post_market: >
+  Bug reports via GitHub Issues. Rule library updates released as versioned npm packages.
+  P2.5 update command will surface new/modified/deprecated assertions on each run.
+  P4.1 amendment service will provide fast-track updates on regulatory changes.
+
+changes: "Initial version"
+
+compliance_declaration: >
+  This system has been assessed against applicable EU AI Act requirements for a
+  limited-risk AI system. Evidence-readiness documentation is maintained in this
+  repository and checked on every CI run via rulestatus itself.
+
+model_architecture: >
+  TypeScript CLI. Core: CheckNode DSL (check.ts) + Executor (executor.ts) + EvidenceRegistry.
+  Evidence collectors: FilesystemCollector, ConfigCollector, ModelCardCollector, ApiProbeCollector.
+  Reporters: ConsoleReporter, JsonReporter, SarifReporter, PdfReporter, BadgeReporter, JUnitReporter.
+  Frameworks: eu-ai-act (43 rules), iso42001 (19 rules), nistAiRmf (18 rules).
+
+capabilities: >
+  Runs 80 assertions across 3 frameworks. Outputs console, SARIF, JSON, PDF, badge, JUnit XML.
+  Blocks CI on configurable severity gate. Generates compliance document templates.
+  Produces cryptographically signed evidence bundles via Sigstore/Rekor.
