@@ -15,6 +15,109 @@ const CONTEXT_DEFAULTS: Record<
   exploring: { frameworks: ["eu-ai-act"], actor: "provider", riskLevel: "high-risk" },
 };
 
+// ── Repo scanner ──────────────────────────────────────────────────────────────
+
+interface ArtifactSpec {
+  label: string;
+  template: string;
+  paths: string[];
+  configKey?: "modelCard" | "riskRegister" | "docsPath" | "configPath";
+}
+
+const ARTIFACTS: ArtifactSpec[] = [
+  {
+    label: "Risk register",
+    template: "risk-register",
+    paths: [
+      "docs/risk_register.yaml",
+      "docs/risk_register.json",
+      "docs/risk-management/risk-management.yaml",
+    ],
+    configKey: "riskRegister",
+  },
+  {
+    label: "Model card",
+    template: "model-card",
+    paths: ["model/model_card.yaml", "model/model_card.yml", "model_card.yaml", "MODEL_CARD.md"],
+    configKey: "modelCard",
+  },
+  {
+    label: "Bias assessment",
+    template: "bias-assessment",
+    paths: ["docs/bias_assessment.yaml", "docs/compliance/bias-assessment.yaml"],
+  },
+  {
+    label: "Technical documentation",
+    template: "technical-doc",
+    paths: [
+      "docs/compliance/technical-documentation.yaml",
+      "docs/technical/technical-documentation.yaml",
+    ],
+  },
+  {
+    label: "Data governance",
+    template: "data-governance",
+    paths: ["docs/compliance/data-governance.yaml", "docs/data-governance.yaml"],
+  },
+  {
+    label: "Transparency config",
+    template: "transparency-config",
+    paths: ["config/transparency.yaml", "config/transparency.yml"],
+    configKey: "configPath",
+  },
+  {
+    label: "Instructions for use",
+    template: "instructions-for-use",
+    paths: ["docs/compliance/instructions-for-use.yaml", "docs/instructions-for-use.yaml"],
+  },
+];
+
+interface ScanResult {
+  found: Array<{ spec: ArtifactSpec; path: string }>;
+  missing: ArtifactSpec[];
+  docsPath: string;
+  configPath: string;
+  modelCard: string;
+  riskRegister: string;
+}
+
+function scanRepo(): ScanResult {
+  const found: ScanResult["found"] = [];
+  const missing: ArtifactSpec[] = [];
+
+  for (const spec of ARTIFACTS) {
+    const hit = spec.paths.find((p) => existsSync(p));
+    if (hit) {
+      found.push({ spec, path: hit });
+    } else {
+      missing.push(spec);
+    }
+  }
+
+  // Detect docs and config directories
+  const docsPath = existsSync("docs/compliance/")
+    ? "./docs/compliance/"
+    : existsSync("compliance/")
+      ? "./compliance/"
+      : "./docs/compliance/";
+
+  const configPath = existsSync("config/") ? "./config/" : "./config/";
+
+  const modelCardHit = found.find((f) => f.spec.configKey === "modelCard");
+  const riskRegisterHit = found.find((f) => f.spec.configKey === "riskRegister");
+
+  return {
+    found,
+    missing,
+    docsPath,
+    configPath,
+    modelCard: modelCardHit ? `./${modelCardHit.path}` : "./model/model_card.yaml",
+    riskRegister: riskRegisterHit ? `./${riskRegisterHit.path}` : "./docs/risk_register.yaml",
+  };
+}
+
+// ── Command ───────────────────────────────────────────────────────────────────
+
 export function cmdInit(): Command {
   return new Command("init")
     .description("Initialize a .rulestatus.yaml configuration file")
@@ -36,7 +139,23 @@ export function cmdInit(): Command {
         }
       }
 
-      // ── Context question ────────────────────────────────────────────────────
+      // ── Repo scan ─────────────────────────────────────────────────────────
+      const scan = scanRepo();
+
+      if (scan.found.length > 0) {
+        const foundLines = scan.found.map((f) => `✓  ${f.spec.label}  ${f.path}`);
+        const missingLines = scan.missing.map((s) => `·  ${s.label}`);
+        p.note(
+          [
+            ...foundLines,
+            ...(missingLines.length > 0 ? ["", "Missing:"] : []),
+            ...missingLines,
+          ].join("\n"),
+          `Found ${scan.found.length} of ${ARTIFACTS.length} compliance artifacts`,
+        );
+      }
+
+      // ── Context question ──────────────────────────────────────────────────
       const context = await p.select<Context>({
         message: "What's driving this?",
         options: [
@@ -70,7 +189,7 @@ export function cmdInit(): Command {
 
       const defaults = CONTEXT_DEFAULTS[context];
 
-      // ── System name ─────────────────────────────────────────────────────────
+      // ── System name ───────────────────────────────────────────────────────
       const name =
         opts.name ??
         (await p.text({
@@ -84,7 +203,7 @@ export function cmdInit(): Command {
         process.exit(0);
       }
 
-      // ── Actor ───────────────────────────────────────────────────────────────
+      // ── Actor ─────────────────────────────────────────────────────────────
       const actor =
         opts.actor ??
         (await p.select({
@@ -117,7 +236,7 @@ export function cmdInit(): Command {
         process.exit(0);
       }
 
-      // ── Risk level ──────────────────────────────────────────────────────────
+      // ── Risk level ────────────────────────────────────────────────────────
       const riskLevel =
         opts.riskLevel ??
         (await p.select({
@@ -152,12 +271,12 @@ export function cmdInit(): Command {
         process.exit(0);
       }
 
-      // ── Frameworks ──────────────────────────────────────────────────────────
+      // ── Frameworks ────────────────────────────────────────────────────────
       const fwList = opts.frameworks
         ? opts.frameworks.split(",").map((s: string) => s.trim())
         : defaults.frameworks;
 
-      // ── Write config ────────────────────────────────────────────────────────
+      // ── Write config — paths pre-filled from scan ─────────────────────────
       const config = {
         system: {
           name: String(name),
@@ -168,10 +287,10 @@ export function cmdInit(): Command {
         },
         frameworks: fwList,
         evidence: {
-          docs_path: "./docs/compliance/",
-          model_card: "./model/model_card.yaml",
-          risk_register: "./docs/risk_register.yaml",
-          config_path: "./config/",
+          docs_path: scan.docsPath,
+          model_card: scan.modelCard,
+          risk_register: scan.riskRegister,
+          config_path: scan.configPath,
         },
         reporting: {
           format: ["console"],
@@ -186,37 +305,54 @@ export function cmdInit(): Command {
 
       writeFileSync(".rulestatus.yaml", yaml.dump(config, { lineWidth: 100 }), "utf-8");
 
-      // ── Context-aware outro ─────────────────────────────────────────────────
+      // ── Context-aware outro ───────────────────────────────────────────────
+      const generateCmd =
+        scan.missing.length === 0
+          ? null
+          : scan.missing.length === ARTIFACTS.length
+            ? "rulestatus generate --all"
+            : `rulestatus generate ${scan.missing.map((s) => s.template).join(" ")}`;
+
       if (context === "enterprise-review") {
-        p.outro(
-          [
-            "Created .rulestatus.yaml",
-            "",
-            "Enterprise security reviews typically focus on:",
-            "  Art. 9  — risk management system and risk register",
-            "  Art. 10 — training data governance and bias assessment",
-            "  Art. 11 — technical documentation (Annex IV)",
-            "  Art. 13 — transparency and instructions for use",
-            "",
-            "Next steps:",
-            "  rulestatus generate --all   scaffold the required documents",
-            "  rulestatus run              see exactly what's missing",
-            "  rulestatus explain <ID>     get the fix for each gap",
-          ].join("\n"),
-        );
+        const lines = [
+          "Created .rulestatus.yaml",
+          ...(scan.found.length > 0
+            ? [`Evidence paths pre-filled from ${scan.found.length} existing artifact(s).`]
+            : []),
+          "",
+          "Enterprise security reviews typically focus on:",
+          "  Art. 9  — risk management system and risk register",
+          "  Art. 10 — training data governance and bias assessment",
+          "  Art. 11 — technical documentation (Annex IV)",
+          "  Art. 13 — transparency and instructions for use",
+          "",
+          "Next steps:",
+          ...(generateCmd ? [`  ${generateCmd}`] : []),
+          "  rulestatus run              see exactly what's missing",
+          "  rulestatus explain <ID>     get the fix for each gap",
+        ];
+        p.outro(lines.join("\n"));
       } else if (context === "eu-deployment") {
-        p.outro(
-          [
-            "Created .rulestatus.yaml",
-            "",
-            "For EU market deployment you need evidence across all of Articles 9–15.",
-            "Start here:",
-            "  rulestatus generate --all   scaffold all required documents",
-            "  rulestatus run              see your current evidence gaps",
-          ].join("\n"),
-        );
+        const lines = [
+          "Created .rulestatus.yaml",
+          ...(scan.found.length > 0
+            ? [`Evidence paths pre-filled from ${scan.found.length} existing artifact(s).`]
+            : []),
+          "",
+          "For EU market deployment you need evidence across all of Articles 9–15.",
+          "Start here:",
+          ...(generateCmd ? [`  ${generateCmd}`] : []),
+          "  rulestatus run              see your current evidence gaps",
+        ];
+        p.outro(lines.join("\n"));
       } else {
-        p.outro("Created .rulestatus.yaml — run `rulestatus run` to see your evidence gaps.");
+        const lines = [
+          "Created .rulestatus.yaml",
+          ...(generateCmd
+            ? [`Run \`${generateCmd}\` to scaffold the missing documents, then \`rulestatus run\`.`]
+            : ["Run `rulestatus run` to check your evidence gaps."]),
+        ];
+        p.outro(lines.join("\n"));
       }
     });
 }

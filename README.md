@@ -47,9 +47,11 @@ npm install -g rulestatus
 
 ```bash
 # 1. Create .rulestatus.yaml in your project root
+#    init scans for existing compliance artifacts and pre-fills paths
 rulestatus init
 
-# 2. Generate compliance artifact templates (fills docs/ and config/)
+# 2. Generate only the missing compliance document templates
+#    (if you already have some docs, init tells you which ones to skip)
 rulestatus generate --all
 
 # 3. Fill in every TODO field in the generated files, then run
@@ -59,7 +61,9 @@ rulestatus run
 rulestatus explain ASSERT-EU-AI-ACT-009-002-B-01
 ```
 
-After `init` and `generate --all`, your project will have the full document structure regulators and enterprise procurement teams look for. Fill in the TODOs and `rulestatus run` will turn green.
+`init` scans your repo for existing compliance artifacts (risk registers, model cards, bias assessments, etc.) before asking questions — it pre-fills evidence paths from what it finds and suggests only the `generate` commands for what's missing.
+
+After `init` and `generate`, your project will have the full document structure regulators and enterprise procurement teams look for. Fill in the TODOs and `rulestatus run` will turn green.
 
 ---
 
