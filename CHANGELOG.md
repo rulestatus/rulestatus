@@ -6,6 +6,13 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 <!-- Generated 2026-05-10 — do not edit manually. Run: bun changelog -->
 
+## [1.2.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.1.0...cli-v1.2.0) (2026-05-10)
+
+
+### Features
+
+* add npm package readme ([d60bd40](https://github.com/rulestatus/rulestatus/commit/d60bd40acd255dd8c77dd5d14475d715c4738abb))
+
 ## [1.1.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.0.0...cli-v1.1.0) (2026-05-10)
 
 
