@@ -5,6 +5,7 @@ compliance-reports/
 *.sarif
 *.pdf
 compliance-badge.svg
+!badges/compliance.svg
 .DS_Store
 bun.lockb
 repomix-output.*

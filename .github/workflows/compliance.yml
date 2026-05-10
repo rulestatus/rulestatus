@@ -9,7 +9,7 @@ jobs:
   compliance:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       security-events: write
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
 
       - name: Run compliance checks
         id: compliance
-        run: node packages/cli/dist/rulestatus.js run --format sarif,json,pdf
+        run: node packages/cli/dist/rulestatus.js run --format sarif,json,pdf,badge
         continue-on-error: true
 
       - name: Upload SARIF to GitHub Code Scanning
@@ -32,6 +32,16 @@ jobs:
         if: always() && github.event_name == 'push'
         with:
           sarif_file: compliance-reports/
+
+      - name: Commit updated badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cp compliance-reports/compliance-badge.svg badges/compliance.svg
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add badges/compliance.svg
+          git diff --cached --quiet || git commit -m "chore: update compliance badge [skip ci]"
+          git push
 
       - name: Upload compliance reports
         uses: actions/upload-artifact@v4

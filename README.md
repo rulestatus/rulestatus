@@ -1,5 +1,8 @@
 # Rulestatus
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/324d68a7-69ab-4cbc-8d25-5cf435417e38/deploy-status)](https://app.netlify.com/projects/rulestatus/deploys)
+[![Compliance](badges/compliance.svg)](https://github.com/rulestatus/rulestatus/actions/workflows/compliance.yml)
+
 **Find AI compliance errors before they block your enterprise deals.**
 
 When an enterprise customer asks for EU AI Act readiness, you don't send them a consultant's report — you send them a signed attestation generated from your CI pipeline.
@@ -268,6 +271,19 @@ High-risk AI developers and deployers under Colorado's AI Act, Sections 1702–1
 | `badge` | SVG badge for README or dashboard |
 
 ---
+
+## Contributing
+
+Commits must follow [Conventional Commits](https://www.conventionalcommits.org/) — this is enforced by CI and drives automated releases.
+
+| Prefix | Effect |
+|---|---|
+| `feat:` | Minor version bump, appears in changelog |
+| `fix:` | Patch version bump, appears in changelog |
+| `feat!:` / `fix!:` | Major version bump (breaking change) |
+| `docs:`, `chore:`, `ci:`, `test:` | No release triggered |
+
+Releases are fully automated via [release-please](https://github.com/googleapis/release-please). Merging a Release PR to `main` creates a GitHub release and publishes `@rulestatus/cli` to npm.
 
 ## License
 
