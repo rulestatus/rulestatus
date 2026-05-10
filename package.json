@@ -13,7 +13,6 @@
     "docs:dev": "bun run --cwd packages/docs dev",
     "docs:build": "bun run --cwd packages/docs build",
     "docs:preview": "bun run --cwd packages/docs preview",
-    "changelog": "bun scripts/changelog.ts",
     "validation-doc": "bun scripts/generate-validation-doc.ts",
     "outdated": "bun outdated --filter '*'"
   },
