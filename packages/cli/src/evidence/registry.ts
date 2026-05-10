@@ -3,7 +3,8 @@ import { ApiProbeCollector, type ApiResponse } from "./collectors/apiProbe.js";
 import { ConfigCollector } from "./collectors/config.js";
 import { FilesystemCollector } from "./collectors/filesystem.js";
 import { ModelCardCollector } from "./collectors/modelCard.js";
-import { redactData } from "./redact.js";
+import { DictDocument, TextDocument } from "./document.js";
+import { redactData, redactText } from "./redact.js";
 import type { Confidence, Document, EvidenceSource, FindDocumentOptions } from "./types.js";
 
 export class EvidenceRegistry {
@@ -34,10 +35,11 @@ export class EvidenceRegistry {
       if (cached?.sourcePath) this.ruleSourcePaths.push(cached.sourcePath);
       return cached;
     }
-    const result = await this.fs.findDocument(opts);
+    const raw = await this.fs.findDocument(opts);
+    const [result, redactedFields] = raw ? this.redactDocument(raw) : [null, 0];
     this.cache.set(key, result);
     if (result) {
-      this.recordDocumentSource(result);
+      this.recordDocumentSource(result, redactedFields);
       this.ruleSourcePaths.push(result.sourcePath);
     }
     return result;
@@ -62,7 +64,7 @@ export class EvidenceRegistry {
     }
 
     if (meta) {
-      const { redactedFields } = redactData(meta.data);
+      const { data, redactedFields } = redactData(meta.data);
       this.sourceMap.set(meta.filePath, {
         filePath: meta.filePath,
         sha256: meta.sha256,
@@ -70,8 +72,8 @@ export class EvidenceRegistry {
       });
       this.cachePathMap.set(key, meta.filePath);
       this.ruleSourcePaths.push(meta.filePath);
-      this.cache.set(key, meta.data);
-      return meta.data;
+      this.cache.set(key, data);
+      return data;
     }
 
     this.cache.set(key, null);
@@ -93,10 +95,11 @@ export class EvidenceRegistry {
       if (cached?.sourcePath) this.ruleSourcePaths.push(cached.sourcePath);
       return cached;
     }
-    const result = await this.mc.load();
+    const raw = await this.mc.load();
+    const [result, redactedFields] = raw ? this.redactDocument(raw) : [null, 0];
     this.cache.set(key, result);
     if (result) {
-      this.recordDocumentSource(result);
+      this.recordDocumentSource(result, redactedFields);
       this.ruleSourcePaths.push(result.sourcePath);
     }
     return result;
@@ -149,15 +152,27 @@ export class EvidenceRegistry {
 
   private readonly cachePathMap = new Map<string, string>(); // cacheKey → filePath
 
-  private recordDocumentSource(doc: Document): void {
+  private recordDocumentSource(doc: Document, redactedFields = 0): void {
     if (!doc.sha256) return;
     if (!this.sourceMap.has(doc.sourcePath)) {
       this.sourceMap.set(doc.sourcePath, {
         filePath: doc.sourcePath,
         sha256: doc.sha256,
-        redactedFields: 0,
+        redactedFields,
       });
     }
+  }
+
+  private redactDocument(doc: Document): [Document, number] {
+    if (doc instanceof DictDocument) {
+      const { data, redactedFields } = redactData(doc.raw);
+      return [new DictDocument(data, doc.sourcePath, doc.sha256), redactedFields];
+    }
+    if (doc instanceof TextDocument) {
+      const { text, redactedFields } = redactText(doc.rawText);
+      return [new TextDocument(text, doc.sourcePath, doc.sha256), redactedFields];
+    }
+    return [doc, 0];
   }
 }
 

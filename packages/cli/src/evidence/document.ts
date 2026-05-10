@@ -56,6 +56,10 @@ export class TextDocument implements Document {
     public readonly sha256?: string,
   ) {}
 
+  get rawText(): string {
+    return this.text;
+  }
+
   hasField(name: string): boolean {
     const pattern = new RegExp(
       `(?:^#{1,4}\\s*${escapeRegex(name)}|^${escapeRegex(name)}\\s*:)`,

@@ -17,6 +17,22 @@ export interface RedactResult {
   redactedFields: number;
 }
 
+export interface RedactTextResult {
+  text: string;
+  redactedFields: number;
+}
+
+export function redactText(raw: string): RedactTextResult {
+  let redactedFields = 0;
+  const text = SECRET_PATTERNS.reduce((s, pattern) => {
+    return s.replace(new RegExp(pattern.source, "g"), () => {
+      redactedFields++;
+      return "[REDACTED]";
+    });
+  }, raw);
+  return { text, redactedFields };
+}
+
 export function redactData(obj: Record<string, unknown>): RedactResult {
   let redactedFields = 0;
 
