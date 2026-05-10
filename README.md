@@ -111,6 +111,7 @@ The signed bundle contains a manifest, all evidence files, and the last-run summ
 | `rulestatus explain <ASSERT-ID>` | Show legal basis, last run result, and fix guidance |
 | `rulestatus attest <file\|ASSERT-ID>` | Sign a bundle or generate a manual attestation |
 | `rulestatus bundle` | Package all compliance artifacts into an audit-ready `.tar.gz` |
+| `rulestatus bundle --auditor` | Generate a full auditor package: PDF + JSON + attestation + evidence + SHA-256 manifest |
 | `rulestatus report <file>` | Re-render a saved JSON results file in another format |
 | `rulestatus update` | Check for a newer version of the rule library |
 | `rulestatus export-registry` | Export obligation + assertion YAML registry from rule definitions |
@@ -263,12 +264,13 @@ High-risk AI developers and deployers under Colorado's AI Act, Sections 1702–1
 
 | Format | Use |
 |---|---|
-| `console` | Default — coloured terminal output grouped by article |
-| `json` | Machine-readable results with full provenance and evidence hashes |
+| `console` | Default — coloured terminal output grouped by article, includes compliance score |
+| `json` | Machine-readable results with full provenance, evidence hashes, and score |
 | `sarif` | GitHub Code Scanning / IDE integration |
 | `junit` | JUnit-compatible XML for test reporting tools |
 | `pdf` | Evidence Readiness Report for auditors |
-| `badge` | SVG badge for README or dashboard |
+| `badge` | SVG badge showing compliance score and grade (A–F), color-coded |
+| `annotations` | GitHub Actions PR annotations (`::error`/`::warning`) + step summary markdown table |
 
 ---
 

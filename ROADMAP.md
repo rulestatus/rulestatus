@@ -4,7 +4,7 @@
 
 Core engine is functional and publicly launched. EU AI Act (44 assertions), ISO/IEC 42001 (19 assertions), NIST AI RMF (18 assertions), and Colorado AI Act / SB 24-205 (14 assertions) are encoded as executable tests. CLI commands `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry`, `export-methodology` work. Reporters: console, JSON, SARIF, PDF, badge, JUnit XML. Evidence collectors: filesystem, config, model card, API probe, manual. GitHub Action (`action.yml`) runs per-framework, uploads retained artifacts, and optionally attests via Sigstore. JSON reports include CI provenance (run ID, SHA, actor) when running in GitHub Actions. All reporters use evidence-readiness framing with legal disclaimers.
 
-Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All four frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
+Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3 complete (P3.8–P3.10 shipped 2026-05-10). All four frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
 
 SCT-0 complete (2026-05-10). SCT-1 complete (2026-05-10): all 14 AIMS files, 4 AI RMF files, 2 training files, and risk-management.yaml filled with substantive content. SCT-2.1–2.4 complete (2026-05-10). Self-compliance run on this repo: **37/37 PASS** (ISO 42001 + NIST AI RMF; EU AI Act skipped — system is `limited-risk`). Remaining SCT open items: SCT-0.5 (legal counsel engagement), SCT-1.5 (assertion validation methodology doc), SCT-1.6 (legal review of assertion library), SCT-2.5 (formal audit dry run), SCT-3 (assurance track). P2.2 `review-process.md` written. Bug fixed: `FilesystemCollector.findDocument` now prefers files whose stem matches the document category, preventing wrong files from being evaluated when multiple documents share the same search paths.
 
@@ -371,11 +371,11 @@ Deliverables:
 
 Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligation registry format or keep a custom YAML schema. Decision affects interoperability with legal tools and how legal analysts import regulation text. Needs input from whoever the first legal analyst partner is.
 
-### P3.8 — GitHub PR annotation reporter
+### P3.8 — GitHub PR annotation reporter ✓ Done
 
 Post rule failures directly into GitHub PR review comments, the same way Snyk and SonarQube do. When a developer opens a PR that introduces a compliance gap (e.g. removes a required field from a model card), the PR is annotated with the failure inline — no SARIF viewer needed, no separate report to open.
 
-Implementation: SARIF output already works and GitHub Code Scanning reads it on push. The gap is PR-level feedback. GitHub Actions supports `::error file=...,line=...,col=...::message` workflow commands that surface as PR annotations. A new `annotations` reporter writes these commands to stdout when running in GitHub Actions on a pull_request event. `action.yml` updated to opt-in via an `annotate-pr` input (default `true`).
+`src/reporters/annotations.ts` added. `AnnotationsReporter` emits `::error`/`::warning` GitHub Actions workflow commands to stdout for each FAIL/WARN result — these surface as annotations in the PR Checks tab. Also writes a markdown summary table (score, per-rule status, finding) to `$GITHUB_STEP_SUMMARY` for the rich per-check report view. `action.yml` gains an `annotate-pr` input (default `true`) that appends `annotations` to the format list when enabled. Registered as `--format annotations` in `cmdRun`. Safe in non-Actions runs: workflow commands are ignored as plain text and the summary write is skipped when `$GITHUB_STEP_SUMMARY` is unset.
 
 Why this matters for GTM: every engineer who sees a compliance failure inline in their PR becomes an internal advocate. Viral adoption within a team without any sales motion.
 

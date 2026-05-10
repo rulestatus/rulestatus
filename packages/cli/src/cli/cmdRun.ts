@@ -6,6 +6,7 @@ import { Engine } from "../core/engine.js";
 import type { RunReport } from "../core/result.js";
 import { exitCode } from "../core/result.js";
 import type { SeverityLevel } from "../core/severity.js";
+import { AnnotationsReporter } from "../reporters/annotations.js";
 import { BadgeReporter } from "../reporters/badge.js";
 import { ConsoleReporter } from "../reporters/console.js";
 import { JsonReporter } from "../reporters/json.js";
@@ -95,6 +96,8 @@ async function dispatchReporters(
       await new PdfReporter().render(report, `${resolved}/${fw}-${dateStr}.pdf`);
     } else if (fmt === "badge") {
       await new BadgeReporter().render(report, `${resolved}/compliance-badge.svg`);
+    } else if (fmt === "annotations") {
+      await new AnnotationsReporter().render(report);
     }
   }
 

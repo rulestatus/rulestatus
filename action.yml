@@ -15,9 +15,13 @@ inputs:
     required: false
     default: "critical"
   report-format:
-    description: "Output format(s): console, json, sarif, pdf, badge, junit"
+    description: "Output format(s): console, json, sarif, pdf, badge, junit, annotations"
     required: false
     default: "sarif"
+  annotate-pr:
+    description: "Post rule failures as PR annotations and step summary (::error/::warning workflow commands)"
+    required: false
+    default: "true"
   config-path:
     description: "Path to .rulestatus.yaml config file"
     required: false
@@ -69,7 +73,12 @@ runs:
       id: run
       shell: bash
       run: |
-        BASE_ARGS="--format ${{ inputs.report-format }} --output ${{ inputs.output-dir }}"
+        FORMATS="${{ inputs.report-format }}"
+        if [ "${{ inputs.annotate-pr }}" == "true" ]; then
+          FORMATS="${FORMATS},annotations"
+        fi
+
+        BASE_ARGS="--format ${FORMATS} --output ${{ inputs.output-dir }}"
 
         if [ -n "${{ inputs.config-path }}" ]; then
           BASE_ARGS="$BASE_ARGS --config ${{ inputs.config-path }}"
