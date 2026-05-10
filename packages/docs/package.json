@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "generate": "bun scripts/generate-docs.ts",
-    "dev": "bun scripts/generate-docs.ts && astro dev",
-    "build": "bun scripts/generate-docs.ts && rm -rf .astro && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "bun scripts/generate-docs.ts && bunx astro dev",
+    "build": "bun scripts/generate-docs.ts && rm -rf .astro && bunx astro build",
+    "preview": "bunx astro preview",
+    "astro": "bunx astro"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.34.0",

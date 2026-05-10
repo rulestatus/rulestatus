@@ -27,6 +27,12 @@ export class JsonReporter implements Reporter {
         generatedAt: new Date().toISOString(),
         disclaimer:
           "This report documents automated evidence scanning results. Evidence present does not constitute a legal determination of compliance with the EU AI Act. Not legal advice. Not a conformity assessment.",
+        regulatoryBaselines: Object.entries(report.frameworkBaselines).map(([fw, b]) => ({
+          framework: fw,
+          citation: b.citation,
+          publishedDate: b.publishedDate,
+          note: "No implementing acts incorporated.",
+        })),
       },
       ...(ci ? { ci } : {}),
       framework: report.framework,

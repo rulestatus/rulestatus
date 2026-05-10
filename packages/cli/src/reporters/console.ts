@@ -65,6 +65,13 @@ export class ConsoleReporter implements Reporter {
     } else {
       console.log(chalk.bold.green("  All evidence items found ✓"));
     }
+    for (const [fw, baseline] of Object.entries(report.frameworkBaselines)) {
+      console.log(
+        chalk.dim(
+          `  ${FRAMEWORK_LABEL[fw] ?? fw}: assertions based on ${baseline.citation} as published ${baseline.publishedDate}. No implementing acts incorporated.`,
+        ),
+      );
+    }
     console.log(
       chalk.dim(
         "  Note: evidence present ≠ legally compliant. Not legal advice or a conformity assessment.",

@@ -38,6 +38,30 @@ export const FRAMEWORK_LABEL: Record<string, string> = {
   "colorado-sb24-205": "Colorado SB 24-205",
 };
 
+export interface FrameworkBaseline {
+  citation: string;
+  publishedDate: string;
+}
+
+export const FRAMEWORK_BASELINES: Record<string, FrameworkBaseline> = {
+  "eu-ai-act": {
+    citation: "EU AI Act (Regulation 2024/1689/EU)",
+    publishedDate: "2024-08-01",
+  },
+  "iso-42001": {
+    citation: "ISO/IEC 42001:2023",
+    publishedDate: "2023-12-01",
+  },
+  "nist-ai-rmf": {
+    citation: "NIST AI RMF 1.0",
+    publishedDate: "2023-01-26",
+  },
+  "colorado-sb24-205": {
+    citation: "Colorado SB 24-205",
+    publishedDate: "2024-05-17",
+  },
+};
+
 export const RULE_REGISTRY: RuleMeta[] = [];
 
 /**

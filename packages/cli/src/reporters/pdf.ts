@@ -60,6 +60,19 @@ export class PdfReporter implements Reporter {
         )
         .moveDown(1.5);
 
+      // Regulatory currency notice
+      const baselineLines = Object.values(report.frameworkBaselines)
+        .map(
+          (b) =>
+            `${b.citation} (published ${b.publishedDate}) — no implementing acts incorporated.`,
+        )
+        .join(" | ");
+      doc
+        .fontSize(8)
+        .fillColor("#555")
+        .text(`Regulatory baselines: ${baselineLines}`, { align: "center" })
+        .moveDown(0.5);
+
       // Disclaimer box
       doc
         .fontSize(8.5)

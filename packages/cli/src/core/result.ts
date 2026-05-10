@@ -1,4 +1,5 @@
 import type { Confidence, EvidenceSource } from "../evidence/types.js";
+import type { FrameworkBaseline } from "./rule.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
 
 export type RuleStatus = "PASS" | "FAIL" | "WARN" | "SKIP" | "MANUAL" | "ATTESTED";
@@ -29,6 +30,7 @@ export interface RunReport {
   startedAt: Date;
   finishedAt: Date;
   results: RuleResult[];
+  frameworkBaselines: Record<string, FrameworkBaseline>;
 }
 
 export function passed(report: RunReport): RuleResult[] {

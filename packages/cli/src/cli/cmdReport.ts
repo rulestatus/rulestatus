@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { Command } from "commander";
 import type { RunReport } from "../core/result.js";
+import { FRAMEWORK_BASELINES } from "../core/rule.js";
 import { BadgeReporter } from "../reporters/badge.js";
 import { ConsoleReporter } from "../reporters/console.js";
 import { JunitReporter } from "../reporters/junit.js";
@@ -69,6 +70,11 @@ function deserializeReport(data: unknown): RunReport {
       : [],
   }));
 
+  const frameworks = [...new Set(results.map((r) => r.framework))];
+  const frameworkBaselines = Object.fromEntries(
+    frameworks.flatMap((fw) => (FRAMEWORK_BASELINES[fw] ? [[fw, FRAMEWORK_BASELINES[fw]]] : [])),
+  );
+
   return {
     systemName: String(sys?.name ?? "Unknown"),
     actor: String(sys?.actor ?? "provider"),
@@ -77,5 +83,6 @@ function deserializeReport(data: unknown): RunReport {
     startedAt: new Date(),
     finishedAt: new Date(),
     results,
+    frameworkBaselines,
   };
 }

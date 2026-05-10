@@ -8,6 +8,8 @@ Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framewo
 
 SCT-0 items 0.1–0.4 complete (2026-05-10). Self-compliance run on this repo: **37/37 PASS** (ISO 42001 + NIST AI RMF; EU AI Act skipped — system is `limited-risk`). P2.2 `review-process.md` written. Bug fixed: `FilesystemCollector.findDocument` now prefers files whose stem matches the document category, preventing wrong files from being evaluated when multiple documents share the same search paths.
 
+SCT-2.2 complete (2026-05-10): regulatory currency disclaimer on all output surfaces (console, JSON, SARIF, PDF). `FRAMEWORK_BASELINES` in `rule.ts` is the single source of truth — new frameworks automatically inherit the disclaimer. SCT-2.1 partial: `CHANGELOG.md` auto-generation via `bun changelog` (scripts/changelog.ts) + regulatory baselines in `FRAMEWORK_BASELINES` complete; outstanding: documented process for tracking implementing acts as published. CI: commitlint workflow added (`.github/workflows/commitlint.yml`) — enforces conventional commits on all PRs via `wagoid/commitlint-github-action`. Two CI bugs fixed: `--format sarif,json,pdf` now parsed correctly (comma-split normalization in `cmdRun.ts`); SARIF upload gated to `push` events only (PR context lacks `security-events: write`).
+
 **What is already audit-grade (not gaps):**
 - Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
 - System boundary declaration: `.rulestatus.yaml` requires `name`, `actor`, `riskLevel`, `domain`, `intendedUse`. Engine filters rules by actor and risk level.
@@ -208,8 +210,8 @@ Release criteria (all must pass before external release):
 
 ### SCT-2 — Operationalization (Week 7–10)
 
-- [ ] **SCT-2.1** — Implement interpretation versioning — document regulatory baseline versions (EU AI Act 2024/1689 as published 2024-08-01, ISO/IEC 42001:2023, NIST AI RMF 1.0 January 2023), establish changelog linking assertion changes to regulatory amendments, track implementing acts as they are published.
-- [ ] **SCT-2.2** — Add regulatory currency disclaimer to all output surfaces — "Assertions based on [framework] as published [date]. No implementing acts incorporated as of version [X]."
+- [ ] **SCT-2.1** — Implement interpretation versioning — ~~regulatory baseline versions~~ done via `FRAMEWORK_BASELINES`; ~~changelog~~ done via `bun changelog`; remaining: documented process for tracking implementing acts as they are published (a short `docs/methodology/regulatory-monitoring.md`).
+- [x] **SCT-2.2** — Add regulatory currency disclaimer to all output surfaces — console, JSON (`meta.regulatoryBaselines`), SARIF (`runs[].properties.regulatoryBaselines`), PDF (cover page). Driven from `FRAMEWORK_BASELINES` in `rule.ts`. ✓ Done 2026-05-10
 - [ ] **SCT-2.3** — Complete management review cycle documentation — first management review meeting, decisions recorded in `docs/aims/management-review.yaml`.
 - [ ] **SCT-2.4** — Establish corrective action workflow — document nonconformity process, link to GitHub Issues for tracking.
 - [ ] **SCT-2.5** — Internal audit dry run — run full self-assessment, document findings, close gaps.

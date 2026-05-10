@@ -74,6 +74,12 @@ export class SarifReporter implements Reporter {
             system: report.systemName,
             actor: report.actor,
             riskLevel: report.riskLevel,
+            regulatoryBaselines: Object.entries(report.frameworkBaselines).map(([fw, b]) => ({
+              framework: fw,
+              citation: b.citation,
+              publishedDate: b.publishedDate,
+              note: "No implementing acts incorporated.",
+            })),
           },
         },
       ],

@@ -5,7 +5,7 @@ import { SystemContext } from "./context.js";
 import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
 import { executeCheck } from "./executor.js";
 import type { RuleResult, RunReport } from "./result.js";
-import { RULE_REGISTRY, type RuleMeta } from "./rule.js";
+import { FRAMEWORK_BASELINES, RULE_REGISTRY, type RuleMeta } from "./rule.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
 
 export interface RunOptions {
@@ -77,6 +77,11 @@ export class Engine {
       results.push(await this.execute(rule));
     }
 
+    const frameworks = [...new Set(results.map((r) => r.framework))];
+    const frameworkBaselines = Object.fromEntries(
+      frameworks.flatMap((fw) => (FRAMEWORK_BASELINES[fw] ? [[fw, FRAMEWORK_BASELINES[fw]]] : [])),
+    );
+
     return {
       systemName: this.config.system.name,
       actor: this.config.system.actor,
@@ -85,6 +90,7 @@ export class Engine {
       startedAt,
       finishedAt: new Date(),
       results,
+      frameworkBaselines,
     };
   }
 
