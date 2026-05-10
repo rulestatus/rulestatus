@@ -379,19 +379,11 @@ Implementation: SARIF output already works and GitHub Code Scanning reads it on 
 
 Why this matters for GTM: every engineer who sees a compliance failure inline in their PR becomes an internal advocate. Viral adoption within a team without any sales motion.
 
-### P3.9 — Auditor ZIP package
+### P3.9 — Auditor ZIP package ✓ Done
 
-`rulestatus bundle --auditor` produces a single ZIP file containing everything a Big 4 auditor needs:
+`rulestatus bundle --auditor` produces a single tar.gz containing everything a Big 4 auditor needs. Runs the engine fresh, generates `reports/summary.pdf` + `reports/results.json`, collects all source evidence files, and packages them with `attestation.json` (SHA-256 of every included file), `manifest.json` (file listing + sizes + hashes), and `README.txt` (structure, integrity verification instructions, legal notice). Prints SHA-256 of the final archive to stdout. `--provider github|cosign|none` controls Sigstore signing; auto-selects `github` in GitHub Actions. Extends existing `cmdBundle` — plain `rulestatus bundle` unchanged.
 
-- PDF executive summary (from `PdfReporter`)
-- Full JSON evidence log with per-rule evidence sources and SHA-256 hashes
-- Cryptographic attestation (`<bundle>.attestation.json`)
-- SHA-256 manifest of all source evidence files
-- `README.txt` explaining the package structure and how to verify integrity
-
-Value proposition: "When your auditor asks for proof of AI compliance, run one command. Hand them the ZIP. Cuts audit prep from 3 weeks to 5 minutes."
-
-Builds on existing `cmdBundle` (`P2.1`) and `cmdAttest` (`P2.8`). New `--auditor` flag orchestrates the full pipeline: run → bundle → attest → zip. No new evidence collection logic needed.
+Value proposition: "When your auditor asks for proof of AI compliance, run one command. Hand them the archive. Cuts audit prep from 3 weeks to 5 minutes."
 
 ### P3.10 — Rulestatus Score ✓ Done
 
