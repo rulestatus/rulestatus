@@ -371,6 +371,40 @@ Deliverables:
 
 Raised in PRD §4 Stage 1. Whether to adopt LegalXML/Akoma Ntoso for the obligation registry format or keep a custom YAML schema. Decision affects interoperability with legal tools and how legal analysts import regulation text. Needs input from whoever the first legal analyst partner is.
 
+### P3.8 — GitHub PR annotation reporter
+
+Post rule failures directly into GitHub PR review comments, the same way Snyk and SonarQube do. When a developer opens a PR that introduces a compliance gap (e.g. removes a required field from a model card), the PR is annotated with the failure inline — no SARIF viewer needed, no separate report to open.
+
+Implementation: SARIF output already works and GitHub Code Scanning reads it on push. The gap is PR-level feedback. GitHub Actions supports `::error file=...,line=...,col=...::message` workflow commands that surface as PR annotations. A new `annotations` reporter writes these commands to stdout when running in GitHub Actions on a pull_request event. `action.yml` updated to opt-in via an `annotate-pr` input (default `true`).
+
+Why this matters for GTM: every engineer who sees a compliance failure inline in their PR becomes an internal advocate. Viral adoption within a team without any sales motion.
+
+### P3.9 — Auditor ZIP package
+
+`rulestatus bundle --auditor` produces a single ZIP file containing everything a Big 4 auditor needs:
+
+- PDF executive summary (from `PdfReporter`)
+- Full JSON evidence log with per-rule evidence sources and SHA-256 hashes
+- Cryptographic attestation (`<bundle>.attestation.json`)
+- SHA-256 manifest of all source evidence files
+- `README.txt` explaining the package structure and how to verify integrity
+
+Value proposition: "When your auditor asks for proof of AI compliance, run one command. Hand them the ZIP. Cuts audit prep from 3 weeks to 5 minutes."
+
+Builds on existing `cmdBundle` (`P2.1`) and `cmdAttest` (`P2.8`). New `--auditor` flag orchestrates the full pipeline: run → bundle → attest → zip. No new evidence collection logic needed.
+
+### P3.10 — Rulestatus Score
+
+`rulestatus run --score` appends a single compliance score to the run output:
+
+```
+Rulestatus Score: 84 / 100   Grade: B
+```
+
+Scoring: start at 100, deduct points by severity × weight (CRITICAL −10, MAJOR −5, MINOR −2, INFO −0). Normalize to 0–100. Letter grades: A ≥90, B ≥80, C ≥70, D ≥60, F <60. Score included in JSON report and badge SVG.
+
+Why this matters: companies put the score in their README and marketing materials ("Rulestatus Score: 91/100"). Once public scores exist, no team will switch to a competitor if it lowers their number. Creates lock-in through public commitment. Also the entry point for P4.6 (industry percentile benchmarking).
+
 ---
 
 ## Phase 4 — SaaS Platform (post-launch)
