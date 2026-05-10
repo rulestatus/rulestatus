@@ -1,12 +1,173 @@
-# ai-risk-assessment — ISO/IEC 42001:2023 8.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ai-risk-assessment — ISO/IEC 42001:2023 8.2 + NIST AI RMF MAP 5.1 / MANAGE 1.1–1.3
+# Satisfies: ASSERT-ISO-42001-008-001-01, ASSERT-NIST-AIRMF-MP-004-01,
+#            ASSERT-NIST-AIRMF-MG-001-01, ASSERT-NIST-AIRMF-MG-002-01
+# System: Rulestatus CLI v1.0
+# Last reviewed: 2026-05-10
 
-# ASSERT-ISO-42001-008-001-01: AI risk assessment process is documented
-risk_criteria:  # aliases accepted: assessment_methodology, riskCriteria
-  - "TODO: item 1"
-  - "TODO: item 2"
+system: "Rulestatus CLI v1.0"
+last_reviewed: "2026-05-10"
+reviewer: "Philipp Nagel, Founder"
 
-# ASSERT-ISO-42001-008-001-01: AI risk assessment process is documented
-identified_risks:  # aliases accepted: risks
-  - "TODO: item 1"
-  - "TODO: item 2"
+# ISO 42001 Clause 8.2 — Risk assessment criteria
+risk_criteria:
+  - "Probability of occurrence (Rare / Unlikely / Possible / Likely / Almost Certain)"
+  - "Severity of impact (Negligible / Minor / Moderate / Major / Critical)"
+  - "Risk level = Probability × Severity (scored 1–25)"
+  - "Threshold for treatment: risks scoring ≥ 10 require active treatment"
+
+# NIST AI RMF MAP 5.1 — Likelihood and impact assessment
+likelihood: "scored 1 (rare) to 5 (almost certain) per risk entry"
+impact: "scored 1 (negligible) to 5 (critical) per risk entry"
+
+# Identified risks with likelihood/impact scores
+identified_risks:
+  - id: RISK-001
+    category: legal
+    description: >
+      Class action or regulatory action arising from customers using Rulestatus output
+      as sole compliance evidence without independent legal review.
+    likelihood: 2
+    impact: 5
+    risk_level: 10
+    treatment: mitigate
+
+  - id: RISK-002
+    category: operational
+    description: >
+      Assertion coding errors — an assertion encodes the wrong interpretation of a
+      regulation, causing users to believe they are compliant when they are not.
+    likelihood: 3
+    impact: 4
+    risk_level: 12
+    treatment: mitigate
+
+  - id: RISK-003
+    category: security
+    description: >
+      Supply chain attack via npm — a compromised dependency is included in the
+      published package and exfiltrates user documents.
+    likelihood: 2
+    impact: 5
+    risk_level: 10
+    treatment: mitigate
+
+  - id: RISK-004
+    category: privacy
+    description: >
+      PII exposure in logs — a user runs rulestatus against a document containing PII
+      and the CLI writes it to stderr/stdout in a CI environment where logs are retained.
+    likelihood: 2
+    impact: 3
+    risk_level: 6
+    treatment: mitigate
+
+  - id: RISK-005
+    category: financial
+    description: >
+      Regulatory fine for capability misrepresentation — marketing implies Rulestatus
+      provides legal compliance certification, resulting in an enforcement action.
+    likelihood: 1
+    impact: 5
+    risk_level: 5
+    treatment: mitigate
+
+  - id: RISK-006
+    category: reputational
+    description: >
+      Public exposure of incomplete self-compliance documentation — Rulestatus's own
+      compliance docs are discovered to be incomplete, undermining product credibility.
+    likelihood: 3
+    impact: 4
+    risk_level: 12
+    treatment: mitigate
+
+  - id: RISK-007
+    category: technical
+    description: >
+      Regulatory interpretation breaking changes — an implementing act changes the
+      interpretation of an article in a way that makes existing assertions incorrect,
+      with no versioning to flag affected users.
+    likelihood: 3
+    impact: 3
+    risk_level: 9
+    treatment: mitigate
+
+# NIST AI RMF MANAGE 1.1 — Treatment decisions
+treatment_plan:
+  - risk_id: RISK-001
+    decision: mitigate
+    measure: "Mandatory disclaimer on all output surfaces; prohibited-uses.yaml; review-process.md distinguishes evidence check from legal certification"
+    owner: "Philipp Nagel"
+    target_date: "2026-06-01"
+
+  - risk_id: RISK-002
+    decision: mitigate
+    measure: "External legal counsel review of all assertions (SCT-0.5, P2.6); peer review requirement before any assertion ships; review_status field in registry"
+    owner: "Philipp Nagel"
+    target_date: "2026-07-01"
+
+  - risk_id: RISK-003
+    decision: mitigate
+    measure: "bun audit on every release; GitHub Dependabot alerts; pinned dependency versions; npm provenance attestation via Sigstore"
+    owner: "Philipp Nagel"
+    target_date: "2026-05-31"
+
+  - risk_id: RISK-004
+    decision: mitigate
+    measure: "Secrets/PII redaction in evidence collectors (P2.11 — shipped); redactedFields count in audit trail"
+    owner: "Philipp Nagel"
+    target_date: "2026-05-10"
+    status: complete
+
+  - risk_id: RISK-005
+    decision: mitigate
+    measure: "Marketing copy review against prohibited-uses.yaml; evidence-readiness framing (not compliance certification) enforced across all output surfaces"
+    owner: "Philipp Nagel"
+    target_date: "2026-06-01"
+
+  - risk_id: RISK-006
+    decision: mitigate
+    measure: "SCT self-compliance track — all gaps in own docs closed before external release; rulestatus run on this repo in CI"
+    owner: "Philipp Nagel"
+    target_date: "2026-07-01"
+
+  - risk_id: RISK-007
+    decision: mitigate
+    measure: "SCT-2.1 interpretation versioning; regulatory baseline versions documented; changelog linking assertion changes to regulatory amendments"
+    owner: "Philipp Nagel"
+    target_date: "2026-07-31"
+
+# NIST AI RMF MANAGE 1.3 — Residual risks after treatment
+residual_risks:
+  - risk_id: RISK-001
+    residual_description: >
+      Even with disclaimers, some users may ignore them. The residual risk of misuse
+      cannot be fully eliminated through documentation alone. Accepted: the disclaimer
+      is the industry standard for compliance tooling; legal counsel engagement (P2.6)
+      further reduces this risk.
+    residual_likelihood: 1
+    residual_impact: 5
+    residual_level: 5
+    accepted_by: "Philipp Nagel"
+    accepted_date: "2026-05-10"
+
+  - risk_id: RISK-002
+    residual_description: >
+      Legal analyst review reduces but does not eliminate interpretation errors; regulation
+      evolves through implementing acts. Residual risk accepted pending first external
+      legal review cycle.
+    residual_likelihood: 2
+    residual_impact: 3
+    residual_level: 6
+    accepted_by: "Philipp Nagel"
+    accepted_date: "2026-05-10"
+
+  - risk_id: RISK-003
+    residual_description: >
+      Supply chain attacks are industry-wide risks. Mitigation (audit + Dependabot + pinning)
+      reduces but does not eliminate the risk.
+    residual_likelihood: 1
+    residual_impact: 5
+    residual_level: 5
+    accepted_by: "Philipp Nagel"
+    accepted_date: "2026-05-10"

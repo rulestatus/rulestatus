@@ -6,6 +6,8 @@ Core engine is functional and publicly launched. EU AI Act (44 assertions), ISO/
 
 Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All four frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
 
+SCT-0 items 0.1–0.4 complete (2026-05-10). Self-compliance run on this repo: **37/37 PASS** (ISO 42001 + NIST AI RMF; EU AI Act skipped — system is `limited-risk`). P2.2 `review-process.md` written. Bug fixed: `FilesystemCollector.findDocument` now prefers files whose stem matches the document category, preventing wrong files from being evaluated when multiple documents share the same search paths.
+
 **What is already audit-grade (not gaps):**
 - Evidence hashing + attestation: `rulestatus attest` computes SHA-256, writes `.sha256` + `.attestation.json`, and optionally submits to Sigstore/Rekor via `gh attestation create` or `cosign`. Immutable, OIDC-backed.
 - System boundary declaration: `.rulestatus.yaml` requires `name`, `actor`, `riskLevel`, `domain`, `intendedUse`. Engine filters rules by actor and risk level.
@@ -76,20 +78,11 @@ Focus: make the tool produce output auditors actually accept as evidence.
 
 `rulestatus bundle` packages all compliance artifacts into a `.tar.gz` archive using Bun's native gzip (no external deps). Output: `manifest.json` + evidence files snapshot + last-run summary. Default output: `.rulestatus/<system-name>-<timestamp>.tar.gz`.
 
-### P2.2 — Obligation → Assertion Methodology ✓ Traceability auto-generated; process doc pending
+### P2.2 — Obligation → Assertion Methodology ✓ Done
 
 `rulestatus export-methodology` generates `docs/methodology/assertion-traceability.md` from the assertion DSL. The document traces every obligation through to its encoded check in plain English — legal basis → assertion ID → evidence check (what files, what fields, in what order) → remediation path. Covers all 95 assertions across 4 frameworks. Includes: coverage summary table, per-assertion metadata + evidence check rendered as prose, obligation → assertion traceability matrix, cross-framework cluster map, and statistics.
 
-The traceability portion (the artifact a legal reviewer needs) is now auto-generated and always in sync with rule source. Still required manually:
-
-- Who the legal analysts are and what qualifies them
-- How long one article takes end-to-end
-- How ambiguity is resolved and by whom
-- What makes an assertion "auditor-grade" vs best-effort
-- How disagreements between analysts are handled
-- Peer review requirement before any assertion ships
-
-These process questions need to be answered once in `docs/methodology/review-process.md` and won't change often. The traceability doc gives a legal reviewer a concrete artifact to mark up rather than a blank page.
+The traceability portion (the artifact a legal reviewer needs) is now auto-generated and always in sync with rule source. `docs/methodology/review-process.md` covers: analyst qualifications, time per article, ambiguity resolution process, auditor-grade criteria checklist, disagreement handling, peer review requirement, and ongoing maintenance process.
 
 ### P2.3 — Separate obligation and assertion registries from code ✓ Done (superseded by P2.12 + P2.13)
 
@@ -178,10 +171,10 @@ Release criteria (all must pass before external release):
 
 ### SCT-0 — Immediate (Week 1–2)
 
-- [ ] **SCT-0.1** — Complete `docs/compliance/prohibited-uses.yaml` — must document at minimum: tool output ≠ legal certification; not a substitute for notified body evaluation under Art. 43; not a gate for high-risk AI deployment without human legal review; not sole compliance evidence for regulatory submissions. (P0)
-- [ ] **SCT-0.2** — Complete `docs/compliance/data-governance.yaml` — document that no ML training data exists (rule-based engine), enumerate regulatory text sources (EU AI Act 2024/1689, ISO/IEC 42001:2023, NIST AI RMF 1.0), list synthetic test fixtures, document data minimisation (no collection or transmission except via opt-in `--provider` flags). (P0)
-- [ ] **SCT-0.3** — Complete `docs/bias_assessment.yaml` — document methodology for evaluating potential bias in assertion logic, assess whether rule phrasing creates systematic documentation gaps, evaluate template representation of protected characteristics. Conclusion of "not applicable" is acceptable with documented rationale. (P0)
-- [ ] **SCT-0.4** — Assign governance roles in `docs/aims/aims-roles.yaml` — define accountable persons for AI policy owner, compliance lead, risk owner. Cannot remain TODO if the product is marketed to help others achieve ISO 42001 Clause 5.3. (P0)
+- [x] **SCT-0.1** — Complete `docs/compliance/prohibited-uses.yaml` — 7 prohibited uses documented with rationale: no legal certification, no substitute for notified body, no deployment gate without legal review, no regulatory submission evidence, no misrepresentation as third-party cert, no cross-system scope, no cover for prohibited systems. ✓ Done 2026-05-10
+- [x] **SCT-0.2** — Complete `docs/compliance/data-governance.yaml` — no ML training data (rule-based engine); 4 regulatory text sources enumerated; synthetic test fixtures documented; data minimisation: all processing local, 3 opt-in-only external calls (API probe, Sigstore hash, npm version check). ✓ Done 2026-05-10
+- [x] **SCT-0.3** — Complete `docs/bias_assessment.yaml` — assertion-level bias assessment across 5 characteristics (org size, jurisdiction, sector, language, technical maturity); all pass; `group_metrics` added per NIST AI RMF MEASURE 2.3. ✓ Done 2026-05-10
+- [x] **SCT-0.4** — Assign governance roles in `docs/aims/aims-roles.yaml` — AI Policy Owner, Compliance Lead, Risk Owner, Security Responsible all assigned to Philipp Nagel; EU AI Act Legal Counsel slot marked pending (SCT-0.5). Self-compliance run: 37/37 PASS. ✓ Done 2026-05-10
 - [ ] **SCT-0.5** — Engage EU AI Act-specialized legal counsel — signed engagement letter; name and firm documented in `docs/aims/aims-roles.yaml`; scope covers EU AI Act assertion library review. Feeds P2.6. (P0)
 
 ### SCT-1 — Foundation (Week 3–6)

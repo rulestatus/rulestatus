@@ -35,7 +35,9 @@ export function cmdRun(): Command {
       if (opts.severity) runOpts.severity = opts.severity as SeverityLevel;
       const report = await engine.run(runOpts);
 
-      const formats: string[] = opts.format ?? config.reporting.format ?? ["console"];
+      const formats: string[] = (opts.format ?? config.reporting.format ?? ["console"]).flatMap(
+        (f: string) => f.split(","),
+      );
 
       const outputDir = opts.output ?? config.reporting.outputDir ?? "./compliance-reports";
       mkdirSync(outputDir, { recursive: true });

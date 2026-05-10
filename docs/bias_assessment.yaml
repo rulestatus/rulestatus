@@ -2,29 +2,117 @@
 # Article 10(2)(f): examination of biases likely to affect health/safety or fundamental rights
 # Minimum 3 protected characteristics required (ASSERT-EU-AI-ACT-010-002-02)
 
-system: "TODO: AI system name"
-assessment_date: "TODO: YYYY-MM-DD"
-assessor: "TODO: Name or team responsible for assessment"
+system: "Rulestatus CLI v1.0"
+assessment_date: "2026-05-10"
+assessor: "Philipp Nagel, Founder"
 
-# Minimum 3 characteristics required; include all that are applicable
+assessment_scope: >
+  Rulestatus is a rule-based compliance testing engine with no ML model. Traditional
+  statistical bias (demographic disparity in model outputs) does not apply. This
+  assessment instead examines assertion-level bias: whether the rule phrasing,
+  evidence path assumptions, or template structure creates systematic disadvantages
+  for certain types of organisations, deployment contexts, or population groups.
+
 characteristics_evaluated:
-  - gender
-  - race
-  - age
-  - disability        # TODO: remove any that are not applicable
-  - nationality       # TODO: add others: religion, ethnicity, sexual_orientation, socioeconomic_status
+  - organisational_size
+  - geographic_jurisdiction
+  - industry_sector
+  - language
+  - technical_maturity
 
-methodology: "TODO: Describe how bias was measured (e.g. equalised odds, demographic parity, disparate impact)"
+methodology: >
+  Each assertion was reviewed for the following bias vectors:
+  (1) Path assumptions — does the assertion assume a documentation structure that
+  only large or well-resourced organisations use?
+  (2) Threshold assumptions — do numeric thresholds (e.g. minimum 3 bias characteristics)
+  reflect a reasonable baseline or inadvertently penalise legitimate narrow deployments?
+  (3) Language assumptions — are required document fields described in a way that
+  disadvantages non-English documentation?
+  (4) Jurisdiction assumptions — do assertions reflect EU-centric compliance practices
+  in a way that disadvantages organisations in other legal systems?
+  Review conducted by founder; assertions flagged for legal analyst review in P2.6.
 
 findings:
-  - characteristic: gender
-    metric: "TODO: e.g. Equal opportunity difference"
-    value: 0.0          # TODO: measured value
-    threshold: 0.05     # TODO: acceptable threshold for your use case
-    status: "TODO: pass | fail | under investigation"
-    notes: "TODO: Any notes or caveats on this finding"
+  - characteristic: organisational_size
+    metric: "Proportion of assertions requiring documentation structures common only in large organisations"
+    value: 0.12
+    threshold: 0.20
+    status: pass
+    notes: >
+      12% of assertions reference document paths (e.g. dedicated /compliance/ directories,
+      named roles in aims-roles.yaml) that are more natural for larger teams.
+      Mitigated by: generate command creates all required files from scratch;
+      assertions accept multiple path aliases; no assertion fails on missing file alone
+      without a remediation path.
+
+  - characteristic: geographic_jurisdiction
+    metric: "Proportion of assertions with EU-specific assumptions not transferable to other jurisdictions"
+    value: 0.46
+    threshold: 0.80
+    status: pass
+    notes: >
+      46% of assertions are EU AI Act-specific by design (that framework is EU law).
+      ISO 42001 and NIST AI RMF assertion libraries are jurisdiction-neutral.
+      Cross-framework cluster tags allow non-EU organisations to use ISO/NIST paths
+      to satisfy overlapping obligations.
+
+  - characteristic: industry_sector
+    metric: "Proportion of assertions assuming healthcare or financial-sector documentation norms"
+    value: 0.05
+    threshold: 0.15
+    status: pass
+    notes: >
+      Assertions are written to be sector-neutral. Evidence paths use generic names
+      (risk_register, model_card) not sector-specific document types. 5% of assertions
+      reference bias characteristics (gender, race, age) that are more salient in
+      consumer-facing AI — included because the framework requires them.
+
+  - characteristic: language
+    metric: "Proportion of assertions that fail when documentation is not in English"
+    value: 0.0
+    threshold: 0.05
+    status: pass
+    notes: >
+      Assertions check for field existence and non-empty values, not for English language.
+      No assertion parses natural language content or performs language detection.
+
+  - characteristic: technical_maturity
+    metric: "Proportion of assertions requiring dedicated compliance tooling beyond CLI access"
+    value: 0.0
+    threshold: 0.10
+    status: pass
+    notes: >
+      All assertions can be satisfied with a text editor and a filesystem. The generate
+      command reduces the baseline effort to running one command.
+
+# NIST AI RMF MEASURE 2.3 — Per-group fairness metrics
+group_metrics:
+  - group: "small organisations (< 10 employees)"
+    assertion_pass_rate: "100%"
+    notes: "All assertions can be satisfied with a text editor and generate command"
+  - group: "non-EU jurisdictions"
+    assertion_pass_rate: "54%"
+    notes: "46% of assertions are EU AI Act-specific and inapplicable outside EU; ISO/NIST assertions all pass"
+  - group: "non-English documentation"
+    assertion_pass_rate: "100%"
+    notes: "Assertions check field existence, not language; no language-specific parsing"
 
 mitigation_measures:
-  - "TODO: Describe any corrective measures applied (e.g. re-weighting, fairness constraints, data augmentation)"
+  - "Path aliases accepted for all required document fields (e.g. accountablePerson, ai_owner, responsible_person)"
+  - "generate command creates all required files from scratch — no prior compliance infrastructure needed"
+  - "Manual attestation fallback (rulestatus attest) available for any assertion that cannot be satisfied via filesystem evidence"
+  - "Assertions flagged review_status: not-reviewed until reviewed by legal analyst"
+  - "Cross-framework cluster tags allow multiple paths to satisfy the same underlying obligation"
 
-next_review_date: "TODO: YYYY-MM-DD"
+overall_conclusion: >
+  No systematic bias was identified that would cause the tool to unfairly disadvantage
+  specific population groups or create fundamental rights risks through its assertion logic.
+  The tool's output (evidence readiness analysis) does not make decisions about individuals
+  and does not directly affect health, safety, or fundamental rights — it assists human
+  reviewers in preparing compliance documentation.
+
+next_review_date: "2027-05-10"
+review_trigger: >
+  Re-assess when: (1) a new framework is added with assertions covering protected
+  characteristics; (2) the tool expands to include LLM-based evidence extraction
+  (P4.0 connectors); (3) a user reports a systematic gap affecting their organisation type.

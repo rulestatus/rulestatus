@@ -1,10 +1,67 @@
-# aims-roles — ISO/IEC 42001:2023 5.3
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# aims-roles — ISO/IEC 42001:2023 Clause 5.3
+# Roles and responsibilities for AI management system (AIMS)
+# ASSERT-ISO-42001-005-002-01
 
-# ASSERT-ISO-42001-005-002-01: Roles and responsibilities for AI management are assigned
-roles:  # aliases accepted: responsibilities
-  - "TODO: item 1"
-  - "TODO: item 2"
+system: "Rulestatus CLI v1.0"
+last_updated: "2026-05-10"
 
-# ASSERT-ISO-42001-005-002-01: Roles and responsibilities for AI management are assigned
-accountable_person: "TODO: ..."  # aliases accepted: accountablePerson, ai_owner, responsible_person
+accountable_person: "Philipp Nagel"
+
+roles:
+  - role: "AI Policy Owner"
+    title: "Founder & CEO"
+    name: "Philipp Nagel"
+    email: "philipp.nagel@mako365.com"
+    responsibilities:
+      - "Approve and maintain the AI policy (docs/aims/ai-policy.yaml)"
+      - "Ensure AIMS conforms to ISO/IEC 42001:2023 requirements"
+      - "Report AIMS performance to stakeholders"
+      - "Authorize release of new assertion library versions"
+      - "Engage external legal counsel for assertion review (P2.6)"
+
+  - role: "Compliance Lead"
+    title: "Founder & CEO (acting)"
+    name: "Philipp Nagel"
+    email: "philipp.nagel@mako365.com"
+    responsibilities:
+      - "Maintain compliance documentation in docs/compliance/ and docs/aims/"
+      - "Run rulestatus self-compliance checks on each release"
+      - "Track open SCT items and close gaps before external release"
+      - "Coordinate legal review of assertion library"
+      - "Maintain prohibited-uses.yaml and data-governance.yaml"
+
+  - role: "Risk Owner"
+    title: "Founder & CEO (acting)"
+    name: "Philipp Nagel"
+    email: "philipp.nagel@mako365.com"
+    responsibilities:
+      - "Maintain risk register (docs/risk_register.yaml)"
+      - "Assess new risks on each release cycle"
+      - "Authorize risk treatment decisions"
+      - "Escalate critical risks to external advisors"
+
+  - role: "Security Responsible"
+    title: "Founder & CEO (acting)"
+    name: "Philipp Nagel"
+    email: "philipp.nagel@mako365.com"
+    responsibilities:
+      - "Review dependency security (bun audit)"
+      - "Manage Sigstore/Rekor attestation configuration"
+      - "Respond to security disclosures via GitHub Security Advisories"
+
+  - role: "EU AI Act Legal Counsel"
+    title: "External Legal Counsel (pending engagement — SCT-0.5)"
+    name: "TBD"
+    email: "TBD"
+    responsibilities:
+      - "Review all 95 assertions in the EU AI Act assertion library"
+      - "Issue written opinion on regulatory interpretation methodology"
+      - "Provide name and review date for PDF report footer"
+      - "Advise on implementing acts as published"
+    status: "pending — engagement letter to be signed (SCT-0.5)"
+
+notes: >
+  At current company size (1 person), all internal roles are held by the founder.
+  Role separation will be implemented as headcount grows. External legal counsel
+  engagement is in progress (SCT-0.5). All role assignments will be updated when
+  additional personnel are onboarded.

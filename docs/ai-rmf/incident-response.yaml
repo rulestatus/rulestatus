@@ -1,0 +1,58 @@
+# incident-response — NIST AI RMF MANAGE 2.2
+# Satisfies: ASSERT-NIST-AIRMF-MG-003-01
+# System: Rulestatus CLI v1.0
+# Last reviewed: 2026-05-10
+
+system: "Rulestatus CLI v1.0"
+last_reviewed: "2026-05-10"
+reviewer: "Philipp Nagel, Founder"
+
+scope: >
+  This document covers the incident response process for the Rulestatus CLI tool.
+  Incidents include: assertion coding errors that produce incorrect results, security
+  vulnerabilities in the distributed package, unintended exposure of user data,
+  and regulatory interpretation errors that affect user compliance posture.
+
+reporting_process:
+  internal:
+    - "Developer identifies an incident (assertion error, security issue, data exposure)"
+    - "Severity assessed using risk register criteria (RISK-001 through RISK-007)"
+    - "GitHub Issue opened with label 'incident' and severity tag"
+    - "Founder notified immediately for CRITICAL or MAJOR severity incidents"
+  external:
+    - "For security vulnerabilities: report via GitHub Security Advisory (private disclosure)"
+    - "For assertion errors affecting users: GitHub Issue opened publicly within 24h of discovery"
+    - "For data exposure: affected users notified within 72h per GDPR Art. 33 timeframe"
+    - "For regulatory interpretation errors: CHANGELOG entry + assertion version bump within 7 days"
+
+escalation_path:
+  - level: "P1 — Critical"
+    criteria: "Data exposure, security vulnerability with active exploitation, regulatory enforcement risk"
+    response_time: "4 hours"
+    escalation: "Founder direct action; external legal counsel notified"
+  - level: "P2 — Major"
+    criteria: "Assertion error producing systematically incorrect results, security vulnerability not yet exploited"
+    response_time: "24 hours"
+    escalation: "Founder triage; GitHub Security Advisory if applicable"
+  - level: "P3 — Minor"
+    criteria: "Single-rule assertion error, documentation gap, user-reported edge case"
+    response_time: "7 days"
+    escalation: "GitHub Issue; included in next release"
+
+response_timeline:
+  discovery_to_triage: "4 hours"
+  triage_to_patch: "24-72 hours depending on severity"
+  patch_to_release: "48 hours (expedited release) or next scheduled release"
+  post_incident_review: "within 5 business days for P1/P2 incidents"
+
+post_incident_process:
+  - "Root cause documented in GitHub Issue"
+  - "Corrective action added to risk register"
+  - "Affected assertions or dependencies updated"
+  - "CHANGELOG entry referencing incident"
+  - "If assertion error: new assertion version created, old version deprecated"
+
+contact:
+  primary: "Philipp Nagel — philipp.nagel@mako365.com"
+  security: "GitHub Security Advisory (preferred for security disclosures)"
+  public: "GitHub Issues — https://github.com/rulestatus/rulestatus/issues"

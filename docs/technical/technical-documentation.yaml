@@ -1,5 +1,97 @@
-# technical-documentation — ISO/IEC 42001:2023 8.4
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# technical-documentation — ISO/IEC 42001:2023 8.3 + NIST AI RMF MANAGE 2.4 + MEASURE 2.7
+# Satisfies: ASSERT-ISO-42001-008-003-01, ASSERT-NIST-AIRMF-MG-004-01, ASSERT-NIST-AIRMF-MS-004-01
+# System: Rulestatus CLI v1.0
+# Last reviewed: 2026-05-10
 
-# ASSERT-ISO-42001-008-003-01: AI system lifecycle stages are documented
-development_process: "TODO: Describe ..."  # aliases accepted: lifecycle_stages, deployment_process
+system: "Rulestatus CLI v1.0"
+version: "1.0"
+last_reviewed: "2026-05-10"
+reviewer: "Philipp Nagel, Founder"
+
+# ISO 42001 Clause 8.3 — AI system lifecycle stages
+development_process: >
+  Rulestatus follows a trunk-based development model on a single main branch.
+  Lifecycle stages: (1) Requirement — obligation identified in regulation text;
+  (2) Analysis — legal analyst maps obligation to evidence requirement;
+  (3) Implementation — TypeScript rule authored in src/frameworks/<framework>/;
+  (4) Testing — unit tests written in tests/unit/, fixtures in tests/fixtures/;
+  (5) Review — peer review via GitHub PR; (6) Release — semantic versioning,
+  npm publish, CHANGELOG entry; (7) Maintenance — regulatory monitoring,
+  corrective action on reported errors; (8) Deprecation — assertion versioning
+  when obligation interpretation changes.
+
+lifecycle_stages:
+  - stage: "Requirements"
+    description: "Regulation text parsed; obligations identified and documented in obligation registry"
+  - stage: "Design"
+    description: "Assertion ID assigned; builder DSL check node designed; evidence paths determined"
+  - stage: "Implementation"
+    description: "Rule registered in framework module; templates generated; docs updated"
+  - stage: "Testing"
+    description: "Pass/fail/edge case fixtures written; bun test run in CI"
+  - stage: "Release"
+    description: "Semantic version bump; npm publish; CHANGELOG entry; registry regenerated"
+  - stage: "Maintenance"
+    description: "Monitoring for regulatory changes; corrective actions via GitHub Issues"
+  - stage: "Deprecation"
+    description: "Assertion versioned as deprecated when superseded; users notified via CHANGELOG"
+
+# NIST AI RMF MANAGE 2.4 — Production monitoring
+monitoring:
+  description: >
+    Rulestatus is a CLI tool running locally; there is no hosted production deployment
+    to monitor in the traditional sense. Monitoring covers: (1) package download health
+    via npm stats; (2) GitHub Issues for user-reported failures; (3) CI/CD pipeline
+    status on main branch; (4) dependency security via GitHub Dependabot alerts.
+  monitored_metrics:
+    - "npm weekly download count (baseline established at launch)"
+    - "GitHub Issues: open issue count, time-to-triage"
+    - "CI pass rate on main branch"
+    - "Dependabot security alerts: count and time-to-resolution"
+    - "Self-compliance run result: pass count vs. fail count on each release"
+  alert_thresholds:
+    - metric: "CI pass rate"
+      threshold: "< 100% on main branch"
+      action: "Block release; investigate immediately"
+    - metric: "Self-compliance result"
+      threshold: "Any new FAIL on main branch"
+      action: "Block release; close gap before release"
+    - metric: "Dependabot CRITICAL alert"
+      threshold: "Any CRITICAL severity"
+      action: "Patch within 24h; expedited release"
+  review_frequency: "Weekly review of metrics; monthly release cycle review"
+  feedback_loop: >
+    User-reported issues via GitHub Issues are triaged weekly. Confirmed assertion errors
+    are treated as incidents (see docs/ai-rmf/incident-response.yaml). Patterns of
+    user confusion inform documentation improvements and new roadmap items.
+
+# NIST AI RMF MEASURE 2.7 — Security and adversarial robustness
+robustness:
+  description: >
+    Security evaluation for Rulestatus covers two attack surfaces: (1) the distributed
+    npm package (supply chain), and (2) the evidence collection pipeline (local filesystem reads).
+  adversarial_testing:
+    - test: "Supply chain integrity"
+      method: "npm provenance via Sigstore/Rekor on each release; bun audit in CI"
+      result: "No known vulnerabilities in current release"
+      last_run: "2026-05-10"
+    - test: "Evidence path traversal"
+      method: "Evidence paths are resolved relative to declared basePath; no user-controlled path traversal"
+      result: "Path resolution uses Node.js path.resolve() — no traversal possible outside basePath"
+      last_run: "2026-05-10"
+    - test: "YAML injection via evidence files"
+      method: "js-yaml used in safe mode (yaml.load); no eval or exec of YAML content"
+      result: "No injection surface; YAML parsed to plain objects only"
+      last_run: "2026-05-10"
+    - test: "Command injection via config values"
+      method: "No shell exec of config values; all config fields used as data, not commands"
+      result: "No injection surface identified"
+      last_run: "2026-05-10"
+    - test: "PII/secret exposure in reports"
+      method: "redact.ts scans evidence for sensitive field names and secret patterns before recording in audit trail"
+      result: "Redaction active; redactedFields count surfaced per evidence source"
+      last_run: "2026-05-10"
+  known_limitations:
+    - "Tool does not sandbox evidence file reads — a malicious YAML file could cause excessive memory use if it contains deeply nested structures. Mitigated by: js-yaml has internal depth limits."
+    - "No authentication on local CLI — any local user with filesystem access can read the compliance reports. Mitigated by: reports are local files; users are responsible for access control on their own machines."
+  security_review_cadence: "Security evaluation reviewed on each major release and on any Dependabot CRITICAL alert"

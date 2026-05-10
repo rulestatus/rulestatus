@@ -1,34 +1,94 @@
 # Data Governance — EU AI Act Article 10
 # Satisfies: 10.1 training data, 10.2 bias examination, 10.3 data sources + representativeness,
 #             10.4 special category data, 10.5 data minimisation, 10.6 data quality criteria
+#
+# System: Rulestatus CLI v1.0
+# Last reviewed: 2026-05-10
+
+system: "Rulestatus CLI v1.0"
+last_reviewed: "2026-05-10"
+reviewer: "Philipp Nagel, Founder"
 
 # Article 10.1 — Training data documentation
 training_data:
-  description: "TODO: Describe training datasets used"
-  sources: []  # TODO: list data sources
+  description: >
+    Rulestatus is a rule-based compliance testing engine. It contains no machine learning
+    model and therefore uses no training data. All assertions are hand-authored by human
+    analysts based on regulatory text. There is no statistical model, no learned weights,
+    and no inference from data.
+  sources: []
 
 # Article 10.2 — Bias examination (see also docs/bias_assessment.yaml for full report)
-bias_examination: "TODO: Describe the bias examination methodology and summary findings for this dataset"
+bias_examination: >
+  Because Rulestatus has no ML model and no training data, bias in the statistical sense
+  (demographic disparity in model predictions) does not apply. The bias examination for
+  this system instead covers assertion-level bias: whether the rule phrasing creates
+  systematic documentation gaps for certain types of organisations or use cases.
+  See docs/bias_assessment.yaml for the full assessment. Conclusion: no systematic bias
+  identified. All assertions pass the assertion-level bias review.
 
 # Article 10.3 — Data sources
 data_sources:
-  - name: "TODO: Dataset name"
-    origin: "TODO: Where this data comes from"
-    size: "TODO: Size of dataset"
-    collection_period: "TODO: When data was collected"
+  - name: "EU AI Act (Regulation 2024/1689)"
+    origin: "Official Journal of the European Union, published 2024-07-12"
+    size: "Single legislative text, ~144 articles + annexes"
+    collection_period: "2024-07-12 (effective date)"
+    notes: "Primary normative source for EU AI Act assertion library"
+
+  - name: "ISO/IEC 42001:2023"
+    origin: "International Organization for Standardization"
+    size: "Single standard document"
+    collection_period: "2023-12-01 (publication date)"
+    notes: "Primary normative source for ISO 42001 assertion library"
+
+  - name: "NIST AI RMF 1.0"
+    origin: "National Institute of Standards and Technology, published 2023-01-26"
+    size: "Single framework document"
+    collection_period: "2023-01-26 (publication date)"
+    notes: "Primary normative source for NIST AI RMF assertion library"
+
+  - name: "Colorado SB 24-205"
+    origin: "Colorado General Assembly, signed 2024-05-17"
+    size: "Single legislative text"
+    collection_period: "2024-05-17 (effective date)"
+    notes: "Primary normative source for Colorado AI Act assertion library"
+
+  - name: "Synthetic test fixtures"
+    origin: "Hand-authored by Rulestatus developers"
+    size: "~50 YAML/JSON/Markdown files in tests/fixtures/"
+    collection_period: "Ongoing since project inception (2025)"
+    notes: >
+      Fictional AI system documentation used for unit and integration tests.
+      Contains no real personal data, real organisation names, or real system details.
 
 # Article 10.3 — Representativeness
-representativeness: "TODO: Explain how the data is representative of the intended deployment population"
+representativeness: >
+  Not applicable in the ML sense. The regulatory texts used as sources are the authoritative
+  versions of the regulations. The synthetic test fixtures are designed to cover the full
+  range of assertion outcomes (pass, fail, manual, skip) and are not intended to represent
+  a population of real AI systems.
 
 # Article 10.4 — Special category data
-special_category_data: false  # TODO: set true if processing health, biometric, political opinions etc.
-# special_category_legal_basis: "TODO: Legal basis (GDPR Art. 9) if special_category_data is true"
+special_category_data: false
+# The system processes no personal data during normal operation. Users run the CLI
+# locally against their own documentation. No data is transmitted to Rulestatus
+# servers except when the user explicitly enables --provider flags (Sigstore/Rekor)
+# for attestation, which transmits only cryptographic hashes of report files.
 
 # Article 10.5 — Data minimisation
-data_minimisation: "TODO: Explain how data collection is limited to what is strictly necessary for the purpose"
+data_minimisation: >
+  Rulestatus does not collect or store any user data, AI system documentation, or
+  compliance reports. All processing is local. The only external network calls are:
+  (1) optional API probe checks (rulestatus.yaml configured api_endpoint) — checks
+  HTTP status only, no payload transmitted; (2) optional Sigstore/Rekor attestation
+  — transmits SHA-256 hash of evidence bundle, not content; (3) version check on
+  rulestatus update — fetches package metadata from npm registry, no user data sent.
+  All three are opt-in or scoped to explicit CLI flags.
 
 # Article 10.6 — Data quality criteria
 data_quality_criteria:
-  - "TODO: Criterion 1 — e.g. No missing values in key fields"
-  - "TODO: Criterion 2 — e.g. Labels verified by domain experts"
-  - "TODO: Criterion 3 — e.g. Balanced class distribution within ±5%"
+  - "Regulatory text sourced from official publications only (Official Journal, NIST, ISO)"
+  - "Assertion IDs are stable and versioned — a change in regulatory interpretation results in a new assertion version, not silent overwrite"
+  - "Each assertion references its specific legal basis (article number, clause)"
+  - "Test fixtures cover pass, fail, and edge cases for each assertion"
+  - "Assertions marked review_status: not-reviewed until reviewed by qualified analyst"

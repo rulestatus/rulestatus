@@ -26,10 +26,26 @@ export class FilesystemCollector implements EvidenceCollector {
       }
     }
 
-    // Prefer structured (yaml/json) over text (md/docx/pdf)
-    const structured = candidates.filter((p) => STRUCTURED_EXTS.has(extname(p).toLowerCase()));
-    const text = candidates.filter((p) => !STRUCTURED_EXTS.has(extname(p).toLowerCase()));
-    const ordered = [...structured, ...text];
+    // Prefer files whose stem matches the document category (e.g. aims-roles.yaml for "aims-roles")
+    const stemMatches = (p: string) => {
+      const stem =
+        p
+          .split("/")
+          .pop()
+          ?.replace(/\.[^.]+$/, "") ?? "";
+      return stem === opts.category;
+    };
+    const nameMatched = candidates.filter(stemMatches);
+    const rest = candidates.filter((p) => !stemMatches(p));
+
+    // Within each group, prefer structured (yaml/json) over text (md/docx/pdf)
+    const orderGroup = (group: string[]) => {
+      const structured = group.filter((p) => STRUCTURED_EXTS.has(extname(p).toLowerCase()));
+      const text = group.filter((p) => !STRUCTURED_EXTS.has(extname(p).toLowerCase()));
+      return [...structured, ...text];
+    };
+
+    const ordered = [...orderGroup(nameMatched), ...orderGroup(rest)];
 
     for (const filePath of ordered) {
       const doc = await loadPath(filePath);

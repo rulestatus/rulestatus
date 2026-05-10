@@ -1,2 +1,79 @@
-# prohibited-uses — EU AI Act (2024/1689) 6
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# prohibited-uses — Rulestatus CLI v1.0
+# Documents what this tool must NOT be used for.
+# Required by EU AI Act Art. 6 (prohibited practices) and over-claim guardrails.
+
+system: "Rulestatus CLI v1.0"
+version: "1.0"
+last_reviewed: "2026-05-10"
+reviewer: "Philipp Nagel, Founder"
+
+prohibited_uses:
+  - id: PU-001
+    description: >
+      Using Rulestatus output as a legal certification or conformity assessment.
+      Tool output is evidence-readiness analysis only. It is not a substitute for
+      a formal conformity assessment under EU AI Act Article 43 by a notified body
+      or accredited third party.
+    rationale: >
+      Rulestatus performs automated checks against documentation artifacts. It cannot
+      evaluate implementation quality, runtime behaviour, or organisational maturity
+      — all of which are required for a valid conformity assessment.
+
+  - id: PU-002
+    description: >
+      Using Rulestatus results as sole compliance evidence in a regulatory submission
+      or enforcement proceeding without independent legal review.
+    rationale: >
+      Regulatory submissions require qualified legal advice and, for high-risk systems,
+      notified body involvement. Rulestatus output is a readiness indicator, not a
+      regulatory filing artefact.
+
+  - id: PU-003
+    description: >
+      Using Rulestatus to gate high-risk AI system deployment without additional human
+      legal review. A "0 FAIL" result from Rulestatus does not mean the system is
+      legally compliant with the EU AI Act or any other regulation.
+    rationale: >
+      The tool checks for the existence and structure of required documents, not their
+      substantive correctness. A risk register that exists but contains incorrect risk
+      assessments will pass the file check and fail the legal review.
+
+  - id: PU-004
+    description: >
+      Using Rulestatus as a substitute for qualified legal counsel. The assertion
+      library encodes one interpretation of each obligation; regulatory interpretation
+      is contested and evolves through guidance, implementing acts, and enforcement.
+    rationale: >
+      Legal obligations require jurisdiction-specific legal advice. Rulestatus provides
+      a structured starting point for legal review, not a replacement for it.
+
+  - id: PU-005
+    description: >
+      Representing Rulestatus "PASS" results in marketing or procurement materials
+      as independent third-party certification, compliance approval, or regulatory clearance.
+    rationale: >
+      Misrepresenting automated evidence checks as third-party certification is
+      misleading to customers and creates legal liability for misrepresentation.
+
+  - id: PU-006
+    description: >
+      Running Rulestatus against a system not covered by the declared .rulestatus.yaml
+      scope and presenting results as if they apply to a different system.
+    rationale: >
+      Evidence checks are scoped to the declared system boundary. Applying results to
+      a different system invalidates the evidence chain and misrepresents compliance status.
+
+  - id: PU-007
+    description: >
+      Using Rulestatus on AI systems that are prohibited under EU AI Act Article 5
+      (e.g. real-time remote biometric identification in public spaces, social scoring,
+      subliminal manipulation) as a tool to appear compliant while operating a prohibited system.
+    rationale: >
+      No documentation check can make a prohibited AI practice lawful. Rulestatus must
+      not be used to manufacture a paper trail for prohibited systems.
+
+disclaimer: >
+  This prohibited-uses list is not exhaustive. The absence of a use case from this list
+  does not imply it is permitted. Users are responsible for ensuring their use of
+  Rulestatus complies with applicable law and does not misrepresent the nature of the
+  tool's output to any third party, regulator, or customer.
