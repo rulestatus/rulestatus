@@ -393,6 +393,62 @@ Why this matters: companies put the score in their README and marketing material
 
 ---
 
+## Architecture & Technical Debt
+
+Findings from a senior architecture review (May 2026). These are structural issues that constrain testability, performance, and extensibility. All are pre-conditions for scaling the codebase to Phase 4 complexity. Ordered by impact.
+
+### ARCH-1 — Replace global `RULE_REGISTRY` with injected registry instances
+
+**Priority: High. Blocks: reliable test isolation, multi-tenancy in Phase 4.**
+
+`RULE_REGISTRY` is a module-level mutable array populated via side-effect imports (`import "../frameworks/euAiAct/index.js"`). This means:
+- Rules from one test suite bleed into the next unless manually cleared
+- Two `Engine` instances in the same process cannot have different rule sets (required for framework A/B comparison in the SaaS dashboard)
+- `loadFrameworks()` in `engine.ts` is a hardcoded `if/else if` chain — adding a new framework requires editing the Engine class
+
+Fix: make `RuleRegistry` an instantiable class passed into `Engine`. Each framework module exports a `register(registry: RuleRegistry)` function instead of calling the global `rule()` on import. The engine owns registry creation and calls `register()` explicitly — the side-effect import is eliminated. Adding a new framework no longer touches the engine.
+
+### ARCH-2 — Separate per-rule execution context from shared evidence cache
+
+**Priority: High. Blocks: parallel rule execution (ARCH-3), correctness under concurrency.**
+
+`EvidenceRegistry` conflates two unrelated responsibilities: (a) caching filesystem and network reads across rules, and (b) tracking which sources were accessed during the *current rule's* execution (`ruleSourcePaths`, `resetForRule`, `snapshotSources`). The per-rule tracking is mutable shared state that the engine must explicitly reset before each rule via `registry.resetForRule()`. If `Engine.run()` ever uses `Promise.all`, source attribution silently corrupts.
+
+Fix: introduce a lightweight `RuleExecutionContext` that wraps the shared cache for the duration of a single rule run. The shared `EvidenceRegistry` holds the cache; the context holds per-rule `ruleSourcePaths` and `confidence`. This also removes the `resetForRule`/`snapshotSources` mutable pattern from the registry entirely.
+
+### ARCH-3 — Parallel rule execution
+
+**Priority: Medium. Depends on: ARCH-2.**
+
+`Engine.run()` is a sequential `for...of` loop. At 95+ rules with filesystem I/O and API probes per rule, this is unnecessarily slow — particularly in CI. The evidence cache already makes filesystem reads safe to parallelize. The only blocker is the shared mutable per-rule state described in ARCH-2.
+
+Fix: once ARCH-2 isolates per-rule context, replace the loop with `Promise.all(rules.map(...))` (or bounded concurrency via `p-limit` for API probe rules). Expected 3–5× speedup in typical runs.
+
+### ARCH-4 — Normalize the compliance score for rule count
+
+**Priority: Medium. Affects: score credibility with auditors and public perception.**
+
+`scoreReport()` in `score.ts` applies fixed absolute deductions (`CRITICAL = −10`, `MAJOR = −5`). Two systems with the same number of critical failures score identically regardless of how many rules they pass. A system passing 47/50 rules with 3 critical failures scores the same as one passing 7/10 rules with 3 critical failures — but the second is far more exposed. This will be noticed by auditors and makes the public score metric less defensible.
+
+Fix: normalize by total weighted opportunity. `score = (passing_weight / total_weight) * 100`, where each rule's weight is its severity multiplier. Severity weights stay the same; the denominator changes from a fixed 100 to the sum of all possible deductions in the run. Requires a migration note for users who have committed scores publicly.
+
+### ARCH-5 — Close type safety gaps in the rule and config interfaces
+
+**Priority: Low. Prevents silent misconfiguration bugs.**
+
+Three concrete issues:
+- `RuleMeta.appliesTo: Record<string, string>` is too loose. A typo like `{ actors: [...] }` (plural) silently matches nothing because `collectRules()` checks `at.actor` (singular). Should be `{ actor?: string; riskLevel?: string }`.
+- `EvidenceConfig` has an index signature `[key: string]: string` which defeats TypeScript's protection on known fields — you cannot get a compile-time error for a misspelled evidence path key.
+- `(this.config as { attestExpiry?: number }).attestExpiry` in `engine.ts` is an unsafe cast indicating `attestExpiry` is not in the `RulestatusConfig` schema. The type is incomplete relative to what the engine actually reads.
+
+### ARCH-6 — Move `requireManual` out of `EvidenceRegistry`
+
+**Priority: Low. Layering cleanliness.**
+
+`EvidenceRegistry.requireManual()` throws `ManualReviewRequired`, a compliance workflow exception. The registry's responsibility is evidence collection; it should not know that a check has no automated evidence path. This belongs in `executor.ts` (in `executeManual`) or as a method on `SystemContext`. The registry should not import or throw engine-layer exceptions.
+
+---
+
 ## Phase 4 — SaaS Platform (post-launch)
 
 Commercial product built on top of the open-source CLI. Do not start until the CLI has ≥500 installs and ≥1 paying team — otherwise building before learning what buyers actually want.

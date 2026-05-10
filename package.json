@@ -15,10 +15,15 @@
     "docs:build": "bun run --cwd packages/docs build",
     "docs:preview": "bun run --cwd packages/docs preview",
     "validation-doc": "bun scripts/generate-validation-doc.ts",
-    "outdated": "bun outdated --filter '*'"
+    "outdated": "bun outdated --filter '*'",
+    "cycles": "madge --circular --extensions ts packages/cli/src"
   },
   "engines": {
     "bun": ">=1.1.0"
   },
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
+  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971",
+  "devDependencies": {
+    "@socketsecurity/bun-security-scanner": "^1.1.2",
+    "madge": "^8.0.0"
+  }
 }

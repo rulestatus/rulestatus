@@ -1,0 +1,18 @@
+[install]
+# Block packages published less than 72 hours ago — reduces supply-chain
+# attack window while allowing normal weekly release cycles.
+minimumReleaseAge = 259200
+# Exempt high-velocity dev tooling that releases on short cycles.
+minimumReleaseAgeExcludes = [
+  "@biomejs/biome",
+  "@types/node",
+  "@types/bun",
+  "bun-types",
+  "typescript",
+]
+
+[install.security]
+# Socket scans every install for malware, typosquatting, and CVEs.
+# Install the scanner: bun add -d @socketsecurity/bun-security-scanner
+# Requires SOCKET_SECURITY_TOKEN env var for org-level policies.
+scanner = "@socketsecurity/bun-security-scanner"

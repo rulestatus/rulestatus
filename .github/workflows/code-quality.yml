@@ -1,0 +1,33 @@
+name: Code Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Type check
+        run: bun typecheck
+
+      - name: Lint
+        run: bun lint
+
+      - name: Circular dependency check
+        run: bun cycles
+
+      - name: Tests
+        run: bun test
