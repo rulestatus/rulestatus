@@ -1,27 +1,22 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import type { RunReport } from "../core/result.js";
-import { failed, warned } from "../core/result.js";
+import { scoreReport } from "../core/score.js";
 import type { Reporter } from "./types.js";
+
+const GRADE_COLOR: Record<string, string> = {
+  A: "#4c1",
+  B: "#97ca00",
+  C: "#dfb317",
+  D: "#fe7d37",
+  F: "#e05d44",
+};
 
 export class BadgeReporter implements Reporter {
   async render(report: RunReport, outputPath = "compliance-badge.svg"): Promise<void> {
-    const criticalFails = failed(report).filter((r) => r.severity === "critical");
-    const anyFail = failed(report).length > 0;
-
-    let label: string;
-    let color: string;
-
-    if (criticalFails.length > 0) {
-      label = "failing";
-      color = "#e05d44";
-    } else if (anyFail || warned(report).length > 0) {
-      label = "warnings";
-      color = "#dfb317";
-    } else {
-      label = "passing";
-      color = "#4c1";
-    }
+    const score = scoreReport(report);
+    const label = `${score.points}/100 ${score.grade}`;
+    const color = GRADE_COLOR[score.grade] ?? "#9f9f9f";
 
     const svg = buildBadge("rulestatus", label, color);
     mkdirSync(dirname(outputPath), { recursive: true });

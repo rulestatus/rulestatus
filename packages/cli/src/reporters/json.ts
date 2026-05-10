@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import type { RunReport } from "../core/result.js";
 import { failed, manual, passed, skipped, warned } from "../core/result.js";
+import { scoreReport } from "../core/score.js";
 import type { Reporter } from "./types.js";
 
 function ciProvenance(): Record<string, string> | undefined {
@@ -49,6 +50,7 @@ export class JsonReporter implements Reporter {
         skipped: skipped(report).length,
         manual: manual(report).length,
         durationMs: report.finishedAt.getTime() - report.startedAt.getTime(),
+        score: scoreReport(report),
       },
       results: report.results.map((r) => ({
         id: r.ruleId,

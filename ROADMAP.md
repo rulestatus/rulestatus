@@ -393,15 +393,9 @@ Value proposition: "When your auditor asks for proof of AI compliance, run one c
 
 Builds on existing `cmdBundle` (`P2.1`) and `cmdAttest` (`P2.8`). New `--auditor` flag orchestrates the full pipeline: run → bundle → attest → zip. No new evidence collection logic needed.
 
-### P3.10 — Rulestatus Score
+### P3.10 — Rulestatus Score ✓ Done
 
-`rulestatus run --score` appends a single compliance score to the run output:
-
-```
-Rulestatus Score: 84 / 100   Grade: B
-```
-
-Scoring: start at 100, deduct points by severity × weight (CRITICAL −10, MAJOR −5, MINOR −2, INFO −0). Normalize to 0–100. Letter grades: A ≥90, B ≥80, C ≥70, D ≥60, F <60. Score included in JSON report and badge SVG.
+`src/core/score.ts` is the single canonical source — `scoreReport(report)` is a pure function imported by all reporters. Scoring: start at 100, deduct by severity for FAIL (CRITICAL −10, MAJOR −5, MINOR −2, INFO −0) and half-weight for WARN. Clamped to 0–100. Letter grades: A ≥90, B ≥80, C ≥70, D ≥60, F <60. Score surfaced in console output (`Score: 84/100  Grade: B`, color-coded by grade), JSON report (`summary.score: { points, grade, totalDeducted }`), and badge SVG (replaces passing/failing/warnings label with score + grade + grade-mapped color).
 
 Why this matters: companies put the score in their README and marketing materials ("Rulestatus Score: 91/100"). Once public scores exist, no team will switch to a competitor if it lowers their number. Creates lock-in through public commitment. Also the entry point for P4.6 (industry percentile benchmarking).
 

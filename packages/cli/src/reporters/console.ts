@@ -2,6 +2,7 @@ import chalk from "chalk";
 import type { RuleResult, RunReport } from "../core/result.js";
 import { attested, failed, manual, passed, skipped, warned } from "../core/result.js";
 import { FRAMEWORK_LABEL } from "../core/rule.js";
+import { gradeLabel, scoreReport } from "../core/score.js";
 import type { Reporter } from "./types.js";
 
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
@@ -52,6 +53,15 @@ export class ConsoleReporter implements Reporter {
       chalk.blue(`${m} manual`),
     ];
     console.log(`  Results: ${parts.join(" | ")}`);
+
+    const score = scoreReport(report);
+    const gradeColor =
+      score.grade === "A"
+        ? chalk.bold.green
+        : score.grade === "F"
+          ? chalk.bold.red
+          : chalk.bold.yellow;
+    console.log(`  Score:   ${gradeColor(gradeLabel(score))}`);
 
     const criticalFails = failed(report).filter((r) => r.severity === "critical");
     if (criticalFails.length > 0) {
