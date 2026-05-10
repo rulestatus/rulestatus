@@ -1,6 +1,6 @@
 {
   "name": "@rulestatus/cli",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "ESLint for AI law — executable compliance testing for AI regulations",
   "type": "module",
   "bin": {
