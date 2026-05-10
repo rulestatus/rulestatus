@@ -58,6 +58,8 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 ### Documentation
 
+- assertion validation methodology doc (`69962c7`)
+- more references (`ca64fd3`)
 - add colorado act (`e2e6753`)
 - icp landing page (`fedaa09`)
 - more content (`63aa562`)
