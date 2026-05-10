@@ -13,7 +13,8 @@
     "docs:dev": "bun run --cwd packages/docs dev",
     "docs:build": "bun run --cwd packages/docs build",
     "docs:preview": "bun run --cwd packages/docs preview",
-    "changelog": "bun scripts/changelog.ts"
+    "changelog": "bun scripts/changelog.ts",
+    "outdated": "bun outdated --filter '*'"
   },
   "engines": {
     "bun": ">=1.1.0"
