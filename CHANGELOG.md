@@ -6,6 +6,13 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 <!-- Generated 2026-05-10 — do not edit manually. Run: bun changelog -->
 
+## [1.3.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.2.0...cli-v1.3.0) (2026-05-10)
+
+
+### Features
+
+* add auto-updating compliance badge ([b86713a](https://github.com/rulestatus/rulestatus/commit/b86713a5d6485dafe37adde7f6f1f7632550dd57))
+
 ## [1.2.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.1.0...cli-v1.2.0) (2026-05-10)
 
 
