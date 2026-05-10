@@ -1,0 +1,144 @@
+# Assertion Validation Methodology
+
+> Auto-generated 2026-05-10 from RULE_REGISTRY and test suite.
+> Manually maintained sections are marked with **[HUMAN INPUT REQUIRED]**.
+
+This document describes how Rulestatus validates that each assertion correctly encodes
+its underlying regulatory obligation. It satisfies SCT-1.5 (assertion validation
+methodology documentation) and scopes the evidence submitted to external legal counsel
+for review (SCT-1.6).
+
+---
+
+## 1. Assertion Library — Current State
+
+| Framework | Baseline | Assertions | Critical | Major | Minor | Articles/Clauses |
+|---|---|---|---|---|---|---|
+| EU AI Act | 2024-08-01 | **44** | 15 | 19 | 9 | 31 |
+| ISO/IEC 42001 | 2023-12-01 | **19** | 6 | 11 | 2 | 18 |
+| NIST AI RMF | 2023-01-26 | **18** | 10 | 6 | 2 | 18 |
+| Colorado SB 24-205 | 2024-05-17 | **14** | 6 | 7 | 1 | 4 |
+| **Total** | | **95** | 37 | 43 | 14 | |
+
+**Cross-framework obligation clusters:** 12 clusters spanning all frameworks:
+`ai-policy-governance`, `ai-risk-management`, `bias-fairness`, `human-oversight`, `impact-assessment`, `incident-response`, `performance-monitoring`, `roles-responsibilities`, `security-robustness`, `technical-documentation`, `training-data`, `transparency-disclosure`
+
+---
+
+## 2. Test Suite Coverage
+
+| Metric | Value |
+|---|---|
+| Test files | 4 |
+| Tests passing | **25** |
+| Tests failing | 0 |
+| Test runner | Bun native (Jest-compatible API) |
+
+Test files cover:
+
+| File | What is tested |
+|---|---|
+| `tests/unit/engine.test.ts` | Rule filtering (framework, actor, severity), PASS/FAIL/MANUAL/SKIP result types |
+| `tests/unit/rule.test.ts` | RULE_REGISTRY population, rule registration side effects |
+| `tests/unit/attestation.test.ts` | Attestation file parsing, expiry logic, TODO-value detection, ATTESTED/MANUAL upgrade |
+| `tests/unit/filesystemCollector.test.ts` | Document discovery, stem-matching preference, path ordering |
+
+**Gap:** No per-assertion integration tests that run each rule against a known-good and
+known-bad fixture. This is the primary test coverage gap and the main risk noted for
+SCT-1.5. See Section 5 (Known Gaps).
+
+---
+
+## 3. Assertion Authoring Process
+
+Each assertion follows the four-stage pipeline described in `docs/methodology/review-process.md`:
+
+1. **Stage 1 — Obligation identification**: The regulatory text is read at the article/clause
+   level. The specific obligation (what the system or provider must *do or produce*) is
+   extracted as a single sentence. Ambiguous text is flagged for legal counsel review.
+
+2. **Stage 2 — Evidence specification**: The obligation is mapped to an evidence artifact:
+   a document (Doc check), structured field (Structured check), config file (Config check),
+   model card field (ModelCard check), API endpoint (Api check), or manual attestation
+   (Manual check). The check DSL in `src/core/check.ts` encodes this mapping.
+
+3. **Stage 3 — Implementation**: The rule is coded in `src/frameworks/<framework>/`.
+   The assertion ID follows the convention `ASSERT-<FW>-<ARTICLE>-<SEQ>-<VERSION>`.
+   A `cluster` tag maps the assertion to its cross-framework obligation group.
+
+4. **Stage 4 — Self-compliance verification**: `rulestatus run` is run on this repo.
+   If the assertion fires incorrectly on a known-compliant artifact, the check is revised.
+
+---
+
+## 4. Review Status
+
+### 4.1 Internal review
+
+All 95 assertions have been authored and self-reviewed by Philipp Nagel
+(Founder, Rulestatus) against the primary regulation texts. The `reviewStatus` field
+in the exported registry (`rulestatus export-registry`) reflects the current review state.
+
+Run `rulestatus export-registry` to inspect the full registry with `reviewStatus` fields.
+
+### 4.2 External legal review **[HUMAN INPUT REQUIRED]**
+
+| Field | Value |
+|---|---|
+| Reviewer name | **TBD** (SCT-0.5 — engagement pending) |
+| Reviewer firm | **TBD** |
+| Review date | **TBD** |
+| Frameworks reviewed | EU AI Act, ISO/IEC 42001, NIST AI RMF, Colorado SB 24-205 |
+| Assertions reviewed | 95 |
+| Written opinion | **TBD** — will appear in PDF report footer once received |
+
+*Update this section when SCT-0.5 (legal counsel engagement) is complete.*
+
+---
+
+## 5. Known Gaps and False Positive/Negative Categories
+
+### 5.1 Structural false positive categories
+
+| Category | Description | Affected assertions |
+|---|---|---|
+| Wrong file matched | Engine finds a file in the search path whose name doesn't match the expected document category | Mitigated by stem-matching fix (2026-05-10) |
+| Field alias mismatch | User uses a field name not in the alias list | Mitigated by extensive alias lists in check DSL |
+| YAML parse failure | Malformed user YAML silently prevents field check | Engine logs parse errors; assertion degrades to FAIL with message |
+
+### 5.2 Structural false negative categories
+
+| Category | Description | Affected assertions |
+|---|---|---|
+| Runtime obligation | Obligation requires runtime system behavior (e.g. Art. 12 logging) | Excluded by design; documented in "Articles not covered" |
+| Content quality | Document exists and has the required field, but content is a placeholder | Not detected; engine checks field presence, not content quality |
+| Delegation gap | Implementing act not yet published (e.g. Art. 7 Annex III updates) | Excluded by design; documented in "Articles not covered" |
+
+### 5.3 Missing per-assertion fixture tests **[HUMAN INPUT REQUIRED]**
+
+The test suite covers engine mechanics but does not include per-assertion pass/fail
+fixture tests. These would run each rule against a minimal known-good YAML file
+(should PASS) and a minimal known-bad file (should FAIL). This is the highest-priority
+test gap to close before the legal review (SCT-1.6).
+
+*To be addressed in a follow-up development cycle.*
+
+---
+
+## 6. Ongoing Monitoring
+
+Assertion quality is monitored through:
+
+1. **GitHub Issues** — users file issues with labels `false-positive` or `false-negative`.
+   Triaged quarterly per the monitoring plan (`docs/aims/monitoring-plan.yaml`).
+
+2. **Self-compliance run** — `rulestatus run` on this repo on every push. Any regression
+   (assertion that fires incorrectly on the tool's own docs) is caught immediately in CI.
+
+3. **Regulatory monitoring** — implementing acts tracked per
+   `docs/methodology/regulatory-monitoring.md`. Affected assertions updated within
+   30 days of a critical implementing act publication.
+
+4. **External counsel feedback loop** — once SCT-1.6 is complete, legal counsel
+   findings feed directly into assertion updates with conventional commit type `fix:`
+   or `feat:` and a CHANGELOG entry referencing the legal opinion.

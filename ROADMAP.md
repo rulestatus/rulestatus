@@ -205,7 +205,7 @@ Release criteria (all must pass before external release):
   - `docs/training/awareness-program.yaml` — 4 awareness activities for single-operator org; scale trigger documented
   - `docs/training/training-materials.yaml` — 5 primary materials with links to regulatory texts
 - [x] **SCT-1.4** — Expand risk register (`docs/risk-management/risk-management.yaml`) — all 7 risk categories filled with mitigations; note that limited-risk classification means Article 9 high-risk obligations do not apply. Full risk register with 7 risks + treatment plans + residual risks is in `docs/aims/ai-risk-assessment.yaml`. ✓ Done 2026-05-10
-- [ ] **SCT-1.5** — Document assertion validation methodology — test case count (pass/fail/edge), expert reviewer names and review date, known false positive/negative categories, ongoing monitoring process via GitHub Issues. Feeds P2.6 legal review scope.
+- [x] **SCT-1.5** — Document assertion validation methodology — `docs/methodology/assertion-validation.md` auto-generated from RULE_REGISTRY and test suite via `bun validation-doc`. Contains: per-framework assertion counts (95 total), severity distribution, 12 obligation clusters, 25 passing tests across 4 files, authoring process, false positive/negative categories, known gaps, monitoring process. External reviewer name/date sections marked [HUMAN INPUT REQUIRED] — filled once SCT-0.5 complete. ✓ Done 2026-05-10
 - [ ] **SCT-1.6** — Legal review of assertion library (P2.6 delivery) — external counsel reviews all 95 assertions, produces written opinion, name and review date appear in PDF report footer and website.
 
 ### SCT-2 — Operationalization (Week 7–10)
