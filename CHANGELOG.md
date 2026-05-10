@@ -6,6 +6,21 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 <!-- Generated 2026-05-10 — do not edit manually. Run: bun changelog -->
 
+## [1.3.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.2.0...cli-v1.3.0) (2026-05-10)
+
+
+### Features
+
+* add auto-updating compliance badge ([b86713a](https://github.com/rulestatus/rulestatus/commit/b86713a5d6485dafe37adde7f6f1f7632550dd57))
+* annotated github reporter ([f6b68dd](https://github.com/rulestatus/rulestatus/commit/f6b68dd0e17152a6d4dc9dbd26e1216d02012b5f))
+* auditor package ([4202360](https://github.com/rulestatus/rulestatus/commit/4202360e1d44b7ebb56331e3d63e6ca0bdcf1311))
+* rulestatus score ([73cb20e](https://github.com/rulestatus/rulestatus/commit/73cb20e0d584dffa585d7cefedbdcd7df13de8fb))
+
+
+### Bug Fixes
+
+* pii redaction ([f73bfb3](https://github.com/rulestatus/rulestatus/commit/f73bfb3f9abfa2737e41155156c017d554fe2c32))
+
 ## [1.2.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.1.0...cli-v1.2.0) (2026-05-10)
 
 
