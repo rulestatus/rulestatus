@@ -67,6 +67,7 @@ List of frameworks to run. Available values:
 | `eu-ai-act` | EU AI Act — Articles 6, 9, 10, 11, 13, 14, 15 |
 | `iso-42001` | ISO/IEC 42001:2023 — Clauses 4–10 |
 | `nist-ai-rmf` | NIST AI RMF 1.0 — GOVERN, MAP, MEASURE, MANAGE |
+| `colorado-sb24-205` | Colorado SB 24-205 — §§ 6-1-1702 through 6-1-1705 |
 
 ---
 
@@ -80,7 +81,7 @@ Paths where Rulestatus looks for compliance artifacts.
 | `model_card` | _(empty)_ | Path to model card YAML |
 | `risk_register` | _(empty)_ | Path to risk register JSON or YAML |
 | `config_path` | `./config/` | Directory scanned for configuration files (transparency config, etc.) |
-| `api_base_url` | _(empty)_ | Base URL for API probe checks (overrides `system.api_base_url`) |
+| `api_base_url` | _(inherits from `system.api_base_url`)_ | Override the base URL for API probe checks in this evidence context. Takes precedence over `system.api_base_url`. |
 
 ---
 

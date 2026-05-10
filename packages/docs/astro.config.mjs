@@ -40,6 +40,7 @@ export default defineConfig({
             { label: "EU AI Act", slug: "frameworks/eu-ai-act" },
             { label: "ISO/IEC 42001", slug: "frameworks/iso-42001" },
             { label: "NIST AI RMF", slug: "frameworks/nist-ai-rmf" },
+            { label: "Colorado SB 24-205", slug: "frameworks/colorado-sb24-205" },
           ],
         },
         {

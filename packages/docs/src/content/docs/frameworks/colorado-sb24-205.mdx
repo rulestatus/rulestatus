@@ -1,0 +1,228 @@
+---
+title: "Colorado SB 24-205"
+description: "Executable assertions for high-risk AI developers and deployers under Colorado SB 24-205."
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+Colorado SB 24-205 (signed May 2024) imposes obligations on **developers** and **deployers**
+of high-risk AI systems. It requires risk management programs, impact assessments, consumer disclosures,
+and appeal mechanisms.
+
+Rulestatus encodes obligations from §§ 6-1-1702 through 6-1-1705 as executable checks.
+All checks apply to `actor: provider` or `actor: deployer` as specified per assertion.
+
+## Summary
+
+| | |
+|---|---|
+| Total assertions | **14** |
+| Critical | 6 |
+| Major | 7 |
+| Minor | 1 |
+
+## Assertions by Section
+
+### §6-1-1702
+
+#### `ASSERT-CO-SB24205-1702-001-01`
+
+**Model card documents intended use, limitations, and known discrimination risks**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> §6-1-1702(2)(a): Developer shall make available to deployers documentation of the high-risk AI system's intended uses, limitations, and known or reasonably foreseeable risks of algorithmic discrimination.
+
+**How to fix:** Add `intended_uses` (or `intendedUse`), `limitations`, and `known_risks` (or `discrimination_risks`) fields to your model card.
+
+---
+
+#### `ASSERT-CO-SB24205-1702-002-01`
+
+**Dataset documentation covers data sources, governance, and potential biases**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> §6-1-1702(2)(a): Developer shall make available documentation including data governance measures, the source of training data, and potential biases in the data.
+
+**How to fix:** Create docs/technical/dataset-documentation.yaml with `data_sources`, `data_governance`, and `potential_biases` fields.
+
+---
+
+#### `ASSERT-CO-SB24205-1702-003-01`
+
+**Bias and algorithmic discrimination evaluation results are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> §6-1-1702(2)(a): Developer shall provide evaluation documentation and performance metrics, including results of bias testing.
+
+**How to fix:** Add evaluation results to your bias assessment or create docs/compliance/bias-examination.yaml with `evaluation_results` and `test_results` fields.
+
+---
+
+#### `ASSERT-CO-SB24205-1702-004-01`
+
+**Discrimination risk mitigation measures are documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: provider |
+
+> §6-1-1702(2)(a): Developer shall provide documentation of measures taken to mitigate known or reasonably foreseeable risks of algorithmic discrimination.
+
+**How to fix:** Add `mitigation_measures` or `bias_mitigations` to your bias assessment or technical documentation.
+
+---
+
+#### `ASSERT-CO-SB24205-1702-005-01`
+
+**Public statement on algorithmic discrimination risk management is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> §6-1-1702(2)(b): Developer shall publish a statement on its website summarizing the types of high-risk AI systems it develops and its governance and risk management approach.
+
+**How to fix:** Create docs/compliance/discrimination-risk-statement.yaml with `high_risk_systems` and `discrimination_risk_management` fields. This statement must also be published on your public website.
+
+---
+
+#### `ASSERT-CO-SB24205-1702-006-01`
+
+**Incident reporting procedure for algorithmic discrimination is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: provider |
+
+> §6-1-1702(2)(c): Developer shall, within 90 days of discovering algorithmic discrimination, disclose to the Colorado Attorney General and all known deployers/developers.
+
+**How to fix:** Add `discrimination_reporting` or `ag_notification` fields to your incident response config or document, including the 90-day notification timeline.
+
+---
+
+### §6-1-1703
+
+#### `ASSERT-CO-SB24205-1703-001-01`
+
+**Risk management program is documented and aligned with a recognized framework**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: deployer |
+
+> §6-1-1703(2)(b): Deployer shall implement a risk management program that is consistent with the NIST AI Risk Management Framework, ISO/IEC 42001, or another framework designated by the attorney general.
+
+**How to fix:** Create docs/compliance/risk-management-program.yaml with `framework_alignment` (nist-ai-rmf, iso-42001, or equivalent), `program_description`, and `review_schedule` fields.
+
+---
+
+#### `ASSERT-CO-SB24205-1703-002-01`
+
+**Pre-deployment impact assessment is conducted and documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: deployer |
+
+> §6-1-1703(2)(c): Before deploying a high-risk AI system, deployer shall complete an impact assessment and retain it for at least 3 years after the system's final deployment.
+
+**How to fix:** Create docs/compliance/ai-impact-assessment.yaml with required fields before deploying the AI system.
+
+---
+
+#### `ASSERT-CO-SB24205-1703-003-01`
+
+**Impact assessment covers all required elements: purpose, risk, data, metrics, monitoring**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: deployer |
+
+> §6-1-1703(2)(c): The impact assessment must include the purpose, risk analysis, data categories processed, evaluation metrics, and post-deployment monitoring plan.
+
+**How to fix:** Ensure your ai-impact-assessment includes: `purpose`, `risk_analysis`, `data_categories`, `evaluation_metrics`, and `monitoring_plan`.
+
+---
+
+#### `ASSERT-CO-SB24205-1703-004-01`
+
+**Annual impact assessment review date is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MINOR" variant="note" /> | actor: deployer |
+
+> §6-1-1703(2)(c): Deployer shall complete an updated impact assessment annually and within 90 days of any intentional and substantial modification to the system.
+
+**How to fix:** Add `annual_review_date` or `next_review_date` to your impact assessment document.
+
+---
+
+### §6-1-1704
+
+#### `ASSERT-CO-SB24205-1704-001-01`
+
+**Consumer AI disclosure notice is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="CRITICAL" variant="danger" /> | actor: deployer |
+
+> §6-1-1704(1): Before or when a consumer interacts with a high-risk AI system, deployer shall provide a plain language notice that the system is an AI system, its purpose, and the nature of the consequential decision.
+
+**How to fix:** Create docs/compliance/consumer-ai-disclosure.yaml with `ai_disclosure`, `system_purpose`, and `consequential_decision_description` fields. Enable in config/transparency.yaml with `ai_disclosure.enabled: true`.
+
+---
+
+#### `ASSERT-CO-SB24205-1704-002-01`
+
+**Pre-decision notice includes data categories, appeal process, and contact information**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: deployer |
+
+> §6-1-1704(2): Before collecting personal data for a consequential decision, deployer shall notify the consumer of the purpose, general categories of data processed, and how to request human review or an alternative process.
+
+**How to fix:** Add `data_categories`, `appeal_process` (or `human_review`), and `contact_information` to your consumer-ai-disclosure document.
+
+---
+
+### §6-1-1705
+
+#### `ASSERT-CO-SB24205-1705-001-01`
+
+**Consumer data correction mechanism is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: deployer |
+
+> §6-1-1705(1): Deployer shall provide a consumer with a way to correct personal data that was incorrect and was processed by the AI system in making a consequential decision.
+
+**How to fix:** Add `data_correction` or `correction_mechanism` to your consumer-ai-disclosure document or human oversight config.
+
+---
+
+#### `ASSERT-CO-SB24205-1705-002-01`
+
+**Appeal process with human review option is documented**
+
+| Severity | Applies to |
+|---|---|
+| <Badge text="MAJOR" variant="caution" /> | actor: deployer |
+
+> §6-1-1705(2): When a deployer makes an adverse consequential decision, the deployer shall provide a consumer the opportunity to appeal and request human review, if technically feasible.
+
+**How to fix:** Add `appeal_process` and `human_review` fields to your consumer-ai-disclosure document or human oversight config.
+
+---

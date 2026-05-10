@@ -16,6 +16,7 @@ import { join } from "node:path";
 import "../../cli/src/frameworks/euAiAct/index.js";
 import "../../cli/src/frameworks/iso42001/index.js";
 import "../../cli/src/frameworks/nistAiRmf/index.js";
+import "../../cli/src/frameworks/coloradoSb24205/index.js";
 import { RULE_REGISTRY, type RuleMeta } from "../../cli/src/core/rule.js";
 
 const DOCS = join(import.meta.dir, "../src/content/docs");
@@ -63,6 +64,8 @@ interface FrameworkMeta {
   description: string;
   intro: string;
   articleLabel: string;
+  /** Articles/clauses intentionally not covered, with explanations. */
+  coverageNotes?: { label: string; reason: string }[];
 }
 
 const FRAMEWORKS: FrameworkMeta[] = [
@@ -77,6 +80,23 @@ as executable checks.
 
 All checks apply to \`actor: provider, riskLevel: high-risk\` unless otherwise noted.`,
     articleLabel: "Article",
+    coverageNotes: [
+      {
+        label: "Article 7 — Amendments to Annex III",
+        reason:
+          "Article 7 delegates Annex III updates to European Commission implementing acts not yet published. Assertions will be added once those acts are finalised.",
+      },
+      {
+        label: "Article 8 — Compliance with requirements",
+        reason:
+          "Article 8 is a general obligation to comply with Articles 9–15. It has no standalone evidence requirements; compliance is demonstrated by passing the Article 9–15 assertions.",
+      },
+      {
+        label: "Article 12 — Record-keeping",
+        reason:
+          "Article 12 requires automatic logging by the AI system at runtime. Rulestatus checks documentation and configuration artifacts, not runtime infrastructure. This obligation must be verified separately in your deployment environment.",
+      },
+    ],
   },
   {
     id: "iso-42001",
@@ -99,6 +119,18 @@ for managing AI risks across four core functions: **GOVERN**, **MAP**, **MEASURE
 Rulestatus encodes documentation and evidence requirements from all four functions.
 Checks apply to \`actor: provider\` regardless of EU AI Act risk level.`,
     articleLabel: "Function",
+  },
+  {
+    id: "colorado-sb24-205",
+    title: "Colorado SB 24-205",
+    description: "Executable assertions for high-risk AI developers and deployers under Colorado SB 24-205.",
+    intro: `Colorado SB 24-205 (signed May 2024) imposes obligations on **developers** and **deployers**
+of high-risk AI systems. It requires risk management programs, impact assessments, consumer disclosures,
+and appeal mechanisms.
+
+Rulestatus encodes obligations from §§ 6-1-1702 through 6-1-1705 as executable checks.
+All checks apply to \`actor: provider\` or \`actor: deployer\` as specified per assertion.`,
+    articleLabel: "Section",
   },
 ];
 
@@ -137,9 +169,9 @@ function generateFrameworkPage(fw: FrameworkMeta, rules: RuleMeta[]): string {
 
   for (const article of articles) {
     const articleRules = byArticle.get(article)!;
-    const label = fw.articleLabel === "Article" ? `Article ${article}` : `Clause ${article}`;
+    // Colorado sections already include the § symbol; others get a prefix
+    const label = article.startsWith("§") ? article : `${fw.articleLabel} ${article}`;
 
-    // Use the first rule's title as a section subtitle if it gives context
     lines.push(`### ${label}`);
     lines.push(``);
 
@@ -172,6 +204,19 @@ function generateFrameworkPage(fw: FrameworkMeta, rules: RuleMeta[]): string {
       }
 
       lines.push(`---`);
+      lines.push(``);
+    }
+  }
+
+  if (fw.coverageNotes && fw.coverageNotes.length > 0) {
+    lines.push(`## Articles not covered`);
+    lines.push(``);
+    lines.push(
+      `The following articles are intentionally excluded from automated checking:`,
+    );
+    lines.push(``);
+    for (const note of fw.coverageNotes) {
+      lines.push(`**${note.label}** — ${note.reason}`);
       lines.push(``);
     }
   }
@@ -432,6 +477,7 @@ List of frameworks to run. Available values:
 | \`eu-ai-act\` | EU AI Act — Articles 6, 9, 10, 11, 13, 14, 15 |
 | \`iso-42001\` | ISO/IEC 42001:2023 — Clauses 4–10 |
 | \`nist-ai-rmf\` | NIST AI RMF 1.0 — GOVERN, MAP, MEASURE, MANAGE |
+| \`colorado-sb24-205\` | Colorado SB 24-205 — §§ 6-1-1702 through 6-1-1705 |
 
 ---
 
@@ -445,7 +491,7 @@ Paths where Rulestatus looks for compliance artifacts.
 | \`model_card\` | _(empty)_ | Path to model card YAML |
 | \`risk_register\` | _(empty)_ | Path to risk register JSON or YAML |
 | \`config_path\` | \`./config/\` | Directory scanned for configuration files (transparency config, etc.) |
-| \`api_base_url\` | _(empty)_ | Base URL for API probe checks (overrides \`system.api_base_url\`) |
+| \`api_base_url\` | _(inherits from \`system.api_base_url\`)_ | Override the base URL for API probe checks in this evidence context. Takes precedence over \`system.api_base_url\`. |
 
 ---
 
@@ -479,12 +525,12 @@ Severity levels in order: \`critical\` > \`major\` > \`minor\` > \`info\`.
 for (const fw of FRAMEWORKS) {
   const rules = RULE_REGISTRY.filter((r) => r.framework === fw.id);
   const content = generateFrameworkPage(fw, rules);
-  const filename = fw.id === "iso-42001" ? "iso-42001.mdx" : `${fw.id}.mdx`;
+  const filename = `${fw.id}.mdx`;
   writeFileSync(join(DOCS, "frameworks", filename), content);
   console.log(`  generated frameworks/${filename}  (${rules.length} assertions)`);
 }
 
-// Rename .md → .mdx for framework pages (Astro needs MDX for Badge imports)
+// Remove any legacy .md files (Astro needs MDX for Badge imports)
 import { existsSync, unlinkSync } from "node:fs";
 for (const fw of FRAMEWORKS) {
   const md = join(DOCS, "frameworks", `${fw.id}.md`);
