@@ -20,7 +20,7 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies and build
-        run: bun install && bun build
+        run: bun install && bun run build
 
       - name: Run compliance checks
         id: compliance
