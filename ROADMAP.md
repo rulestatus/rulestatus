@@ -165,6 +165,71 @@ $ rulestatus update
 
 ---
 
+## Self-Compliance Track — CCO Remediation (Prerequisite for External Release)
+
+The CCO review (May 2026) identified critical documentation gaps that must be closed before any external marketing or customer deployment. A compliance tool with compliance gaps in its own docs creates legal liability and undermines credibility. This track runs in parallel with Phase 3 code work. Release is gated on all Phase 0 and Phase 1 items being complete.
+
+Release criteria (all must pass before external release):
+- 0 TODO placeholders in `docs/`
+- `rulestatus run` on this repo returns 0 FAIL
+- Prohibited uses documented (≥5 use cases)
+- All governance roles assigned
+- External legal counsel engaged
+
+### SCT-0 — Immediate (Week 1–2)
+
+- [ ] **SCT-0.1** — Complete `docs/compliance/prohibited-uses.yaml` — must document at minimum: tool output ≠ legal certification; not a substitute for notified body evaluation under Art. 43; not a gate for high-risk AI deployment without human legal review; not sole compliance evidence for regulatory submissions. (P0)
+- [ ] **SCT-0.2** — Complete `docs/compliance/data-governance.yaml` — document that no ML training data exists (rule-based engine), enumerate regulatory text sources (EU AI Act 2024/1689, ISO/IEC 42001:2023, NIST AI RMF 1.0), list synthetic test fixtures, document data minimisation (no collection or transmission except via opt-in `--provider` flags). (P0)
+- [ ] **SCT-0.3** — Complete `docs/bias_assessment.yaml` — document methodology for evaluating potential bias in assertion logic, assess whether rule phrasing creates systematic documentation gaps, evaluate template representation of protected characteristics. Conclusion of "not applicable" is acceptable with documented rationale. (P0)
+- [ ] **SCT-0.4** — Assign governance roles in `docs/aims/aims-roles.yaml` — define accountable persons for AI policy owner, compliance lead, risk owner. Cannot remain TODO if the product is marketed to help others achieve ISO 42001 Clause 5.3. (P0)
+- [ ] **SCT-0.5** — Engage EU AI Act-specialized legal counsel — signed engagement letter; name and firm documented in `docs/aims/aims-roles.yaml`; scope covers EU AI Act assertion library review. Feeds P2.6. (P0)
+
+### SCT-1 — Foundation (Week 3–6)
+
+- [ ] **SCT-1.1** — Complete all AIMS documentation files with substantive content (not TODO placeholders):
+  - `docs/aims/ai-policy.yaml` — purpose, commitments, approval (ISO 42001 Clause 5.2)
+  - `docs/aims/aims-scope.yaml` — scope, context, interested parties (ISO 42001 Clauses 4.1–4.4)
+  - `docs/aims/ai-objectives.yaml` — measurable objectives and targets
+  - `docs/aims/ai-risk-assessment.yaml` — risk assessment methodology and results
+  - `docs/aims/ai-impact-assessment.yaml` — impact assessment for the tool itself
+  - `docs/aims/aims-risk-assessment.yaml` — AIMS-level risk assessment
+  - `docs/aims/competence-requirements.yaml` — required competencies per role (ISO 42001 Clause 7.2)
+  - `docs/aims/document-control.yaml` — review cycle and version control (ISO 42001 Clause 7.5.2)
+  - `docs/aims/lifecycle.yaml` — AI system lifecycle documentation
+  - `docs/aims/operational-procedures.yaml` — operational procedures for running the tool
+  - `docs/aims/monitoring-plan.yaml` — metrics and monitoring frequency (ISO 42001 Clause 9.1)
+  - `docs/aims/audit-program.yaml` — schedule and scope (ISO 42001 Clause 9.2)
+  - `docs/aims/management-review.yaml` — review cadence, inputs, decisions (ISO 42001 Clause 9.3)
+  - `docs/aims/corrective-action.yaml` — nonconformity process (ISO 42001 Clause 10.2)
+- [ ] **SCT-1.2** — Complete all AI RMF documentation files:
+  - `docs/ai-rmf/ai-risk-policy.yaml`
+  - `docs/ai-rmf/ai-roles.yaml`
+  - `docs/ai-rmf/system-context.yaml`
+  - `docs/ai-rmf/vendor-risk.yaml`
+- [ ] **SCT-1.3** — Complete training documentation:
+  - `docs/training/awareness-program.yaml`
+  - `docs/training/training-materials.yaml`
+- [ ] **SCT-1.4** — Expand risk register (`docs/risk-management/risk-management.yaml`) with missing risk categories identified by CCO review: legal (class action from regulatory reliance), operational (assertion coding errors), security (supply chain attack via npm), privacy (PII exposure in logs), financial (regulatory fine for capability misrepresentation), reputational (public exposure of incomplete self-docs), technical (regulatory interpretation breaking changes without versioning).
+- [ ] **SCT-1.5** — Document assertion validation methodology — test case count (pass/fail/edge), expert reviewer names and review date, known false positive/negative categories, ongoing monitoring process via GitHub Issues. Feeds P2.6 legal review scope.
+- [ ] **SCT-1.6** — Legal review of assertion library (P2.6 delivery) — external counsel reviews all 95 assertions, produces written opinion, name and review date appear in PDF report footer and website.
+
+### SCT-2 — Operationalization (Week 7–10)
+
+- [ ] **SCT-2.1** — Implement interpretation versioning — document regulatory baseline versions (EU AI Act 2024/1689 as published 2024-08-01, ISO/IEC 42001:2023, NIST AI RMF 1.0 January 2023), establish changelog linking assertion changes to regulatory amendments, track implementing acts as they are published.
+- [ ] **SCT-2.2** — Add regulatory currency disclaimer to all output surfaces — "Assertions based on [framework] as published [date]. No implementing acts incorporated as of version [X]."
+- [ ] **SCT-2.3** — Complete management review cycle documentation — first management review meeting, decisions recorded in `docs/aims/management-review.yaml`.
+- [ ] **SCT-2.4** — Establish corrective action workflow — document nonconformity process, link to GitHub Issues for tracking.
+- [ ] **SCT-2.5** — Internal audit dry run — run full self-assessment, document findings, close gaps.
+
+### SCT-3 — Assurance (Week 11–14)
+
+- [ ] **SCT-3.1** — Full self-assessment using Rulestatus on this repo — target: 0 FAIL. Result is the first public proof that the product works on its own codebase.
+- [ ] **SCT-3.2** — External legal opinion — qualified EU AI Act counsel provides written opinion on regulatory interpretation methodology and assertion library scope.
+- [ ] **SCT-3.3** — Third-party ISO 42001 gap assessment — external auditor reviews AIMS documentation completeness against Clause 4–10 requirements; remediate findings.
+- [ ] **SCT-3.4** — Executive sign-off — management review meeting with decisions documented; completion of this track is the formal release gate.
+
+---
+
 ## Phase 3 — Platform & Expansion (Weeks 11–16+)
 
 ### P3.1 — Additional frameworks ✓ ISO/IEC 42001 Done ✓ NIST AI RMF Done
