@@ -31,6 +31,13 @@ export interface RuleMeta {
   fn?: (system: SystemContext) => Promise<void>;
 }
 
+export const FRAMEWORK_LABEL: Record<string, string> = {
+  "eu-ai-act": "EU AI Act",
+  "iso-42001": "ISO/IEC 42001:2023",
+  "nist-ai-rmf": "NIST AI RMF 1.0",
+  "colorado-sb24-205": "Colorado SB 24-205",
+};
+
 export const RULE_REGISTRY: RuleMeta[] = [];
 
 /**

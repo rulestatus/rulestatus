@@ -743,7 +743,7 @@ The CLI and full rule library are open-source forever (Apache 2.0). Monetisation
 **What is open-source (free forever):**
 - Full engine: test runner, builder DSL, evidence collectors, result types
 - Full rule library: every assertion for every framework, including all future additions
-- All CLI commands: `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry`
+- All CLI commands: `run`, `init`, `explain`, `generate`, `report`, `bundle`, `attest`, `export-registry`, `export-methodology`
 - All reporters: console, JSON, SARIF, JUnit, badge, PDF
 - GitHub Action
 

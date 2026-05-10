@@ -111,6 +111,7 @@ The signed bundle contains a manifest, all evidence files, and the last-run summ
 | `rulestatus report <file>` | Re-render a saved JSON results file in another format |
 | `rulestatus update` | Check for a newer version of the rule library |
 | `rulestatus export-registry` | Export obligation + assertion YAML registry from rule definitions |
+| `rulestatus export-methodology` | Generate `docs/methodology/assertion-traceability.md` — obligation → evidence chain in plain English |
 
 ### Templates (`rulestatus generate`)
 
@@ -203,7 +204,7 @@ severity_gate:
 
 ## What's checked
 
-### EU AI Act — 43 assertions
+### EU AI Act — 44 assertions
 
 High-risk AI providers under Regulation (EU) 2024/1689, Articles 6, 9, 10, 11, 13, 14, 15.
 
@@ -241,6 +242,17 @@ All 4 core functions: GOVERN, MAP, MEASURE, MANAGE.
 | **MAP** | System context and intended use, external factors, capabilities and limitations, likelihood and impact documentation |
 | **MEASURE** | Evaluation criteria, performance documentation, fairness and bias metrics, security and adversarial robustness, third-party component risks |
 | **MANAGE** | Risk treatment plan, residual risks, incident response and escalation, production monitoring |
+
+### Colorado SB 24-205 — 14 assertions
+
+High-risk AI developers and deployers under Colorado's AI Act, Sections 1702–1705.
+
+| Section | Checks |
+|---|---|
+| **§1702** | Model card (intended use, limitations, discrimination risks), dataset documentation (sources, governance, bias), bias evaluation (≥3 protected characteristics), discrimination risk mitigation, public risk management statement, incident reporting |
+| **§1703** | Risk management program aligned to a recognized framework, pre-deployment impact assessment, impact assessment covers purpose/risk/data/metrics/monitoring, annual review date |
+| **§1704** | Consumer AI disclosure notice, pre-decision notice (data categories, appeal process, contact information) |
+| **§1705** | Consumer data correction mechanism, appeal process with human review option |
 
 ---
 

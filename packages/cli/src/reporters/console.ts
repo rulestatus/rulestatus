@@ -1,14 +1,8 @@
 import chalk from "chalk";
 import type { RuleResult, RunReport } from "../core/result.js";
 import { attested, failed, manual, passed, skipped, warned } from "../core/result.js";
+import { FRAMEWORK_LABEL } from "../core/rule.js";
 import type { Reporter } from "./types.js";
-
-const FRAMEWORK_LABEL: Record<string, string> = {
-  "eu-ai-act": "EU AI Act",
-  "iso-42001": "ISO 42001",
-  "nist-ai-rmf": "NIST AI RMF",
-  "colorado-sb24-205": "Colorado AI Act (SB 24-205)",
-};
 
 const STATUS_FORMAT: Record<string, (s: string) => string> = {
   PASS: chalk.bold.green,

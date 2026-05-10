@@ -8,7 +8,7 @@ import type {
   ModelCard,
   Structured,
 } from "./check.js";
-import type { RuleMeta } from "./rule.js";
+import { FRAMEWORK_LABEL, type RuleMeta } from "./rule.js";
 
 export interface ExtractedField {
   canonical: string;
@@ -190,16 +190,10 @@ export function extractTemplates(rules: RuleMeta[]): DocTemplateSpec[] {
 
 // ── Renderers ─────────────────────────────────────────────────────────────────
 
-const FRAMEWORK_LABELS: Record<string, string> = {
-  "iso-42001": "ISO/IEC 42001:2023",
-  "nist-ai-rmf": "NIST AI RMF 1.0",
-  "eu-ai-act": "EU AI Act (2024/1689)",
-};
-
 export function renderTemplate(spec: DocTemplateSpec): string {
   if (spec.kind !== "doc") return renderNodeTemplate(spec);
 
-  const label = FRAMEWORK_LABELS[spec.framework] ?? spec.framework;
+  const label = FRAMEWORK_LABEL[spec.framework] ?? spec.framework;
   const articles = spec.articles.join(", ");
   const lines: string[] = [
     `# ${spec.category} — ${label} ${articles}`,
@@ -252,7 +246,7 @@ export function renderTemplate(spec: DocTemplateSpec): string {
 }
 
 function renderNodeTemplate(spec: DocTemplateSpec): string {
-  const label = FRAMEWORK_LABELS[spec.framework] ?? spec.framework;
+  const label = FRAMEWORK_LABEL[spec.framework] ?? spec.framework;
   const articles = spec.articles.join(", ");
 
   const header = [
