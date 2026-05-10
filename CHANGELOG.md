@@ -10,6 +10,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 ### Features
 
+- regulatory currency disclaimer on all output surfaces (`b9f2e3c`)
 - auditor docs (`82b184b`)
 - p2.2 methodology docs (`a40542d`)
 - colorado ai act (`068e0ef`)
@@ -43,6 +44,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 ### Bug Fixes
 
+- deployment of docs (`8ef7c56`)
 - builds in ci (`1987c19`)
 - ci usage (`189924d`)
 - bug fixes (`c8bedbf`)
@@ -56,6 +58,11 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 ### Documentation
 
+- add colorado act (`e2e6753`)
 - icp landing page (`fedaa09`)
 - more content (`63aa562`)
 - add README and add .rulestatus/ to gitignore (`fc5e85e`)
+
+### CI
+
+- generate changelog from commits (`faa4754`)
