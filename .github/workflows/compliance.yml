@@ -14,16 +14,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install rulestatus
-        run: npm install -g rulestatus
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies and build
+        run: bun install && bun build
 
       - name: Run compliance checks
         id: compliance
-        run: rulestatus run --format sarif,json,pdf
+        run: node packages/cli/dist/rulestatus.js run --format sarif,json,pdf
         continue-on-error: true
 
       - name: Upload SARIF to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: compliance-reports/
@@ -34,4 +39,5 @@ jobs:
         with:
           name: compliance-reports
           path: compliance-reports/
+          if-no-files-found: warn
           retention-days: 365

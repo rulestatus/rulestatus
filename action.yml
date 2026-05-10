@@ -58,9 +58,12 @@ runs:
       with:
         bun-version: latest
 
-    - name: Install Rulestatus
+    - name: Install dependencies and build Rulestatus
       shell: bash
-      run: bun install -g rulestatus
+      run: |
+        cd "${{ github.action_path }}"
+        bun install --frozen-lockfile
+        bun build
 
     - name: Run compliance checks
       id: run
@@ -72,11 +75,13 @@ runs:
           BASE_ARGS="$BASE_ARGS --config ${{ inputs.config-path }}"
         fi
 
+        RULESTATUS="node ${{ github.action_path }}/packages/cli/dist/rulestatus.js"
+
         EXIT_CODE=0
         IFS=',' read -ra FWS <<< "${{ inputs.frameworks }}"
         for fw in "${FWS[@]}"; do
           fw=$(echo "$fw" | xargs)
-          rulestatus run $BASE_ARGS --framework "$fw" || EXIT_CODE=$?
+          $RULESTATUS run $BASE_ARGS --framework "$fw" || EXIT_CODE=$?
         done
 
         SARIF_FILE=$(ls "${{ inputs.output-dir }}"/*.sarif 2>/dev/null | head -1)
@@ -101,12 +106,13 @@ runs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        BUNDLE=$(rulestatus bundle --output "${{ inputs.output-dir }}/bundle-${{ github.sha }}.tar.gz" 2>&1 | grep 'Bundle:' | awk '{print $2}')
+        RULESTATUS="node ${{ github.action_path }}/packages/cli/dist/rulestatus.js"
+        BUNDLE=$($RULESTATUS bundle --output "${{ inputs.output-dir }}/bundle-${{ github.sha }}.tar.gz" 2>&1 | grep 'Bundle:' | awk '{print $2}')
         if [ -n "$BUNDLE" ] && [ -f "$BUNDLE" ]; then
-          rulestatus attest "$BUNDLE" --provider github
+          $RULESTATUS attest "$BUNDLE" --provider github
         else
           echo "  Warning: bundle not found, attesting JSON reports individually"
           for f in "${{ inputs.output-dir }}"/*.json; do
-            [ -f "$f" ] && rulestatus attest "$f" --provider github
+            [ -f "$f" ] && $RULESTATUS attest "$f" --provider github
           done
         fi
