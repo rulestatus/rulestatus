@@ -1,17 +1,52 @@
 # ai-risk-policy — NIST AI RMF 1.0 GOVERN 1.1, GOVERN 1.5, GOVERN 4.1, GOVERN 6.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-NIST-AIRMF-GV-001-01, ASSERT-NIST-AIRMF-GV-002-01,
+# ASSERT-NIST-AIRMF-GV-004-01, ASSERT-NIST-AIRMF-GV-005-01
 
-# ASSERT-NIST-AIRMF-GV-001-01: AI risk management policy is documented
-scope: "TODO: Describe ..."  # aliases accepted: governance_structure
+scope: >
+  This AI risk management policy applies to all AI-related activities of Rulestatus,
+  currently comprising the Rulestatus CLI (rulestatus npm package) and its associated
+  documentation, CI/CD pipeline, and evidence infrastructure. The policy aligns with
+  NIST AI RMF 1.0 across GOVERN, MAP, MEASURE, and MANAGE functions. It applies to
+  Rulestatus as both the system being governed (this repo's own compliance) and as
+  the tool used to govern customer AI systems.
 
-# ASSERT-NIST-AIRMF-GV-001-01: AI risk management policy is documented
-risk_management_commitment: "TODO: ..."  # aliases accepted: commitment
+risk_management_commitment: >
+  Rulestatus commits to managing AI risks throughout the full lifecycle of the Rulestatus
+  system. This includes: identifying risks before development begins (MAP), measuring
+  risk through self-compliance runs and monitoring metrics (MEASURE), managing identified
+  risks with active treatment plans (MANAGE), and governing the overall program through
+  policy, roles, and communication (GOVERN). All risk decisions are documented and
+  version-controlled. No AI system feature ships without a corresponding self-compliance
+  check passing on this repo.
 
-# ASSERT-NIST-AIRMF-GV-002-01: Organizational AI risk tolerance is defined
-risk_tolerance: "TODO: ..."  # aliases accepted: riskTolerance, acceptable_risk
+risk_tolerance: >
+  Risk tolerance thresholds for Rulestatus:
+  - Critical risks (likelihood × impact ≥ 15): require immediate treatment; no release
+    proceeds with an untreated critical risk.
+  - High risks (score 10–14): require active treatment plan with a named owner and
+    target date before the risk is accepted.
+  - Medium risks (score 5–9): treatment plan documented; may be accepted with written
+    rationale.
+  - Low risks (score < 5): accepted without treatment plan; monitored annually.
+  Specific accepted residual risks documented in docs/aims/ai-risk-assessment.yaml.
+  Risk scoring: likelihood (1–5) × impact (1–5) per ISO 31000 principles.
 
-# ASSERT-NIST-AIRMF-GV-004-01: AI risk and benefits are communicated to relevant stakeholders
-communication_plan: "TODO: Describe ..."  # aliases accepted: stakeholder_communication, communicationPlan
+communication_plan: >
+  AI risk and benefit communication:
+  - Users: risks communicated through mandatory disclaimer on all output surfaces
+    (console, PDF, JSON, SARIF); prohibited-uses.yaml available publicly.
+  - Enterprise customers: evidence readiness framing in all reports; PDF cover page
+    includes regulatory baseline versions and disclaimer.
+  - Open-source community: CONTRIBUTING.md explains assertion review process and
+    known limitations; GitHub Issues are public for transparency.
+  - Regulators: SARIF output format is consumable by regulatory tooling; full audit
+    bundle available via rulestatus bundle + rulestatus attest.
+  - Legal counsel: assertion library available for external review via
+    rulestatus export-registry (YAML format with legalText and reviewStatus fields).
 
-# ASSERT-NIST-AIRMF-GV-005-01: Third-party AI risk management policies are established
-third_party_policy: "TODO: Describe ..."  # aliases accepted: supply_chain_risk, vendor_risk
+third_party_policy: >
+  Third-party AI components: Rulestatus does not use any external AI model or LLM.
+  It is a deterministic rule-based engine. Third-party software dependencies are
+  managed per the policy in docs/ai-rmf/vendor-risk.yaml: open-source only,
+  license-compatible, security-audited before each release. Supply chain risk is
+  mitigated through bun audit, Dependabot, and npm provenance attestation via Sigstore.

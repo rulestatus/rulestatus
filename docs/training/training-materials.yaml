@@ -1,5 +1,35 @@
 # training-materials — ISO/IEC 42001:2023 7.3
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-007-002-01
 
-# ASSERT-ISO-42001-007-002-01: Awareness program for AI policy and AIMS exists
-ai_policy: "TODO: Describe ..."  # aliases accepted: aims_obligations, awareness
+ai_policy: >
+  Training materials and awareness resources for Rulestatus AIMS obligations:
+
+  Primary materials (available to all contributors):
+  (1) CLAUDE.md — project-level guidance covering architecture, assertion conventions,
+      evidence model, check DSL, and the obligation-to-assertion methodology pipeline.
+      Serves as the primary onboarding document for new contributors.
+
+  (2) docs/methodology/ — formal methodology documentation:
+      - overview.md: how law becomes a test (Stage 1–4 pipeline)
+      - assertion-ids.md: ASSERT-ID naming convention
+      - evidence.md: evidence model and confidence levels
+      - review-process.md: analyst qualifications, peer review, auditor-grade criteria
+
+  (3) docs/methodology/assertion-traceability.md — auto-generated from RULE_REGISTRY;
+      traces every obligation through its assertion ID to its evidence check and
+      remediation path. Reference for legal reviewers and auditors.
+
+  (4) CONTRIBUTING.md — assertion contribution guide: how to propose new assertions,
+      flag incorrect ones, add a framework, and meet review criteria.
+
+  (5) Regulatory texts (external):
+      - EU AI Act: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401689
+      - ISO/IEC 42001:2023: available via ISO website (purchase required)
+      - NIST AI RMF 1.0: https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf
+      - Colorado SB 24-205: https://leg.colorado.gov/bills/sb24-205
+
+  AIMS obligations awareness:
+  All contributors are expected to understand: (a) that Rulestatus produces evidence
+  readiness indicators, not legal compliance certifications; (b) the prohibited uses
+  documented in docs/compliance/prohibited-uses.yaml; (c) that assertions require
+  external legal review before being used in enterprise procurement contexts.

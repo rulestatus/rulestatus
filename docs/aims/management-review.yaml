@@ -1,8 +1,30 @@
 # management-review — ISO/IEC 42001:2023 9.3
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-009-003-01
 
-# ASSERT-ISO-42001-009-003-01: Management review of the AIMS is conducted and recorded
-review_date: "TODO: ..."  # aliases accepted: reviewDate
+review_date: "2026-05-10"
 
-# ASSERT-ISO-42001-009-003-01: Management review of the AIMS is conducted and recorded
-decisions: "TODO: ..."  # aliases accepted: improvement_actions, outcomes
+decisions: >
+  First management review of the Rulestatus AIMS — conducted 2026-05-10 by Philipp Nagel
+  (Founder & CEO, sole management representative).
+
+  Inputs reviewed:
+  - Self-compliance run results: 37/37 PASS (ISO 42001 + NIST AI RMF; EU AI Act skipped
+    — system is limited-risk, high-risk articles not applicable)
+  - Risk register: 7 risks identified, all with active treatment plans
+  - SCT self-compliance track status: SCT-0 complete; SCT-1 and SCT-2 in progress
+  - Monitoring metrics: evidence readiness score at ~60% (TODO placeholders remaining
+    in docs/); addressed as primary output of this review
+  - Regulatory currency: FRAMEWORK_BASELINES pinned to publication dates of all 4
+    frameworks; no implementing acts affecting current assertions published to date
+
+  Decisions:
+  1. Approve AI policy (docs/aims/ai-policy.yaml) effective 2026-05-10.
+  2. Prioritize completion of all AIMS documentation files (SCT-1) before external release.
+  3. Engage EU AI Act external legal counsel within 60 days (target: 2026-07-10).
+  4. Schedule next management review for Q4 2026 or earlier if a material regulatory
+     change occurs (e.g., implementing act published under EU AI Act).
+  5. Accept residual risks RISK-001, RISK-002, RISK-003 as documented in ai-risk-assessment.yaml.
+  6. Add Colorado SB 24-205 to self-compliance tracking once the framework's docs
+     templates are generated and evidence files completed.
+
+  Next review: Q4 2026 (target: 2026-11-01).

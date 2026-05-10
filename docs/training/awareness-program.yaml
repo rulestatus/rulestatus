@@ -1,5 +1,29 @@
 # awareness-program — ISO/IEC 42001:2023 7.3
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-007-002-01
 
-# ASSERT-ISO-42001-007-002-01: Awareness program for AI policy and AIMS exists
-ai_policy_awareness: "TODO: Describe ..."  # aliases accepted: policy_awareness, aims_awareness
+ai_policy_awareness: >
+  AI policy and AIMS awareness program for Rulestatus:
+
+  Current organization size: 1 person (Philipp Nagel). All roles are held by the same
+  individual, so formal training delivery is replaced by equivalent self-study and
+  evidence of competence through delivered work products.
+
+  Awareness activities:
+  (1) Policy review — AI policy (docs/aims/ai-policy.yaml) is reviewed at each annual
+      management review. The sole operator reads and approves the policy as part of the
+      management review record (docs/aims/management-review.yaml).
+
+  (2) Regulatory self-study — ongoing study of EU AI Act, ISO/IEC 42001:2023, NIST AI RMF 1.0,
+      and Colorado SB 24-205 through primary regulation texts, official guidance documents,
+      and legal counsel engagement (SCT-0.5).
+
+  (3) Self-compliance check as awareness mechanism — running rulestatus run on this repo
+      on every release reinforces awareness of AIMS requirements through direct practice.
+
+  (4) External contributors — CONTRIBUTING.md communicates the assertion review process,
+      methodology, and AIMS commitments to open-source contributors. All contributions
+      must pass CI (tests, typecheck, lint, self-compliance run) before merging.
+
+  Scale trigger: when additional personnel are onboarded, formal training delivery
+  (induction session, policy sign-off, competence assessment) will be implemented.
+  This document will be updated to reflect the new program.

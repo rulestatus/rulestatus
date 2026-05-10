@@ -1,16 +1,33 @@
 # aims-scope — ISO/IEC 42001:2023 4.1, 4.2, 10.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-004-001-01, ASSERT-ISO-42001-010-002-01
 
-# ASSERT-ISO-42001-004-001-01: Organizational context and AIMS scope are documented
-scope: "TODO: Describe ..."  # aliases accepted: aims_scope, system_scope
+scope: >
+  The AIMS covers the design, development, testing, release, and ongoing maintenance of
+  the Rulestatus CLI (rulestatus npm package). Scope includes: rule library authorship,
+  evidence collection logic, report generation, attestation pipeline, and the documentation
+  site. Excluded: customer AI systems evaluated using Rulestatus (those are the customer's
+  scope); SaaS platform features not yet implemented.
 
-# ASSERT-ISO-42001-004-001-01: Organizational context and AIMS scope are documented
-organizational_context: "TODO: ..."  # aliases accepted: context
+organizational_context: >
+  Rulestatus is developed and operated by Rulestatus (sole operator: Philipp Nagel).
+  The organization provides a developer-tools product in the AI compliance space.
+  External context: EU AI Act enforcement timelines create strong market demand;
+  ISO/IEC 42001 adoption is accelerating among enterprise AI providers.
+  Internal context: single-person engineering team; all AIMS roles held by the founder;
+  open-source model (Apache 2.0) with planned SaaS platform.
 
-# ASSERT-ISO-42001-004-002-01: Interested parties and their AI-relevant requirements are identified
-interested_parties:  # aliases accepted: interestedParties, stakeholders
-  - "TODO: item 1"
-  - "TODO: item 2"
+interested_parties:
+  - "Developers and compliance teams using Rulestatus to assess their AI systems"
+  - "Enterprise procurement teams receiving Rulestatus reports as vendor evidence"
+  - "EU regulatory authorities (GDPR/AI Act supervisory bodies)"
+  - "ISO certification bodies (future: if ISO 42001 certification is sought)"
+  - "npm ecosystem users and open-source contributors"
+  - "External legal counsel reviewing assertion library (SCT-0.5)"
 
-# ASSERT-ISO-42001-010-002-01: Continual improvement of the AIMS is planned
-continual_improvement: "TODO: ..."  # aliases accepted: improvement_plan, improvementPlan
+continual_improvement: >
+  Continual improvement is driven through: (1) self-compliance runs on every release
+  (rulestatus run on this repo); (2) GitHub Issues tracking assertion gaps and false
+  positives; (3) annual management review (docs/aims/management-review.yaml);
+  (4) incorporation of external legal counsel feedback into assertion updates;
+  (5) regulatory monitoring process (docs/methodology/regulatory-monitoring.md)
+  tracking implementing acts and amendments.

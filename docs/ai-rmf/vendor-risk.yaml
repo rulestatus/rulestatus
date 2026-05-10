@@ -1,10 +1,59 @@
 # vendor-risk — NIST AI RMF 1.0 GOVERN 6.1, MEASURE 2.9
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-NIST-AIRMF-GV-005-01, ASSERT-NIST-AIRMF-MS-005-01
 
-# ASSERT-NIST-AIRMF-GV-005-01: Third-party AI risk management policies are established
-third_party_policy: "TODO: Describe ..."  # aliases accepted: supply_chain_risk, provenance
+third_party_policy: >
+  Rulestatus uses open-source npm/bun packages as third-party components. Policy:
+  (1) All dependencies must be open-source with a permissive license (MIT, Apache 2.0,
+      BSD) compatible with the Apache 2.0 license of Rulestatus.
+  (2) bun audit is run before every release; high/critical vulnerabilities must be
+      resolved before publishing.
+  (3) Dependabot is enabled on the GitHub repository for automated security alerts.
+  (4) No proprietary AI model or external API is used in the core assertion engine;
+      the tool is rule-based and deterministic.
+  (5) The only external network calls in normal operation are: (a) optional API probe
+      checks configured by the user, (b) optional Sigstore/Rekor attestation (hash only,
+      no document content), (c) optional npm version check. All are opt-in or user-triggered.
+  (6) npm provenance attestation is used for published package versions (Sigstore).
 
-# ASSERT-NIST-AIRMF-MS-005-01: Risks from third-party AI components and data are documented
-third_party_components:  # aliases accepted: ai_components, component_risks
-  - "TODO: item 1"
-  - "TODO: item 2"
+third_party_components:
+  - name: "@clack/prompts"
+    version: "^1.3.0"
+    purpose: "Interactive CLI prompts for rulestatus init"
+    license: "MIT"
+    risk: "Low — UI only, no data processing"
+
+  - name: "chalk"
+    version: "^5.3.0"
+    purpose: "Terminal color output in console reporter"
+    license: "MIT"
+    risk: "Low — output formatting only"
+
+  - name: "commander"
+    version: "^14.0.3"
+    purpose: "CLI argument parsing framework"
+    license: "MIT"
+    risk: "Low — command routing only"
+
+  - name: "js-yaml"
+    version: "^4.1.0"
+    purpose: "YAML parsing for evidence files and config"
+    license: "MIT"
+    risk: "Medium — parses user-provided YAML; malformed input handled gracefully"
+
+  - name: "pdfkit"
+    version: "^0.18.0"
+    purpose: "PDF report generation"
+    license: "MIT"
+    risk: "Low — output generation only; no network access"
+
+  - name: "@astrojs/starlight + astro"
+    version: "^0.39.2 / ^6.3.1"
+    purpose: "Documentation site build (packages/docs only, not in CLI)"
+    license: "MIT"
+    risk: "Low — build-time only, not shipped in CLI package"
+
+  - name: "@biomejs/biome"
+    version: "^2.4.15"
+    purpose: "TypeScript linting and formatting (dev dependency)"
+    license: "MIT"
+    risk: "Low — dev tooling only, not in production package"

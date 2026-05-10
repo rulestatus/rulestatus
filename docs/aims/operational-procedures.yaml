@@ -1,5 +1,30 @@
 # operational-procedures — ISO/IEC 42001:2023 8.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-008-004-01
 
-# ASSERT-ISO-42001-008-004-01: Operational planning and control procedures are documented
-development_controls: "TODO: ..."  # aliases accepted: review_gates, deployment_approval, controls
+development_controls: >
+  Operational controls for the Rulestatus AI system (the rule library and CLI):
+
+  Review gates:
+  - Every new or modified assertion must have a passing unit test before merging to main.
+  - All changes to src/frameworks/ trigger the full self-compliance workflow in CI
+    (.github/workflows/compliance.yml): rulestatus run --format sarif,json,pdf on this repo.
+  - Pull requests require passing: bun test, bun typecheck, bun lint (Biome),
+    commitlint (conventional commits enforced via .github/workflows/commitlint.yml).
+  - SARIF output is uploaded to GitHub Code Scanning; any new assertion gap in this
+    repo's own compliance run must be resolved before the PR can merge.
+
+  Deployment approval:
+  - npm releases are manual (bun publish from the CLI). No automated release pipeline
+    without manual approval. Release checklist: (1) rulestatus run on this repo returns
+    0 FAIL; (2) CHANGELOG.md updated via bun changelog; (3) version bumped in
+    packages/cli/package.json; (4) git tag created.
+
+  Controls:
+  - Secrets and PII redaction: evidence collectors apply redactData() at read time;
+    no raw secrets appear in report output (P2.11).
+  - Attestation: rulestatus attest computes SHA-256 + writes attestation.json;
+    GitHub Actions optionally submits to Sigstore/Rekor for OIDC-backed proof.
+  - Dependency security: bun audit run before each release; Dependabot alerts
+    monitored weekly.
+  - API probe surface: Article 14 rules use config/doc checks first; API probe is
+    optional and falls through to MANUAL if no response (P2.4).

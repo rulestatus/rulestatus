@@ -1,5 +1,15 @@
 # document-control — ISO/IEC 42001:2023 7.5
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-007-003-01
 
-# ASSERT-ISO-42001-007-003-01: Document control procedure for AIMS documented information exists
-review_cycle: "TODO: ..."  # aliases accepted: review_frequency, retention_period, reviewCycle
+review_cycle: >
+  All AIMS documents (docs/aims/, docs/compliance/, docs/ai-rmf/, docs/training/) are
+  reviewed at minimum annually, triggered by: (1) scheduled annual management review
+  (docs/aims/management-review.yaml); (2) a regulation amendment affecting covered
+  frameworks; (3) a material change to the Rulestatus system (new framework added,
+  architecture change, significant new capability). Documents are version-controlled
+  in git; commit history is the audit trail. Retention period: indefinitely via git
+  history; no document is deleted, only superseded by a newer version in the same file.
+  Controlled documents: all YAML and Markdown files under docs/. Format: YAML for
+  structured evidence, Markdown for process documentation. Approval authority: Philipp Nagel
+  (AI Policy Owner). External documents (regulations, standards) are referenced by
+  citation and version in FRAMEWORK_BASELINES (packages/cli/src/core/rule.ts).

@@ -1,10 +1,53 @@
 # ai-objectives — ISO/IEC 42001:2023 6.2, 10.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-006-002-01, ASSERT-ISO-42001-010-002-01
+# Note: specific numeric targets (install counts, revenue) should be reviewed and
+# updated by the AI Policy Owner each management review cycle.
 
-# ASSERT-ISO-42001-006-002-01: AI management objectives are documented and measurable
-objectives:  # aliases accepted: aims_objectives, aiObjectives
-  - "TODO: item 1"
-  - "TODO: item 2"
+objectives:
+  - id: OBJ-001
+    objective: "Zero FAIL results in self-compliance run on this repo at every release"
+    measure: "rulestatus run exit code 0; SARIF uploaded to GitHub Code Scanning with 0 open findings"
+    target: "0 FAIL, 0 unattested MANUAL"
+    frequency: "Per release"
+    owner: "Philipp Nagel"
+    status: "achieved as of 2026-05-10"
 
-# ASSERT-ISO-42001-010-002-01: Continual improvement of the AIMS is planned
-continual_improvement: "TODO: ..."  # aliases accepted: improvement_plan, improvement_cycle
+  - id: OBJ-002
+    objective: "100% assertion library coverage — every assertion has a corresponding unit test"
+    measure: "bun test pass rate; test count ≥ assertion count in RULE_REGISTRY"
+    target: "100% test coverage of all RULE_REGISTRY assertions"
+    frequency: "Per release"
+    owner: "Philipp Nagel"
+    status: "in progress"
+
+  - id: OBJ-003
+    objective: "External legal review of EU AI Act assertion library completed"
+    measure: "Signed engagement letter; written legal opinion received; reviewer name in PDF footer"
+    target: "Completed by 2026-07-10"
+    frequency: "Once; then annually"
+    owner: "Philipp Nagel"
+    status: "pending (SCT-0.5)"
+
+  - id: OBJ-004
+    objective: "All AIMS documentation files contain substantive content (0 TODO placeholders)"
+    measure: "grep -r TODO docs/ returns 0 matches"
+    target: "0 TODO placeholders before external release"
+    frequency: "Per release"
+    owner: "Philipp Nagel"
+    status: "in progress (SCT-1)"
+
+  - id: OBJ-005
+    objective: "Regulatory monitoring — new implementing acts reflected in assertions within 30 days"
+    measure: "Days from implementing act publication to assertion update shipping"
+    target: "≤ 30 days for critical changes"
+    frequency: "Per regulatory event"
+    owner: "Philipp Nagel"
+    status: "process defined in docs/methodology/regulatory-monitoring.md"
+
+continual_improvement: >
+  The AIMS improves through a continuous loop: (1) rulestatus self-compliance run on
+  every push identifies evidence gaps immediately; (2) GitHub Issues track assertion
+  quality improvements; (3) annual management review reassesses objectives and sets
+  new targets; (4) external audit findings (planned Q2 2027) feed into the next
+  planning cycle. Improvement actions are recorded in management-review.yaml and
+  corrective-action.yaml, and tracked as GitHub Issues.

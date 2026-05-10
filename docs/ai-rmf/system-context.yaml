@@ -1,14 +1,48 @@
 # system-context — NIST AI RMF 1.0 MAP 1.1, MAP 2.2, MAP 3.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-NIST-AIRMF-MP-001-01, ASSERT-NIST-AIRMF-MP-002-01, ASSERT-NIST-AIRMF-MP-003-01
 
-# ASSERT-NIST-AIRMF-MP-001-01: AI system context, intended use, and deployment environment are documented
-intended_use: "TODO: ..."  # aliases accepted: intendedUse
+intended_use: >
+  Rulestatus CLI v1.0 is a developer tool that checks whether AI system documentation
+  and configuration satisfies the evidence requirements of the EU AI Act, ISO/IEC 42001,
+  NIST AI RMF 1.0, and Colorado SB 24-205. It produces evidence readiness reports (console,
+  JSON, SARIF, PDF, JUnit) for use in internal audits, CI pipelines, and enterprise security
+  reviews. Intended users: AI system providers (developers, compliance teams, DevOps engineers).
+  Intended output: evidence readiness indicators — not legal compliance certifications.
 
-# ASSERT-NIST-AIRMF-MP-001-01: AI system context, intended use, and deployment environment are documented
-deployment_context: "TODO: ..."  # aliases accepted: deploymentContext, deployment_environment
+deployment_context: >
+  Deployment environments: (1) local developer workstation via npm/bun global install;
+  (2) CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins) via the published GitHub Action
+  (action.yml) or direct CLI invocation; (3) enterprise security review workflows where
+  the PDF/JSON output is submitted to procurement teams.
+  The tool runs entirely locally — no data is sent to external servers except:
+  (a) optional API probe checks (Article 14, user-configured endpoint),
+  (b) optional Sigstore/Rekor attestation submission (user-initiated, cryptographic hash only),
+  (c) optional npm version check (rulestatus update command).
 
-# ASSERT-NIST-AIRMF-MP-002-01: External factors and dependencies affecting AI risk are documented
-external_factors: "TODO: ..."  # aliases accepted: dependencies, externalFactors
+external_factors: >
+  Key external dependencies affecting AI risk:
+  - EU AI Act implementing acts: Commission delegated acts under Articles 7, 12, and others
+    may change which systems are high-risk or what evidence is required. Tracked via
+    regulatory monitoring process.
+  - ISO/IEC 42001 amendments: standard amendments could invalidate current clause mappings.
+  - npm ecosystem: third-party packages (chalk, commander, pdfkit, etc.) are supply chain
+    dependencies. Managed via bun audit and Dependabot.
+  - Node.js/Bun runtime: runtime version requirements enforced in package.json engines field.
+  - GitHub Actions runner availability: CI workflows depend on GitHub-hosted runners.
 
-# ASSERT-NIST-AIRMF-MP-003-01: AI system tasks, capabilities, and limitations are documented
-capabilities: "TODO: ..."  # aliases accepted: limitations
+capabilities: >
+  Capabilities:
+  - Automated checks: filesystem evidence collection (document existence, field presence,
+    format validation), structured data validation (YAML/JSON shape), API endpoint probing,
+    config file scanning.
+  - Manual attestation: MANUAL-status assertions require human sign-off via
+    rulestatus attest; attestation files stored in .rulestatus/attestations/.
+  - Cross-framework mapping: assertions tagged with cluster IDs enable cross-framework
+    "Also satisfies" annotations at runtime.
+  - Output formats: console, JSON, SARIF (GitHub Code Scanning), PDF, JUnit XML, SVG badge.
+  Limitations:
+  - Does not evaluate the AI system's actual algorithmic behavior, model weights, or runtime outputs.
+  - Cannot determine legal compliance — produces evidence readiness indicators only.
+  - Rule-based engine: no ML model or probabilistic inference; all checks are deterministic.
+  - Evidence quality is limited by the quality of the documentation provided.
+  - Does not cover all EU AI Act articles: Articles 7, 8, 12 are excluded (see framework page).

@@ -1,8 +1,27 @@
 # audit-program — ISO/IEC 42001:2023 9.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-009-002-01
 
-# ASSERT-ISO-42001-009-002-01: Internal audit program for the AIMS is established
-audit_schedule: "TODO: ..."  # aliases accepted: schedule, auditSchedule
+audit_schedule: >
+  Internal audit cadence:
+  (1) Automated continuous: rulestatus run on this repo on every push to main via
+      .github/workflows/compliance.yml. SARIF uploaded to GitHub Code Scanning.
+  (2) Pre-release audit: full rulestatus run --format sarif,json,pdf before every
+      npm release; results retained as GitHub Actions artifacts (365-day retention).
+  (3) Annual AIMS audit: scheduled for Q4 each calendar year. First audit: Q4 2026.
+      Covers: all docs/ evidence files, monitoring-plan metrics review, risk register
+      review, assertion library coverage gaps. Output: management-review.yaml updated
+      with findings and decisions.
+  (4) External audit: ISO 42001 gap assessment by external auditor — planned for Q2 2027
+      after first full year of operation (SCT-3.3).
 
-# ASSERT-ISO-42001-009-002-01: Internal audit program for the AIMS is established
-audit_scope: "TODO: ..."  # aliases accepted: scope
+audit_scope: >
+  Audit scope covers all elements of the Rulestatus AIMS:
+  - Assertion library completeness and accuracy (all frameworks in RULE_REGISTRY)
+  - Evidence documentation completeness (docs/ directory, no TODO placeholders)
+  - Self-compliance run results (0 FAIL target)
+  - Risk register currency (docs/aims/ai-risk-assessment.yaml, docs/risk_register.yaml)
+  - Monitoring metrics performance against targets (monitoring-plan.yaml)
+  - Regulatory currency (FRAMEWORK_BASELINES versions vs. current regulation text)
+  - Dependency security posture (bun audit output)
+  - Attestation integrity (docs/attestations/ files, Sigstore records)
+  Out of scope: customer AI systems evaluated using Rulestatus (customer's own AIMS).

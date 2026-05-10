@@ -1,5 +1,33 @@
 # corrective-action — ISO/IEC 42001:2023 10.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-010-001-01
 
-# ASSERT-ISO-42001-010-001-01: Nonconformity and corrective action procedure exists
-nonconformity_process: "TODO: Describe ..."  # aliases accepted: corrective_action_process, process
+nonconformity_process: >
+  Nonconformity identification and corrective action process for the Rulestatus AIMS:
+
+  1. Detection — Nonconformities are detected through: (a) rulestatus self-compliance run
+     returning FAIL on this repo; (b) GitHub Issues filed by users reporting incorrect
+     assertions (false positives / false negatives); (c) internal review finding an
+     assertion does not match its cited legal text; (d) regulatory change making an
+     existing assertion incorrect or incomplete.
+
+  2. Recording — Each nonconformity is recorded as a GitHub Issue with label
+     "nonconformity" (for internal AIMS gaps) or "false-positive" / "false-negative"
+     (for assertion library errors). Issue must describe: what was found, what was
+     expected, which assertion ID or AIMS document is affected.
+
+  3. Root cause analysis — For critical nonconformities (assertion encodes wrong legal
+     interpretation, FAIL in own compliance run): root cause identified within 5 business
+     days. For minor nonconformities: within 30 days.
+
+  4. Corrective action — Action taken to eliminate the root cause:
+     - Assertion error: rule updated, test added, CHANGELOG entry written, new version released.
+     - Documentation gap: AIMS document updated, self-compliance re-run, result verified.
+     - Process gap: operational-procedures.yaml or review-process.md updated.
+
+  5. Verification — Corrective action verified by re-running rulestatus run on this repo.
+     If the FAIL is resolved: GitHub Issue closed with reference to the commit.
+     If not: escalate to external legal counsel (for assertion errors) or external auditor
+     (for AIMS process gaps).
+
+  6. Records — Closed GitHub Issues and their linked commits constitute the corrective
+     action record. Retained indefinitely via git history.

@@ -1,10 +1,38 @@
 # ai-roles — NIST AI RMF 1.0 GOVERN 2.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-NIST-AIRMF-GV-003-01
 
-# ASSERT-NIST-AIRMF-GV-003-01: Roles and responsibilities for AI risk management are assigned
-roles:  # aliases accepted: responsibilities
-  - "TODO: item 1"
-  - "TODO: item 2"
+roles:
+  - role: "AI Risk Management Owner"
+    name: "Philipp Nagel"
+    email: "phil@philippnagel.com"
+    responsibilities:
+      - "Define and maintain the AI risk management policy (docs/ai-rmf/ai-risk-policy.yaml)"
+      - "Ensure NIST AI RMF GOVERN, MAP, MEASURE, MANAGE functions are implemented"
+      - "Approve risk treatment decisions and residual risk acceptance"
+      - "Communicate AI risks and benefits to relevant stakeholders"
 
-# ASSERT-NIST-AIRMF-GV-003-01: Roles and responsibilities for AI risk management are assigned
-accountable_person: "TODO: ..."  # aliases accepted: accountablePerson, ai_owner, responsible_party
+  - role: "AI System Developer"
+    name: "Philipp Nagel"
+    email: "phil@philippnagel.com"
+    responsibilities:
+      - "Implement assertions in src/frameworks/ following the methodology in review-process.md"
+      - "Write unit tests for every assertion"
+      - "Run self-compliance checks (rulestatus run) before each release"
+      - "Maintain evidence collectors and reporters"
+
+  - role: "AI Risk Assessor"
+    name: "Philipp Nagel"
+    email: "phil@philippnagel.com"
+    responsibilities:
+      - "Assess risks using likelihood/impact scoring (docs/aims/ai-risk-assessment.yaml)"
+      - "Monitor third-party component risks (docs/ai-rmf/vendor-risk.yaml)"
+      - "Track incident response (docs/ai-rmf/incident-response.yaml)"
+
+  - role: "External Legal Reviewer (planned)"
+    name: "TBD"
+    responsibilities:
+      - "Independent review of EU AI Act assertion interpretation"
+      - "Validation that assertions reflect current regulatory requirements"
+    status: "pending engagement (SCT-0.5)"
+
+accountable_person: "Philipp Nagel, Founder, Rulestatus"

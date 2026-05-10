@@ -53,6 +53,6 @@ post_incident_process:
   - "If assertion error: new assertion version created, old version deprecated"
 
 contact:
-  primary: "Philipp Nagel — philipp.nagel@mako365.com"
+  primary: "Philipp Nagel — phil@philippnagel.com"
   security: "GitHub Security Advisory (preferred for security disclosures)"
   public: "GitHub Issues — https://github.com/rulestatus/rulestatus/issues"

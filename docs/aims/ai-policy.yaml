@@ -1,14 +1,30 @@
 # ai-policy — ISO/IEC 42001:2023 5.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-005-001-01, ASSERT-ISO-42001-005-001-02
 
-# ASSERT-ISO-42001-005-001-01: AI policy exists and includes required commitments
-purpose: "TODO: ..."  # aliases accepted: scope
+purpose: >
+  This AI policy governs the design, development, and operation of the Rulestatus AI
+  management system (AIMS). It establishes commitments to responsible AI development,
+  evidence-based compliance checking, and transparency about the scope and limitations
+  of the tool. It applies to all AI-related activities of Rulestatus, currently comprising
+  the Rulestatus CLI and associated documentation.
 
-# ASSERT-ISO-42001-005-001-01: AI policy exists and includes required commitments
-commitments: "TODO: ..."  # aliases accepted: commitment
+commitments: >
+  Rulestatus commits to:
+  (1) Accuracy — assertions encode the actual legal obligation, not a simplified
+      approximation; any ambiguity is flagged as MANUAL rather than AUTO-resolved.
+  (2) Transparency — all output surfaces carry a mandatory disclaimer that results
+      are evidence readiness indicators, not legal compliance certifications.
+  (3) Fairness — the assertion library is assessed for applicability bias across
+      organization size, jurisdiction, sector, and technical maturity (docs/bias_assessment.yaml).
+  (4) Safety — prohibited uses are documented and enforced through disclaimers and
+      evidence-readiness framing (docs/compliance/prohibited-uses.yaml).
+  (5) Human oversight — MANUAL assertions require human attestation; no automated
+      system makes a legal determination without a human sign-off path.
+  (6) Continuous improvement — the AIMS is reviewed annually and after any material
+      regulatory change; gaps identified through self-compliance runs are closed before
+      external release.
+  (7) Legal accountability — external legal counsel reviews the assertion library
+      before the product is used in enterprise procurement contexts (SCT-0.5, P2.6).
 
-# ASSERT-ISO-42001-005-001-02: AI policy is approved by top management
-approved_by: "TODO: ..."  # aliases accepted: approvedBy
-
-# ASSERT-ISO-42001-005-001-02: AI policy is approved by top management
-effective_date: "TODO: ..."  # aliases accepted: effectiveDate
+approved_by: "Philipp Nagel, Founder, Rulestatus"
+effective_date: "2026-05-10"

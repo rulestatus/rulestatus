@@ -1,10 +1,56 @@
 # aims-risk-assessment — ISO/IEC 42001:2023 6.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-006-001-01
+# Note: this file covers AIMS-level risks (risks to the management system itself).
+# AI system risks (risks from running the tool) are in docs/aims/ai-risk-assessment.yaml.
 
-# ASSERT-ISO-42001-006-001-01: AIMS-level risks and opportunities are identified and documented
-identified_risks:  # aliases accepted: risks
-  - "TODO: item 1"
-  - "TODO: item 2"
+identified_risks:
+  - id: AIMS-RISK-001
+    description: >
+      AIMS documentation becomes stale — evidence files contain outdated content,
+      TODO placeholders, or information that no longer reflects the system.
+    likelihood: 3
+    impact: 4
+    treatment: mitigate
+    measure: "rulestatus run on this repo in CI; no-TODO check before release; annual review"
 
-# ASSERT-ISO-42001-006-001-01: AIMS-level risks and opportunities are identified and documented
-treatment_plan: "TODO: Describe ..."  # aliases accepted: treatmentPlan, opportunities
+  - id: AIMS-RISK-002
+    description: >
+      Regulatory change invalidates AIMS scope — a new implementing act or amendment
+      changes what the AIMS must cover, and the scope document is not updated.
+    likelihood: 3
+    impact: 3
+    treatment: mitigate
+    measure: "Regulatory monitoring process (docs/methodology/regulatory-monitoring.md)"
+
+  - id: AIMS-RISK-003
+    description: >
+      Single point of failure — all AIMS roles held by one person; illness or departure
+      of Philipp Nagel would leave the AIMS unmaintained.
+    likelihood: 2
+    impact: 5
+    treatment: accept
+    measure: "Accepted at current company size; role separation planned as headcount grows; open-source community provides some continuity"
+
+  - id: AIMS-RISK-004
+    description: >
+      Legal counsel engagement delayed — external legal review (SCT-0.5) not completed
+      before external release, undermining the credibility of the assertion library.
+    likelihood: 2
+    impact: 4
+    treatment: mitigate
+    measure: "SCT-0.5 tracked in ROADMAP.md; target completion 2026-07-10"
+
+  - id: AIMS-RISK-005
+    description: >
+      AIMS conformity to ISO 42001 is insufficient for future certification — if
+      certification is sought, gaps in current AIMS documentation would be found.
+    likelihood: 3
+    impact: 3
+    treatment: mitigate
+    measure: "SCT-3.3 external gap assessment planned for Q2 2027"
+
+treatment_plan: >
+  AIMS-level risks are treated through: continuous self-compliance runs (AIMS-RISK-001),
+  regulatory monitoring process (AIMS-RISK-002), planned headcount and role separation
+  (AIMS-RISK-003), tracked SCT milestones (AIMS-RISK-004), and planned external gap
+  assessment (AIMS-RISK-005). Treatment effectiveness reviewed at annual management review.

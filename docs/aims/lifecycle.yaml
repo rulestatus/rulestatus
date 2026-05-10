@@ -1,7 +1,12 @@
 # lifecycle — ISO/IEC 42001:2023 8.4
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-008-003-01
 
-# ASSERT-ISO-42001-008-003-01: AI system lifecycle stages are documented
-lifecycle_stages:  # aliases accepted: development_stages, lifecycleStages
-  - "TODO: item 1"
-  - "TODO: item 2"
+lifecycle_stages:
+  - "1. Requirements — regulatory obligation identified; mapped to assertion ID via methodology (docs/methodology/review-process.md)"
+  - "2. Design — assertion structure and check DSL designed; reviewed against legal text; assigned cluster tag for cross-framework interoperability"
+  - "3. Implementation — rule coded in TypeScript (src/frameworks/); unit tests written; self-compliance check run on this repo"
+  - "4. Review — peer review or external legal counsel review; review_status field updated in export-registry output; bias assessment updated if new applicability criteria introduced"
+  - "5. Release — assertion shipped in a versioned npm release; CHANGELOG.md updated; commit message follows conventional commits convention"
+  - "6. Monitoring — post-release: GitHub Issues track false positives/negatives; regulatory monitoring watches for implementing acts that affect covered articles"
+  - "7. Amendment — when a regulation changes, affected assertions updated or deprecated; new version released; affected users notified via rulestatus update check"
+  - "8. Deprecation — assertions deprecated when: (a) the underlying obligation is repealed, (b) a superior check replaces it, or (c) the article is withdrawn. Deprecated assertions remain in git history; CHANGELOG entry explains the reason."

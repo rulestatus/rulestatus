@@ -11,7 +11,7 @@ roles:
   - role: "AI Policy Owner"
     title: "Founder & CEO"
     name: "Philipp Nagel"
-    email: "philipp.nagel@mako365.com"
+    email: "phil@philippnagel.com"
     responsibilities:
       - "Approve and maintain the AI policy (docs/aims/ai-policy.yaml)"
       - "Ensure AIMS conforms to ISO/IEC 42001:2023 requirements"
@@ -22,7 +22,7 @@ roles:
   - role: "Compliance Lead"
     title: "Founder & CEO (acting)"
     name: "Philipp Nagel"
-    email: "philipp.nagel@mako365.com"
+    email: "phil@philippnagel.com"
     responsibilities:
       - "Maintain compliance documentation in docs/compliance/ and docs/aims/"
       - "Run rulestatus self-compliance checks on each release"
@@ -33,7 +33,7 @@ roles:
   - role: "Risk Owner"
     title: "Founder & CEO (acting)"
     name: "Philipp Nagel"
-    email: "philipp.nagel@mako365.com"
+    email: "phil@philippnagel.com"
     responsibilities:
       - "Maintain risk register (docs/risk_register.yaml)"
       - "Assess new risks on each release cycle"
@@ -43,7 +43,7 @@ roles:
   - role: "Security Responsible"
     title: "Founder & CEO (acting)"
     name: "Philipp Nagel"
-    email: "philipp.nagel@mako365.com"
+    email: "phil@philippnagel.com"
     responsibilities:
       - "Review dependency security (bun audit)"
       - "Manage Sigstore/Rekor attestation configuration"

@@ -1,10 +1,40 @@
 # competence-requirements — ISO/IEC 42001:2023 7.2
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-007-001-01
 
-# ASSERT-ISO-42001-007-001-01: Competence requirements for AI roles are documented
-required_competencies: "TODO: ..."  # aliases accepted: competencies, requiredCompetencies
+required_competencies: >
+  All persons performing AI-related roles in Rulestatus must demonstrate competence in:
+  (1) the regulatory frameworks covered by the tool (EU AI Act, ISO/IEC 42001, NIST AI RMF,
+      Colorado SB 24-205) — through self-study, external training, or legal counsel engagement;
+  (2) TypeScript and Bun.js development — for assertion authorship and CLI maintenance;
+  (3) evidence assessment methodology — understanding what constitutes strong vs. weak
+      evidence for a compliance assertion (docs/methodology/review-process.md);
+  (4) git-based version control and conventional commits — for audit trail integrity;
+  (5) risk identification and treatment — for maintaining the risk register and AIMS
+      risk assessment.
+  Competence is demonstrated through: delivered work products (rule files, documentation,
+  test coverage), external training certificates where applicable, and legal counsel
+  engagement for regulatory interpretation.
 
-# ASSERT-ISO-42001-007-001-01: Competence requirements for AI roles are documented
-roles:  # aliases accepted: ai_roles
-  - "TODO: item 1"
-  - "TODO: item 2"
+roles:
+  - role: "AI Policy Owner / Compliance Lead / Risk Owner"
+    name: "Philipp Nagel"
+    required_competencies:
+      - "EU AI Act Regulation (EU) 2024/1689 — provisions for providers and limited-risk systems"
+      - "ISO/IEC 42001:2023 — full standard including Annexes A and B"
+      - "NIST AI RMF 1.0 — GOVERN, MAP, MEASURE, MANAGE functions"
+      - "Colorado SB 24-205 — §§ 6-1-1702 through 6-1-1705"
+      - "TypeScript/Bun.js — assertion DSL authorship"
+      - "Risk assessment methodology — ISO 31000 principles"
+    competence_evidence:
+      - "Delivered: 95 assertions across 4 frameworks (RULE_REGISTRY)"
+      - "Delivered: self-compliance documentation (docs/)"
+      - "Delivered: methodology documentation (docs/methodology/)"
+      - "Planned: external legal counsel engagement (SCT-0.5)"
+  - role: "EU AI Act Legal Counsel (external, pending)"
+    name: "TBD"
+    required_competencies:
+      - "Qualified EU AI Act legal expertise (law firm or notified body)"
+      - "Experience with high-risk AI system compliance reviews"
+      - "Familiarity with EU product liability and conformity assessment processes"
+    competence_evidence:
+      - "TBD — engagement letter pending (SCT-0.5)"

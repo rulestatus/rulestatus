@@ -6,7 +6,7 @@ Core engine is functional and publicly launched. EU AI Act (44 assertions), ISO/
 
 Docs site live at rulestatus.com (Astro Starlight, deployed on Netlify). Framework reference pages auto-generated at build time from `RULE_REGISTRY` — always in sync with rule source. CONTRIBUTING.md covers assertion review process and framework contribution guide. Phases 1, 2, and 3.1–3.5 complete. All four frameworks carry `cluster` tags; `--all` runs show cross-framework `↳ Also satisfies:` annotations derived at runtime from rule definitions — no static mapping table.
 
-SCT-0 items 0.1–0.4 complete (2026-05-10). Self-compliance run on this repo: **37/37 PASS** (ISO 42001 + NIST AI RMF; EU AI Act skipped — system is `limited-risk`). P2.2 `review-process.md` written. Bug fixed: `FilesystemCollector.findDocument` now prefers files whose stem matches the document category, preventing wrong files from being evaluated when multiple documents share the same search paths.
+SCT-0 complete (2026-05-10). SCT-1 complete (2026-05-10): all 14 AIMS files, 4 AI RMF files, 2 training files, and risk-management.yaml filled with substantive content. SCT-2.1–2.4 complete (2026-05-10). Self-compliance run on this repo: **37/37 PASS** (ISO 42001 + NIST AI RMF; EU AI Act skipped — system is `limited-risk`). Remaining SCT open items: SCT-0.5 (legal counsel engagement), SCT-1.5 (assertion validation methodology doc), SCT-1.6 (legal review of assertion library), SCT-2.5 (formal audit dry run), SCT-3 (assurance track). P2.2 `review-process.md` written. Bug fixed: `FilesystemCollector.findDocument` now prefers files whose stem matches the document category, preventing wrong files from being evaluated when multiple documents share the same search paths.
 
 SCT-2.2 complete (2026-05-10): regulatory currency disclaimer on all output surfaces (console, JSON, SARIF, PDF). `FRAMEWORK_BASELINES` in `rule.ts` is the single source of truth — new frameworks automatically inherit the disclaimer. SCT-2.1 partial: `CHANGELOG.md` auto-generation via `bun changelog` (scripts/changelog.ts) + regulatory baselines in `FRAMEWORK_BASELINES` complete; outstanding: documented process for tracking implementing acts as published. CI: commitlint workflow added (`.github/workflows/commitlint.yml`) — enforces conventional commits on all PRs via `wagoid/commitlint-github-action`. Two CI bugs fixed: `--format sarif,json,pdf` now parsed correctly (comma-split normalization in `cmdRun.ts`); SARIF upload gated to `push` events only (PR context lacks `security-events: write`).
 
@@ -181,40 +181,40 @@ Release criteria (all must pass before external release):
 
 ### SCT-1 — Foundation (Week 3–6)
 
-- [ ] **SCT-1.1** — Complete all AIMS documentation files with substantive content (not TODO placeholders):
-  - `docs/aims/ai-policy.yaml` — purpose, commitments, approval (ISO 42001 Clause 5.2)
-  - `docs/aims/aims-scope.yaml` — scope, context, interested parties (ISO 42001 Clauses 4.1–4.4)
-  - `docs/aims/ai-objectives.yaml` — measurable objectives and targets
-  - `docs/aims/ai-risk-assessment.yaml` — risk assessment methodology and results
-  - `docs/aims/ai-impact-assessment.yaml` — impact assessment for the tool itself
-  - `docs/aims/aims-risk-assessment.yaml` — AIMS-level risk assessment
-  - `docs/aims/competence-requirements.yaml` — required competencies per role (ISO 42001 Clause 7.2)
-  - `docs/aims/document-control.yaml` — review cycle and version control (ISO 42001 Clause 7.5.2)
-  - `docs/aims/lifecycle.yaml` — AI system lifecycle documentation
-  - `docs/aims/operational-procedures.yaml` — operational procedures for running the tool
-  - `docs/aims/monitoring-plan.yaml` — metrics and monitoring frequency (ISO 42001 Clause 9.1)
-  - `docs/aims/audit-program.yaml` — schedule and scope (ISO 42001 Clause 9.2)
-  - `docs/aims/management-review.yaml` — review cadence, inputs, decisions (ISO 42001 Clause 9.3)
-  - `docs/aims/corrective-action.yaml` — nonconformity process (ISO 42001 Clause 10.2)
-- [ ] **SCT-1.2** — Complete all AI RMF documentation files:
-  - `docs/ai-rmf/ai-risk-policy.yaml`
-  - `docs/ai-rmf/ai-roles.yaml`
-  - `docs/ai-rmf/system-context.yaml`
-  - `docs/ai-rmf/vendor-risk.yaml`
-- [ ] **SCT-1.3** — Complete training documentation:
-  - `docs/training/awareness-program.yaml`
-  - `docs/training/training-materials.yaml`
-- [ ] **SCT-1.4** — Expand risk register (`docs/risk-management/risk-management.yaml`) with missing risk categories identified by CCO review: legal (class action from regulatory reliance), operational (assertion coding errors), security (supply chain attack via npm), privacy (PII exposure in logs), financial (regulatory fine for capability misrepresentation), reputational (public exposure of incomplete self-docs), technical (regulatory interpretation breaking changes without versioning).
+- [x] **SCT-1.1** — Complete all AIMS documentation files with substantive content (not TODO placeholders). ✓ Done 2026-05-10
+  - `docs/aims/ai-policy.yaml` — 7 policy commitments, approved by Philipp Nagel, effective 2026-05-10
+  - `docs/aims/aims-scope.yaml` — scope, organizational context, 6 interested parties, continual improvement plan
+  - `docs/aims/ai-objectives.yaml` — 5 measurable objectives with owners, targets, and status
+  - `docs/aims/ai-risk-assessment.yaml` — already complete from SCT-0 (7 risks with treatment plans)
+  - `docs/aims/ai-impact-assessment.yaml` — direct/indirect/potential harms assessment with mitigations
+  - `docs/aims/aims-risk-assessment.yaml` — 5 AIMS-level risks with treatment plans
+  - `docs/aims/competence-requirements.yaml` — required competencies per role with evidence
+  - `docs/aims/document-control.yaml` — review cycle, retention policy, approval authority
+  - `docs/aims/lifecycle.yaml` — 8 lifecycle stages (requirements → deprecation)
+  - `docs/aims/operational-procedures.yaml` — CI gates, release checklist, deployment controls
+  - `docs/aims/monitoring-plan.yaml` — 7 KPIs with targets and measurement frequency
+  - `docs/aims/audit-program.yaml` — 4-tier audit schedule (per-push CI, pre-release, annual, external Q2 2027)
+  - `docs/aims/management-review.yaml` — first review 2026-05-10 with 6 recorded decisions
+  - `docs/aims/corrective-action.yaml` — 6-step detection → recording → RCA → action → verification process
+- [x] **SCT-1.2** — Complete all AI RMF documentation files. ✓ Done 2026-05-10
+  - `docs/ai-rmf/ai-risk-policy.yaml` — scope, risk management commitment, tolerance thresholds, comms plan
+  - `docs/ai-rmf/ai-roles.yaml` — 4 roles with responsibilities; accountable person named
+  - `docs/ai-rmf/system-context.yaml` — intended use, deployment context, external factors, capabilities/limitations
+  - `docs/ai-rmf/vendor-risk.yaml` — third-party policy + full 7-component inventory with risk ratings
+- [x] **SCT-1.3** — Complete training documentation. ✓ Done 2026-05-10
+  - `docs/training/awareness-program.yaml` — 4 awareness activities for single-operator org; scale trigger documented
+  - `docs/training/training-materials.yaml` — 5 primary materials with links to regulatory texts
+- [x] **SCT-1.4** — Expand risk register (`docs/risk-management/risk-management.yaml`) — all 7 risk categories filled with mitigations; note that limited-risk classification means Article 9 high-risk obligations do not apply. Full risk register with 7 risks + treatment plans + residual risks is in `docs/aims/ai-risk-assessment.yaml`. ✓ Done 2026-05-10
 - [ ] **SCT-1.5** — Document assertion validation methodology — test case count (pass/fail/edge), expert reviewer names and review date, known false positive/negative categories, ongoing monitoring process via GitHub Issues. Feeds P2.6 legal review scope.
 - [ ] **SCT-1.6** — Legal review of assertion library (P2.6 delivery) — external counsel reviews all 95 assertions, produces written opinion, name and review date appear in PDF report footer and website.
 
 ### SCT-2 — Operationalization (Week 7–10)
 
-- [ ] **SCT-2.1** — Implement interpretation versioning — ~~regulatory baseline versions~~ done via `FRAMEWORK_BASELINES`; ~~changelog~~ done via `bun changelog`; remaining: documented process for tracking implementing acts as they are published (a short `docs/methodology/regulatory-monitoring.md`).
+- [x] **SCT-2.1** — Implement interpretation versioning — ~~regulatory baseline versions~~ done via `FRAMEWORK_BASELINES`; ~~changelog~~ done via `bun changelog`; ~~documented process for tracking implementing acts~~ done via `docs/methodology/regulatory-monitoring.md` (monitoring sources, cadence, impact triage, version locking). ✓ Done 2026-05-10
 - [x] **SCT-2.2** — Add regulatory currency disclaimer to all output surfaces — console, JSON (`meta.regulatoryBaselines`), SARIF (`runs[].properties.regulatoryBaselines`), PDF (cover page). Driven from `FRAMEWORK_BASELINES` in `rule.ts`. ✓ Done 2026-05-10
-- [ ] **SCT-2.3** — Complete management review cycle documentation — first management review meeting, decisions recorded in `docs/aims/management-review.yaml`.
-- [ ] **SCT-2.4** — Establish corrective action workflow — document nonconformity process, link to GitHub Issues for tracking.
-- [ ] **SCT-2.5** — Internal audit dry run — run full self-assessment, document findings, close gaps.
+- [x] **SCT-2.3** — Complete management review cycle documentation — first management review 2026-05-10; 6 decisions recorded in `docs/aims/management-review.yaml`; next review Q4 2026. ✓ Done 2026-05-10
+- [x] **SCT-2.4** — Establish corrective action workflow — 6-step nonconformity process documented in `docs/aims/corrective-action.yaml`; GitHub Issues integration for tracking. ✓ Done 2026-05-10
+- [ ] **SCT-2.5** — Internal audit dry run — run full self-assessment, document findings, close gaps. Self-compliance run currently 37/37 PASS (ISO 42001 + NIST AI RMF). Formal audit dry run to be documented once SCT-1.5 and SCT-1.6 are complete.
 
 ### SCT-3 — Assurance (Week 11–14)
 
@@ -315,7 +315,7 @@ Implementation notes:
 - Astro Starlight (`packages/docs/`) with `netlify.toml` at `base = packages/docs`
 - `bun run build` runs `generate-docs.ts` first, which imports `RULE_REGISTRY` directly — framework pages are always in sync with the rule source
 - Hand-written pages: quickstart, configuration, GitHub Actions, output formats, all methodology pages
-- Auto-generated pages: all three framework reference pages, commands reference, config schema reference
+- Auto-generated pages: all four framework reference pages (EU AI Act, ISO 42001, NIST AI RMF, Colorado SB 24-205), commands reference, config schema reference. Colorado added 2026-05-10; EU AI Act page now includes "Articles not covered" section for Articles 7, 8, 12.
 
 ### P3.4b — SaaS platform (Phase 4 track)
 

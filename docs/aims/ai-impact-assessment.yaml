@@ -1,5 +1,43 @@
 # ai-impact-assessment — ISO/IEC 42001:2023 8.3
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-008-002-01
+# System: Rulestatus CLI v1.0 — a developer tool for AI compliance checking
 
-# ASSERT-ISO-42001-008-002-01: AI impact assessment is documented
-impacted_groups: "TODO: ..."  # aliases accepted: impacts, potential_harms, impactedGroups
+impacted_groups: >
+  Impact assessment for the Rulestatus CLI (the AI system being governed):
+
+  Direct users:
+  - Developers and DevOps engineers who run rulestatus in CI pipelines.
+    Impact: positive — reduces time to identify compliance evidence gaps;
+    risk: if results are misinterpreted as legal certification, may create false confidence.
+    Mitigation: mandatory disclaimer on all output surfaces; evidence-readiness framing.
+
+  - Compliance officers and legal teams receiving Rulestatus reports.
+    Impact: positive — structured evidence readiness report accelerates review;
+    risk: over-reliance on automated output without independent legal review.
+    Mitigation: disclaimer, prohibited-uses.yaml, evidence-readiness (not pass/fail) language.
+
+  Indirect stakeholders:
+  - End users of AI systems evaluated using Rulestatus.
+    Impact: indirect positive — their AI provider has a lower barrier to documenting
+    compliance evidence; risk: provider relying solely on Rulestatus without full
+    legal compliance process may deploy non-compliant systems.
+    Mitigation: out of scope for this tool's direct control; disclaimers address this.
+
+  - Regulatory authorities.
+    Impact: neutral to positive — Rulestatus produces SARIF and structured evidence
+    in formats auditors can consume; does not make compliance determinations.
+
+  Potential harms:
+  - False negative: assertion fails to detect a genuine compliance gap →
+    provider believes they are evidence-ready when they are not.
+    Probability: low-moderate (reduced by external legal review, SCT-0.5);
+    severity: high (regulatory liability for the provider).
+  - False positive: assertion flags a gap that does not exist →
+    unnecessary remediation effort for developers.
+    Probability: low; severity: low (no regulatory consequence).
+
+  Assessment conclusion:
+  Rulestatus is a limited-risk tool (risk_level: limited-risk per .rulestatus.yaml).
+  Its primary impacts are positive (lowering compliance barriers for AI providers).
+  The main risk — misinterpretation of output as legal certification — is addressed
+  through framing, disclaimers, and the SCT documentation track.

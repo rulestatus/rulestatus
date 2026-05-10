@@ -1,8 +1,26 @@
 # monitoring-plan — ISO/IEC 42001:2023 9.1
-# Auto-generated from rule definitions. Fill in every TODO, then run: rulestatus run
+# ASSERT-ISO-42001-009-001-01
 
-# ASSERT-ISO-42001-009-001-01: Monitoring and measurement program for AIMS is documented
-metrics: "TODO: ..."  # aliases accepted: kpis, measurements
+metrics: >
+  Key performance indicators monitored for the Rulestatus AIMS:
+  (1) Self-compliance pass rate — rulestatus run on this repo; target: 0 FAIL, 0 MANUAL
+      unattested. Measured per release.
+  (2) Assertion coverage — total assertions per framework; any uncovered article/clause
+      tracked as a gap in ROADMAP.md. Measured per release.
+  (3) False positive rate — GitHub Issues labeled "false-positive"; target: <5% of
+      assertions reported as false positive across all users. Measured quarterly.
+  (4) False negative rate — GitHub Issues labeled "false-negative" or "missed-obligation";
+      target: 0 critical false negatives. Measured quarterly.
+  (5) Dependency security — bun audit findings; target: 0 high/critical vulnerabilities
+      unresolved for >7 days. Measured per release and weekly via Dependabot.
+  (6) Evidence readiness score — percentage of own docs/ files without TODO placeholders;
+      target: 100% before external release. Measured per release.
+  (7) Time to regulatory amendment — days from a regulation implementing act publication
+      to updated assertion shipping; target: <30 days for critical changes. Measured per event.
 
-# ASSERT-ISO-42001-009-001-01: Monitoring and measurement program for AIMS is documented
-measurement_frequency: "TODO: ..."  # aliases accepted: review_schedule, monitoring_cadence
+measurement_frequency: >
+  Per release: self-compliance pass rate, assertion coverage, evidence readiness score,
+  dependency security check.
+  Quarterly: false positive/negative rate review (GitHub Issues triage).
+  Annually: full AIMS performance review (management-review.yaml).
+  On regulatory event: time-to-amendment measurement triggered by implementing act publication.
