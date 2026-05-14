@@ -405,13 +405,9 @@ Findings from a senior architecture review (May 2026). These are structural issu
 
 `RuleExecutionContext` introduced in `src/core/ruleContext.ts`. `EvidenceProvider` interface added to `evidence/types.ts`. `EvidenceRegistry` stripped of all per-rule state (`ruleSourcePaths`, `_confidence`, `resetForRule`, `snapshotSources`, `setConfidence`, `getConfidence`) and exposes two read-only accessors (`getSource`, `getStructuredSourcePath`). `RuleExecutionContext` wraps the shared registry, tracks per-rule source paths and confidence, implements `EvidenceProvider`. `SystemContext.evidence` typed as `EvidenceProvider`; `executor.ts` uses `EvidenceProvider` throughout. `Engine.execute()` creates a fresh `RuleExecutionContext` and `SystemContext` per rule — no shared mutable state, no `resetForRule` call. `redaction.test.ts` updated to use `RuleExecutionContext`. 46/46 tests pass, typecheck clean.
 
-### ARCH-3 — Parallel rule execution
+### ARCH-3 — Parallel rule execution ✓ Done
 
-**Priority: Medium. Depends on: ARCH-2.**
-
-`Engine.run()` is a sequential `for...of` loop. At 95+ rules with filesystem I/O and API probes per rule, this is unnecessarily slow — particularly in CI. The evidence cache already makes filesystem reads safe to parallelize. The only blocker is the shared mutable per-rule state described in ARCH-2.
-
-Fix: once ARCH-2 isolates per-rule context, replace the loop with `Promise.all(rules.map(...))` (or bounded concurrency via `p-limit` for API probe rules). Expected 3–5× speedup in typical runs.
+Sequential `for...of` loop in `Engine.run()` replaced with `Promise.all(rules.map(...))`. Safe because ARCH-2 gives each rule an isolated `RuleExecutionContext`; shared `EvidenceRegistry` cache is JS single-threaded so concurrent Map reads/writes are safe. Result order preserved by `Promise.all`. 46/46 tests pass.
 
 ### ARCH-4 — Normalize the compliance score for rule count
 

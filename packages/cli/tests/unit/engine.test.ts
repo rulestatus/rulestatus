@@ -166,6 +166,67 @@ describe("Engine", () => {
     expect(report.results[0]?.ruleId).toBe("CRIT-001");
   });
 
+  it("parallel rules have isolated confidence — weak in rule A does not leak into rule B", async () => {
+    const registry = new RuleRegistry();
+
+    // Rule A sets confidence to weak before yielding
+    registry.register({
+      id: "PARALLEL-WEAK",
+      framework: "test",
+      article: "1",
+      severity: CRITICAL,
+      appliesTo: { actor: "provider", riskLevel: "high-risk" },
+      title: "Weak rule",
+      fn: async (system) => {
+        system.evidence.setConfidence("weak");
+        await Promise.resolve(); // yield to event loop
+      },
+    });
+
+    // Rule B must see its own default confidence, not rule A's weak
+    registry.register({
+      id: "PARALLEL-STRONG",
+      framework: "test",
+      article: "1",
+      severity: CRITICAL,
+      appliesTo: { actor: "provider", riskLevel: "high-risk" },
+      title: "Strong rule",
+      fn: async () => {
+        await Promise.resolve(); // yield to event loop
+      },
+    });
+
+    const engine = new Engine(makeConfig(), registry);
+    const report = await engine.run({ framework: "test" });
+
+    const weak = report.results.find((r) => r.ruleId === "PARALLEL-WEAK");
+    const strong = report.results.find((r) => r.ruleId === "PARALLEL-STRONG");
+
+    expect(weak?.confidence).toBe("weak");
+    expect(strong?.confidence).toBe("strong");
+  });
+
+  it("results are returned in registry order regardless of execution order", async () => {
+    const registry = new RuleRegistry();
+    const ids = ["ORDER-1", "ORDER-2", "ORDER-3"];
+    for (const id of ids) {
+      registry.register({
+        id,
+        framework: "test",
+        article: "1",
+        severity: CRITICAL,
+        appliesTo: { actor: "provider", riskLevel: "high-risk" },
+        title: id,
+        fn: async () => {},
+      });
+    }
+
+    const engine = new Engine(makeConfig(), registry);
+    const report = await engine.run({ framework: "test" });
+
+    expect(report.results.map((r) => r.ruleId)).toEqual(ids);
+  });
+
   it("two Engine instances have isolated registries", async () => {
     const reg1 = new RuleRegistry();
     reg1.register({

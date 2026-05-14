@@ -104,11 +104,7 @@ export class Engine {
   async run(opts: RunOptions = {}): Promise<RunReport> {
     const rules = this.collectRules(opts);
     const startedAt = new Date();
-    const results: RuleResult[] = [];
-
-    for (const rule of rules) {
-      results.push(await this.execute(rule));
-    }
+    const results = await Promise.all(rules.map((rule) => this.execute(rule)));
 
     const frameworks = [...new Set(results.map((r) => r.framework))];
     const frameworkBaselines = Object.fromEntries(
