@@ -417,11 +417,9 @@ Sequential `for...of` loop in `Engine.run()` replaced with `Promise.all(rules.ma
 
 `RuleMeta.appliesTo` narrowed from `Record<string, string>` to `{ actor?: string; riskLevel?: string }` — typos like `actors` now fail at compile time. `EvidenceConfig` index signature `[key: string]: string` removed — known fields are `docsPath`, `modelCard`, `riskRegister`, `apiBaseUrl`, `configPath`; loader never passed through unknown keys anyway. `attestExpiry: number` added to `RulestatusConfig` (defaults to 365), parsed in `loadConfig` from `attest_expiry`/`attestExpiry` YAML key; unsafe cast in `engine.ts` removed. 65/65 tests pass, typecheck clean.
 
-### ARCH-6 — Move `requireManual` out of `EvidenceRegistry`
+### ARCH-6 — Move `requireManual` out of `EvidenceRegistry` ✓ Done
 
-**Priority: Low. Layering cleanliness.**
-
-`EvidenceRegistry.requireManual()` throws `ManualReviewRequired`, a compliance workflow exception. The registry's responsibility is evidence collection; it should not know that a check has no automated evidence path. This belongs in `executor.ts` (in `executeManual`) or as a method on `SystemContext`. The registry should not import or throw engine-layer exceptions.
+`requireManual` removed from `EvidenceRegistry`, `EvidenceProvider`, and `RuleExecutionContext`. `ManualReviewRequired` import removed from `registry.ts`. `executeManual` in `executor.ts` now throws directly. `requireManual(message): never` added to `SystemContext` — rule `fn` authors call `system.requireManual(...)`, keeping the convenience API without the layering violation. `article13.ts` updated to use `system.requireManual(...)`. Test added proving both direct-throw and `system.requireManual()` paths produce `MANUAL` status. 65/65 pass.
 
 ---
 

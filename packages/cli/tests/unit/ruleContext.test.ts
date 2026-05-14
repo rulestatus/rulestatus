@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { ManualReviewRequired } from "../../src/core/exceptions.js";
 import { RuleExecutionContext } from "../../src/core/ruleContext.js";
 import { EvidenceRegistry } from "../../src/evidence/registry.js";
 
@@ -128,13 +127,6 @@ describe("RuleExecutionContext", () => {
     const ctx = new RuleExecutionContext(new EvidenceRegistry({}, base));
     await ctx.findDocument({ category: "missing", paths: ["nowhere/"], formats: ["yaml"] });
     expect(ctx.snapshotSources()).toHaveLength(0);
-  });
-
-  // ── requireManual ────────────────────────────────────────────────────────────
-
-  it("requireManual throws ManualReviewRequired", () => {
-    const ctx = new RuleExecutionContext(new EvidenceRegistry({}, base));
-    expect(() => ctx.requireManual("human needed")).toThrow(ManualReviewRequired);
   });
 
   // ── hasApi ───────────────────────────────────────────────────────────────────

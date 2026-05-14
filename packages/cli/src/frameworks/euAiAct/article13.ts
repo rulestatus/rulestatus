@@ -48,7 +48,7 @@ export const rules: RuleMeta[] = [
           );
         }
       }
-      system.evidence.requireManual(
+      system.requireManual(
         "Cannot verify AI disclosure automatically. Provide documentation proving AI disclosure is shown to users.",
       );
     },

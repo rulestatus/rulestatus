@@ -49,7 +49,6 @@ export interface EvidenceProvider {
   loadConfig(name: string): Promise<Record<string, unknown> | null>;
   loadModelCard(): Promise<Document | null>;
   probeApi(endpoint: string): Promise<ApiResponse | null>;
-  requireManual(message: string): never;
   hasApi(): boolean;
   setConfidence(c: Confidence): void;
 }

@@ -1,5 +1,6 @@
 import type { SystemConfig } from "../config/schema.js";
 import type { EvidenceProvider } from "../evidence/types.js";
+import { ManualReviewRequired } from "./exceptions.js";
 
 export class SystemContext {
   readonly evidence: EvidenceProvider;
@@ -29,5 +30,9 @@ export class SystemContext {
 
   hasApi(): boolean {
     return this.evidence.hasApi();
+  }
+
+  requireManual(message: string): never {
+    throw new ManualReviewRequired(message);
   }
 }

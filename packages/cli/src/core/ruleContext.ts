@@ -7,8 +7,6 @@ import type {
   EvidenceSource,
   FindDocumentOptions,
 } from "../evidence/types.js";
-import { ManualReviewRequired } from "./exceptions.js";
-
 export class RuleExecutionContext implements EvidenceProvider {
   private readonly sourcePaths: string[] = [];
   private _confidence: Confidence = "strong";
@@ -42,10 +40,6 @@ export class RuleExecutionContext implements EvidenceProvider {
 
   async probeApi(endpoint: string): Promise<ApiResponse | null> {
     return this.registry.probeApi(endpoint);
-  }
-
-  requireManual(message: string): never {
-    throw new ManualReviewRequired(message);
   }
 
   hasApi(): boolean {

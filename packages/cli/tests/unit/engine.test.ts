@@ -50,7 +50,7 @@ describe("Engine", () => {
     expect(report.results[0]?.message).toBe("Missing document");
   });
 
-  it("returns MANUAL for ManualReviewRequired", async () => {
+  it("returns MANUAL for ManualReviewRequired thrown directly", async () => {
     const registry = new RuleRegistry();
     registry.register({
       id: "TEST-MANUAL",
@@ -68,6 +68,27 @@ describe("Engine", () => {
     const report = await engine.run({ framework: "test" });
 
     expect(report.results[0]?.status).toBe("MANUAL");
+  });
+
+  it("returns MANUAL when rule calls system.requireManual()", async () => {
+    const registry = new RuleRegistry();
+    registry.register({
+      id: "TEST-MANUAL-VIA-SYSTEM",
+      framework: "test",
+      article: "1",
+      severity: CRITICAL,
+      appliesTo: { actor: "provider", riskLevel: "high-risk" },
+      title: "Manual via system",
+      fn: async (system) => {
+        system.requireManual("needs human review");
+      },
+    });
+
+    const engine = new Engine(makeConfig(), registry);
+    const report = await engine.run({ framework: "test" });
+
+    expect(report.results[0]?.status).toBe("MANUAL");
+    expect(report.results[0]?.message).toBe("needs human review");
   });
 
   it("returns SKIP for SkipTest", async () => {

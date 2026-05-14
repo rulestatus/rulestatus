@@ -1,4 +1,3 @@
-import { ManualReviewRequired } from "../core/exceptions.js";
 import { ApiProbeCollector, type ApiResponse } from "./collectors/apiProbe.js";
 import { ConfigCollector } from "./collectors/config.js";
 import { FilesystemCollector } from "./collectors/filesystem.js";
@@ -97,11 +96,6 @@ export class EvidenceRegistry {
 
   async probeApi(endpoint: string): Promise<ApiResponse | null> {
     return this.api.probe(endpoint);
-  }
-
-  /** Signals that this check requires human review. Throws ManualReviewRequired. */
-  requireManual(message: string): never {
-    throw new ManualReviewRequired(message);
   }
 
   /** Returns true if an API base URL is configured. */

@@ -32,7 +32,7 @@ export async function executeCheck(node: CheckNode, system: SystemContext): Prom
     case "system-field":
       return executeSystemField(node, system);
     case "manual":
-      return executeManual(node, ev);
+      return executeManual(node);
     case "any-of":
       return executeAnyOf(node, system);
   }
@@ -286,8 +286,8 @@ async function executeSystemField(node: SystemField, system: SystemContext): Pro
 
 // ── Manual ────────────────────────────────────────────────────────────────────
 
-async function executeManual(node: Manual, ev: EvidenceProvider): Promise<void> {
-  ev.requireManual(node.reason);
+async function executeManual(node: Manual): Promise<void> {
+  throw new ManualReviewRequired(node.reason);
 }
 
 // ── AnyOf ─────────────────────────────────────────────────────────────────────
