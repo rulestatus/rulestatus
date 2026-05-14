@@ -5,8 +5,29 @@ import { SystemContext } from "./context.js";
 import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js";
 import { executeCheck } from "./executor.js";
 import type { RuleResult, RunReport } from "./result.js";
-import { FRAMEWORK_BASELINES, RULE_REGISTRY, type RuleMeta } from "./rule.js";
+import { FRAMEWORK_BASELINES, type RuleMeta, RuleRegistry } from "./rule.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
+
+/** Load framework rules into a fresh registry without constructing a full Engine. */
+export async function createRegistryWithFrameworks(frameworks: string[]): Promise<RuleRegistry> {
+  const registry = new RuleRegistry();
+  for (const fw of frameworks) {
+    if (fw === "eu-ai-act") {
+      const { register } = await import("../frameworks/euAiAct/index.js");
+      register(registry);
+    } else if (fw === "iso-42001") {
+      const { register } = await import("../frameworks/iso42001/index.js");
+      register(registry);
+    } else if (fw === "nist-ai-rmf") {
+      const { register } = await import("../frameworks/nistAiRmf/index.js");
+      register(registry);
+    } else if (fw === "colorado-sb24-205") {
+      const { register } = await import("../frameworks/coloradoSb24205/index.js");
+      register(registry);
+    }
+  }
+  return registry;
+}
 
 export interface RunOptions {
   framework?: string;
@@ -16,34 +37,47 @@ export interface RunOptions {
 
 export class Engine {
   private readonly system: SystemContext;
+  private readonly _registry: RuleRegistry;
 
-  constructor(private readonly config: RulestatusConfig) {
+  constructor(
+    private readonly config: RulestatusConfig,
+    registry?: RuleRegistry,
+  ) {
     const evCfg: Record<string, unknown> = {
       ...config.evidence,
       api_base_url: config.system.apiBaseUrl || config.evidence.apiBaseUrl,
     };
     const basePath = process.cwd();
-    const registry = new EvidenceRegistry(evCfg, basePath);
-    this.system = new SystemContext(config.system, registry);
+    const evRegistry = new EvidenceRegistry(evCfg, basePath);
+    this.system = new SystemContext(config.system, evRegistry);
+    this._registry = registry ?? new RuleRegistry();
   }
 
-  /** Lazily import framework modules, triggering side-effect registration into RULE_REGISTRY. */
+  get registry(): RuleRegistry {
+    return this._registry;
+  }
+
+  /** Load framework modules and register their rules into this engine's registry. */
   async loadFrameworks(frameworks: string[]): Promise<void> {
     for (const fw of frameworks) {
       if (fw === "eu-ai-act") {
-        await import("../frameworks/euAiAct/index.js");
+        const { register } = await import("../frameworks/euAiAct/index.js");
+        register(this._registry);
       } else if (fw === "iso-42001") {
-        await import("../frameworks/iso42001/index.js");
+        const { register } = await import("../frameworks/iso42001/index.js");
+        register(this._registry);
       } else if (fw === "nist-ai-rmf") {
-        await import("../frameworks/nistAiRmf/index.js");
+        const { register } = await import("../frameworks/nistAiRmf/index.js");
+        register(this._registry);
       } else if (fw === "colorado-sb24-205") {
-        await import("../frameworks/coloradoSb24205/index.js");
+        const { register } = await import("../frameworks/coloradoSb24205/index.js");
+        register(this._registry);
       }
     }
   }
 
   collectRules(opts: RunOptions = {}): RuleMeta[] {
-    let rules = [...RULE_REGISTRY];
+    let rules = [...this._registry.rules];
 
     if (opts.framework) {
       rules = rules.filter((r) => r.framework === opts.framework);

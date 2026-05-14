@@ -3,7 +3,8 @@ import { join } from "node:path";
 import { Command } from "commander";
 import yaml from "js-yaml";
 import type { ArrayReq, CheckNode, FieldReq } from "../core/check.js";
-import { RULE_REGISTRY, type RuleMeta } from "../core/rule.js";
+import { createRegistryWithFrameworks } from "../core/engine.js";
+import type { RuleMeta } from "../core/rule.js";
 
 // ── Public command ────────────────────────────────────────────────────────────
 
@@ -13,11 +14,13 @@ export function cmdExportRegistry(): Command {
     .option("--output <dir>", "Output directory", "registry")
     .option("--framework <fw>", "Limit to one framework (e.g. eu-ai-act)")
     .action(async (opts: { output: string; framework?: string }) => {
-      await import("../frameworks/euAiAct/index.js");
-      await import("../frameworks/iso42001/index.js");
-      await import("../frameworks/nistAiRmf/index.js");
-
-      let rules = [...RULE_REGISTRY];
+      const registry = await createRegistryWithFrameworks([
+        "eu-ai-act",
+        "iso-42001",
+        "nist-ai-rmf",
+        "colorado-sb24-205",
+      ]);
+      let rules = [...registry.rules];
       if (opts.framework) rules = rules.filter((r) => r.framework === opts.framework);
 
       const byFramework = groupBy(rules, (r) => r.framework);

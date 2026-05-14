@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import chalk from "chalk";
 import { Command } from "commander";
-import { RULE_REGISTRY } from "../core/rule.js";
+import { createRegistryWithFrameworks } from "../core/engine.js";
 
 interface LastRunResult {
   ruleId: string;
@@ -81,11 +81,13 @@ export function cmdExplain(): Command {
     .description("Explain a failing assertion and how to fix it")
     .argument("<assert-id>", "Assertion ID (e.g. ASSERT-EU-AI-ACT-009-002-B-01)")
     .action(async (assertId: string) => {
-      await import("../frameworks/euAiAct/index.js");
-      await import("../frameworks/iso42001/index.js");
-      await import("../frameworks/nistAiRmf/index.js");
-
-      const rule = RULE_REGISTRY.find((r) => r.id === assertId);
+      const registry = await createRegistryWithFrameworks([
+        "eu-ai-act",
+        "iso-42001",
+        "nist-ai-rmf",
+        "colorado-sb24-205",
+      ]);
+      const rule = registry.rules.find((r) => r.id === assertId);
       if (!rule) {
         console.error(chalk.red(`Unknown assertion ID: ${assertId}`));
         console.error(`Run ${chalk.bold("rulestatus run")} to see applicable assertion IDs.`);

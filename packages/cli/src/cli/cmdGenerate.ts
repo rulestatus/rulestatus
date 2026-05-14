@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import * as p from "@clack/prompts";
 import { Command } from "commander";
-import { RULE_REGISTRY } from "../core/rule.js";
 import { loadAndExtract, renderTemplate } from "../core/templateExtractor.js";
 
 // ── Framework list ────────────────────────────────────────────────────────────
@@ -81,7 +80,7 @@ export function cmdGenerate(): Command {
 async function generateFramework(framework: string): Promise<void> {
   p.intro(`Generating ${framework} templates from rule definitions…`);
 
-  const specs = await loadAndExtract(framework, RULE_REGISTRY);
+  const specs = await loadAndExtract(framework);
 
   if (specs.length === 0) {
     p.outro(`No templates found for ${framework}.`);
@@ -124,7 +123,7 @@ async function generateAll(): Promise<void> {
   const skipped: string[] = [];
 
   for (const framework of ALL_FRAMEWORKS) {
-    const specs = await loadAndExtract(framework, RULE_REGISTRY);
+    const specs = await loadAndExtract(framework);
 
     for (const spec of specs) {
       if (existsSync(spec.outputPath)) {

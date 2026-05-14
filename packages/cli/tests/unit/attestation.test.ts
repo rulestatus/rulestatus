@@ -6,7 +6,7 @@ import { defaultConfig } from "../../src/config/schema.js";
 import { loadAttestation } from "../../src/core/attestation.js";
 import { Engine } from "../../src/core/engine.js";
 import { ManualReviewRequired } from "../../src/core/exceptions.js";
-import { RULE_REGISTRY } from "../../src/core/rule.js";
+import { RuleRegistry } from "../../src/core/rule.js";
 import { CRITICAL } from "../../src/core/severity.js";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -118,7 +118,6 @@ describe("Engine ATTESTED status", () => {
   const origCwd = process.cwd();
 
   beforeEach(() => {
-    RULE_REGISTRY.length = 0;
     tmp = join(tmpdir(), `rulestatus-engine-test-${Date.now()}`);
     mkdirSync(tmp, { recursive: true });
     process.chdir(tmp);
@@ -130,7 +129,8 @@ describe("Engine ATTESTED status", () => {
   });
 
   it("upgrades MANUAL to ATTESTED when a valid attestation exists", async () => {
-    RULE_REGISTRY.push({
+    const registry = new RuleRegistry();
+    registry.register({
       id: "TEST-MANUAL-ATTEST",
       framework: "test",
       article: "1",
@@ -148,7 +148,7 @@ describe("Engine ATTESTED status", () => {
       statement: "Reviewed and confirmed compliant",
     });
 
-    const engine = new Engine(makeConfig());
+    const engine = new Engine(makeConfig(), registry);
     const report = await engine.run({ framework: "test" });
     const result = report.results[0];
 
@@ -159,7 +159,8 @@ describe("Engine ATTESTED status", () => {
   });
 
   it("stays MANUAL when no attestation file exists", async () => {
-    RULE_REGISTRY.push({
+    const registry = new RuleRegistry();
+    registry.register({
       id: "TEST-NO-ATTEST",
       framework: "test",
       article: "1",
@@ -171,14 +172,15 @@ describe("Engine ATTESTED status", () => {
       },
     });
 
-    const engine = new Engine(makeConfig());
+    const engine = new Engine(makeConfig(), registry);
     const report = await engine.run({ framework: "test" });
 
     expect(report.results[0]?.status).toBe("MANUAL");
   });
 
   it("stays MANUAL and shows expiry message when attestation is expired", async () => {
-    RULE_REGISTRY.push({
+    const registry = new RuleRegistry();
+    registry.register({
       id: "TEST-EXPIRED",
       framework: "test",
       article: "1",
@@ -196,7 +198,7 @@ describe("Engine ATTESTED status", () => {
       statement: "Old attestation",
     });
 
-    const engine = new Engine(makeConfig());
+    const engine = new Engine(makeConfig(), registry);
     const report = await engine.run({ framework: "test" });
     const result = report.results[0];
 
@@ -206,7 +208,8 @@ describe("Engine ATTESTED status", () => {
   });
 
   it("stays MANUAL when attestation has unfilled TODO values", async () => {
-    RULE_REGISTRY.push({
+    const registry = new RuleRegistry();
+    registry.register({
       id: "TEST-TODO",
       framework: "test",
       article: "1",
@@ -224,7 +227,7 @@ describe("Engine ATTESTED status", () => {
       statement: "done",
     });
 
-    const engine = new Engine(makeConfig());
+    const engine = new Engine(makeConfig(), registry);
     const report = await engine.run({ framework: "test" });
 
     expect(report.results[0]?.status).toBe("MANUAL");

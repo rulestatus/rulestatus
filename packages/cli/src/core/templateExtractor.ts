@@ -461,19 +461,34 @@ function renderConfigBody(spec: DocTemplateSpec): string[] {
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
-const FRAMEWORK_LOADERS: Record<string, () => Promise<unknown>> = {
-  "iso-42001": () => import("../frameworks/iso42001/index.js"),
-  "nist-ai-rmf": () => import("../frameworks/nistAiRmf/index.js"),
-  "eu-ai-act": () => import("../frameworks/euAiAct/index.js"),
-};
-
-export async function loadAndExtract(
-  framework: string,
-  registry: RuleMeta[],
-): Promise<DocTemplateSpec[]> {
-  const loader = FRAMEWORK_LOADERS[framework];
-  if (!loader) throw new Error(`Unknown framework: ${framework}`);
-  await loader();
-  const rules = registry.filter((r) => r.framework === framework);
-  return extractTemplates(rules);
+export async function loadAndExtract(framework: string): Promise<DocTemplateSpec[]> {
+  let rules: RuleMeta[];
+  if (framework === "eu-ai-act") {
+    const { register } = await import("../frameworks/euAiAct/index.js");
+    const { RuleRegistry } = await import("./rule.js");
+    const reg = new RuleRegistry();
+    register(reg);
+    rules = [...reg.rules];
+  } else if (framework === "iso-42001") {
+    const { register } = await import("../frameworks/iso42001/index.js");
+    const { RuleRegistry } = await import("./rule.js");
+    const reg = new RuleRegistry();
+    register(reg);
+    rules = [...reg.rules];
+  } else if (framework === "nist-ai-rmf") {
+    const { register } = await import("../frameworks/nistAiRmf/index.js");
+    const { RuleRegistry } = await import("./rule.js");
+    const reg = new RuleRegistry();
+    register(reg);
+    rules = [...reg.rules];
+  } else if (framework === "colorado-sb24-205") {
+    const { register } = await import("../frameworks/coloradoSb24205/index.js");
+    const { RuleRegistry } = await import("./rule.js");
+    const reg = new RuleRegistry();
+    register(reg);
+    rules = [...reg.rules];
+  } else {
+    throw new Error(`Unknown framework: ${framework}`);
+  }
+  return extractTemplates(rules.filter((r) => r.framework === framework));
 }

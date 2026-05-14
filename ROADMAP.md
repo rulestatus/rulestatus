@@ -397,16 +397,9 @@ Why this matters: companies put the score in their README and marketing material
 
 Findings from a senior architecture review (May 2026). These are structural issues that constrain testability, performance, and extensibility. All are pre-conditions for scaling the codebase to Phase 4 complexity. Ordered by impact.
 
-### ARCH-1 — Replace global `RULE_REGISTRY` with injected registry instances
+### ARCH-1 — Replace global `RULE_REGISTRY` with injected registry instances ✓ Done
 
-**Priority: High. Blocks: reliable test isolation, multi-tenancy in Phase 4.**
-
-`RULE_REGISTRY` is a module-level mutable array populated via side-effect imports (`import "../frameworks/euAiAct/index.js"`). This means:
-- Rules from one test suite bleed into the next unless manually cleared
-- Two `Engine` instances in the same process cannot have different rule sets (required for framework A/B comparison in the SaaS dashboard)
-- `loadFrameworks()` in `engine.ts` is a hardcoded `if/else if` chain — adding a new framework requires editing the Engine class
-
-Fix: make `RuleRegistry` an instantiable class passed into `Engine`. Each framework module exports a `register(registry: RuleRegistry)` function instead of calling the global `rule()` on import. The engine owns registry creation and calls `register()` explicitly — the side-effect import is eliminated. Adding a new framework no longer touches the engine.
+`RuleRegistry` instantiable class added to `rule.ts`. All 22 framework article files changed from side-effect `rule({...})` calls to `export const rules: RuleMeta[]`. All 4 framework index files export `register(registry: RuleRegistry)` instead of side-effect imports. `Engine` owns its own `RuleRegistry`, accepts optional one in constructor, calls `register()` on each framework — no global state reads. `createRegistryWithFrameworks()` helper exported for CLI commands. Tests updated: `engine.test.ts`, `rule.test.ts`, `attestation.test.ts` all use isolated registries. Isolation test added proving two Engine instances cannot bleed into each other. 46/46 tests pass, 95 rules preserved.
 
 ### ARCH-2 — Separate per-rule execution context from shared evidence cache
 

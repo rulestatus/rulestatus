@@ -2,7 +2,8 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { Command } from "commander";
 import type { ArrayReq, CheckNode, FieldReq } from "../core/check.js";
-import { FRAMEWORK_LABEL, RULE_REGISTRY, type RuleMeta } from "../core/rule.js";
+import { createRegistryWithFrameworks } from "../core/engine.js";
+import { FRAMEWORK_LABEL, type RuleMeta } from "../core/rule.js";
 
 // ── Public command ────────────────────────────────────────────────────────────
 
@@ -12,12 +13,13 @@ export function cmdExportMethodology(): Command {
     .option("--output <path>", "Output file path", "docs/methodology/assertion-traceability.md")
     .option("--framework <fw>", "Limit to one framework (e.g. eu-ai-act)")
     .action(async (opts: { output: string; framework?: string }) => {
-      await import("../frameworks/euAiAct/index.js");
-      await import("../frameworks/iso42001/index.js");
-      await import("../frameworks/nistAiRmf/index.js");
-      await import("../frameworks/coloradoSb24205/index.js");
-
-      let rules = [...RULE_REGISTRY];
+      const registry = await createRegistryWithFrameworks([
+        "eu-ai-act",
+        "iso-42001",
+        "nist-ai-rmf",
+        "colorado-sb24-205",
+      ]);
+      let rules = [...registry.rules];
       if (opts.framework) rules = rules.filter((r) => r.framework === opts.framework);
 
       const md = buildDocument(rules);

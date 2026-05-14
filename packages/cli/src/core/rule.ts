@@ -62,14 +62,29 @@ export const FRAMEWORK_BASELINES: Record<string, FrameworkBaseline> = {
   },
 };
 
+export class RuleRegistry {
+  private readonly _rules: RuleMeta[] = [];
+
+  register(meta: RuleMeta): void {
+    this._rules.push(meta);
+  }
+
+  get rules(): readonly RuleMeta[] {
+    return this._rules;
+  }
+
+  clear(): void {
+    this._rules.length = 0;
+  }
+}
+
+/** Global singleton — kept for backward compatibility with tests and public API consumers. */
 export const RULE_REGISTRY: RuleMeta[] = [];
 
 /**
- * Register a compliance rule. Call at module top-level in each framework file.
- *
- * Two forms:
- *   rule({ ...meta, check: doc("...").inPaths([...]) })        // builder DSL
- *   rule({ ...meta }, async (system) => { ... })               // imperative (escape hatch)
+ * Register a compliance rule into the global singleton registry.
+ * @deprecated Framework modules should export `rules: RuleMeta[]` and use
+ * `RuleRegistry.register()` via the Engine instead.
  */
 export function rule(
   meta: Omit<RuleMeta, "fn">,
