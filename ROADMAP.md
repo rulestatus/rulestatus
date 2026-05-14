@@ -409,13 +409,9 @@ Findings from a senior architecture review (May 2026). These are structural issu
 
 Sequential `for...of` loop in `Engine.run()` replaced with `Promise.all(rules.map(...))`. Safe because ARCH-2 gives each rule an isolated `RuleExecutionContext`; shared `EvidenceRegistry` cache is JS single-threaded so concurrent Map reads/writes are safe. Result order preserved by `Promise.all`. 46/46 tests pass.
 
-### ARCH-4 — Normalize the compliance score for rule count
+### ARCH-4 — Normalize the compliance score for rule count ✓ Done
 
-**Priority: Medium. Affects: score credibility with auditors and public perception.**
-
-`scoreReport()` in `score.ts` applies fixed absolute deductions (`CRITICAL = −10`, `MAJOR = −5`). Two systems with the same number of critical failures score identically regardless of how many rules they pass. A system passing 47/50 rules with 3 critical failures scores the same as one passing 7/10 rules with 3 critical failures — but the second is far more exposed. This will be noticed by auditors and makes the public score metric less defensible.
-
-Fix: normalize by total weighted opportunity. `score = (passing_weight / total_weight) * 100`, where each rule's weight is its severity multiplier. Severity weights stay the same; the denominator changes from a fixed 100 to the sum of all possible deductions in the run. Requires a migration note for users who have committed scores publicly.
+`scoreReport()` now uses `score = round((total_weight - deducted) / total_weight * 100)`. `total_weight` is the sum of `FAIL_DEDUCTIONS[severity]` for all scoreable rules in the run. Scoreable = PASS, ATTESTED, FAIL, WARN. SKIP (not applicable) and MANUAL (unresolved) are excluded from both numerator and denominator. `ComplianceScore` gains `totalWeight` field. Severity weights unchanged. 3 critical fails in a 50-rule run now scores 94; in a 10-rule run it scores 70. Score tests fully rewritten to the normalized formula; 65/65 pass.
 
 ### ARCH-5 — Close type safety gaps in the rule and config interfaces
 

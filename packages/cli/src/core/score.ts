@@ -7,6 +7,7 @@ export interface ComplianceScore {
   points: number;
   grade: Grade;
   totalDeducted: number;
+  totalWeight: number;
 }
 
 /**
@@ -36,10 +37,18 @@ const GRADE_THRESHOLDS: [number, Grade][] = [
   [0, "F"],
 ];
 
+const SCOREABLE_STATUSES = new Set(["PASS", "ATTESTED", "FAIL", "WARN"]);
+
 export function scoreReport(report: RunReport): ComplianceScore {
   let totalDeducted = 0;
+  let totalWeight = 0;
 
   for (const r of report.results) {
+    // SKIP = not applicable; MANUAL = unresolved — neither affects the score
+    if (!SCOREABLE_STATUSES.has(r.status)) continue;
+
+    totalWeight += FAIL_DEDUCTIONS[r.severity];
+
     if (r.status === "FAIL") {
       totalDeducted += FAIL_DEDUCTIONS[r.severity];
     } else if (r.status === "WARN") {
@@ -47,9 +56,10 @@ export function scoreReport(report: RunReport): ComplianceScore {
     }
   }
 
-  const points = Math.max(0, 100 - totalDeducted);
+  const points =
+    totalWeight === 0 ? 100 : Math.round(((totalWeight - totalDeducted) / totalWeight) * 100);
   const grade = toGrade(points);
-  return { points, grade, totalDeducted };
+  return { points, grade, totalDeducted, totalWeight };
 }
 
 export function gradeLabel(score: ComplianceScore): string {
