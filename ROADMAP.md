@@ -413,14 +413,9 @@ Sequential `for...of` loop in `Engine.run()` replaced with `Promise.all(rules.ma
 
 `scoreReport()` now uses `score = round((total_weight - deducted) / total_weight * 100)`. `total_weight` is the sum of `FAIL_DEDUCTIONS[severity]` for all scoreable rules in the run. Scoreable = PASS, ATTESTED, FAIL, WARN. SKIP (not applicable) and MANUAL (unresolved) are excluded from both numerator and denominator. `ComplianceScore` gains `totalWeight` field. Severity weights unchanged. 3 critical fails in a 50-rule run now scores 94; in a 10-rule run it scores 70. Score tests fully rewritten to the normalized formula; 65/65 pass.
 
-### ARCH-5 — Close type safety gaps in the rule and config interfaces
+### ARCH-5 — Close type safety gaps in the rule and config interfaces ✓ Done
 
-**Priority: Low. Prevents silent misconfiguration bugs.**
-
-Three concrete issues:
-- `RuleMeta.appliesTo: Record<string, string>` is too loose. A typo like `{ actors: [...] }` (plural) silently matches nothing because `collectRules()` checks `at.actor` (singular). Should be `{ actor?: string; riskLevel?: string }`.
-- `EvidenceConfig` has an index signature `[key: string]: string` which defeats TypeScript's protection on known fields — you cannot get a compile-time error for a misspelled evidence path key.
-- `(this.config as { attestExpiry?: number }).attestExpiry` in `engine.ts` is an unsafe cast indicating `attestExpiry` is not in the `RulestatusConfig` schema. The type is incomplete relative to what the engine actually reads.
+`RuleMeta.appliesTo` narrowed from `Record<string, string>` to `{ actor?: string; riskLevel?: string }` — typos like `actors` now fail at compile time. `EvidenceConfig` index signature `[key: string]: string` removed — known fields are `docsPath`, `modelCard`, `riskRegister`, `apiBaseUrl`, `configPath`; loader never passed through unknown keys anyway. `attestExpiry: number` added to `RulestatusConfig` (defaults to 365), parsed in `loadConfig` from `attest_expiry`/`attestExpiry` YAML key; unsafe cast in `engine.ts` removed. 65/65 tests pass, typecheck clean.
 
 ### ARCH-6 — Move `requireManual` out of `EvidenceRegistry`
 

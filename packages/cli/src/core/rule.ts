@@ -7,7 +7,7 @@ export interface RuleMeta {
   framework: string;
   article: string;
   severity: SeverityLevel;
-  appliesTo: Record<string, string>;
+  appliesTo: { actor?: string; riskLevel?: string };
   title: string;
   description?: string;
   obligation?: string;

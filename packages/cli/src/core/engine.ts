@@ -169,7 +169,7 @@ export class Engine {
         };
       }
       if (e instanceof ManualReviewRequired) {
-        const expiryDays = (this.config as { attestExpiry?: number }).attestExpiry ?? 365;
+        const expiryDays = this.config.attestExpiry;
         const attestation = loadAttestation(rule.id, process.cwd(), expiryDays);
         if (attestation && !attestation.expired) {
           return {

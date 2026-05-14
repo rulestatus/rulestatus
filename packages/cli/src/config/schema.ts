@@ -15,7 +15,6 @@ export interface EvidenceConfig {
   riskRegister: string;
   apiBaseUrl: string;
   configPath: string;
-  [key: string]: string;
 }
 
 export interface ReportingConfig {
@@ -35,6 +34,8 @@ export interface RulestatusConfig {
   evidence: EvidenceConfig;
   reporting: ReportingConfig;
   severityGate: SeverityGateConfig;
+  /** Days before a manual attestation expires. Defaults to 365. */
+  attestExpiry: number;
 }
 
 export function defaultConfig(): RulestatusConfig {
@@ -64,5 +65,6 @@ export function defaultConfig(): RulestatusConfig {
       failOn: "critical",
       warnOn: "major",
     },
+    attestExpiry: 365,
   };
 }

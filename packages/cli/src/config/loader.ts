@@ -74,5 +74,6 @@ export async function loadConfig(configPath?: string): Promise<RulestatusConfig>
         sg.warn_on ?? sg.warnOn ?? defaults.severityGate.warnOn,
       ) as RulestatusConfig["severityGate"]["warnOn"],
     },
+    attestExpiry: Number(raw.attest_expiry ?? raw.attestExpiry ?? defaults.attestExpiry),
   };
 }
