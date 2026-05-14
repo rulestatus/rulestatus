@@ -1,5 +1,4 @@
-import type { EvidenceRegistry } from "../evidence/registry.js";
-import type { Document } from "../evidence/types.js";
+import type { Document, EvidenceProvider } from "../evidence/types.js";
 import type {
   AnyOf,
   Api,
@@ -41,7 +40,7 @@ export async function executeCheck(node: CheckNode, system: SystemContext): Prom
 
 // ── Doc ───────────────────────────────────────────────────────────────────────
 
-async function executeDoc(node: Doc, ev: EvidenceRegistry): Promise<void> {
+async function executeDoc(node: Doc, ev: EvidenceProvider): Promise<void> {
   const doc = await ev.findDocument({
     category: node.category,
     paths: node.paths,
@@ -101,7 +100,7 @@ function applyFieldReqToDoc(req: FieldReq, doc: Document, label: string): void {
 
 // ── Structured ────────────────────────────────────────────────────────────────
 
-async function executeStructured(node: Structured, ev: EvidenceRegistry): Promise<void> {
+async function executeStructured(node: Structured, ev: EvidenceProvider): Promise<void> {
   const data = await ev.loadStructured(node.name);
   if (!data) {
     throw new ComplianceError(
@@ -212,7 +211,7 @@ function matchesCondition(entry: Record<string, unknown>, cond: EntryCondition):
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-async function executeConfig(node: Config, ev: EvidenceRegistry): Promise<void> {
+async function executeConfig(node: Config, ev: EvidenceProvider): Promise<void> {
   const data = await ev.loadConfig(node.name);
   if (!data) {
     throw new ComplianceError(`Config ${node.name} not found.`);
@@ -246,7 +245,7 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
 
 // ── ModelCard ─────────────────────────────────────────────────────────────────
 
-async function executeModelCard(node: ModelCard, ev: EvidenceRegistry): Promise<void> {
+async function executeModelCard(node: ModelCard, ev: EvidenceProvider): Promise<void> {
   const mc = await ev.loadModelCard();
   if (!mc) {
     throw new ComplianceError("No model card found.");
@@ -287,7 +286,7 @@ async function executeSystemField(node: SystemField, system: SystemContext): Pro
 
 // ── Manual ────────────────────────────────────────────────────────────────────
 
-async function executeManual(node: Manual, ev: EvidenceRegistry): Promise<void> {
+async function executeManual(node: Manual, ev: EvidenceProvider): Promise<void> {
   ev.requireManual(node.reason);
 }
 

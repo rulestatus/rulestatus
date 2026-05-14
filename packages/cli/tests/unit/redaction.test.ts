@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { RuleExecutionContext } from "../../src/core/ruleContext.js";
 import { EvidenceRegistry } from "../../src/evidence/registry.js";
 
 function tmpDir(): string {
@@ -108,9 +109,9 @@ describe("EvidenceRegistry redaction", () => {
     );
 
     const registry = new EvidenceRegistry({ secrets: join(base, "secrets.yaml") }, base);
-    registry.resetForRule();
-    await registry.loadStructured("secrets");
-    const sources = registry.snapshotSources();
+    const ctx = new RuleExecutionContext(registry);
+    await ctx.loadStructured("secrets");
+    const sources = ctx.snapshotSources();
 
     expect(sources).toHaveLength(1);
     expect(sources[0]?.redactedFields).toBeGreaterThan(0);

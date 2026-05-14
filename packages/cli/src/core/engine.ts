@@ -6,6 +6,7 @@ import { ComplianceError, ManualReviewRequired, SkipTest } from "./exceptions.js
 import { executeCheck } from "./executor.js";
 import type { RuleResult, RunReport } from "./result.js";
 import { FRAMEWORK_BASELINES, type RuleMeta, RuleRegistry } from "./rule.js";
+import { RuleExecutionContext } from "./ruleContext.js";
 import { atLeast, type SeverityLevel } from "./severity.js";
 
 /** Load framework rules into a fresh registry without constructing a full Engine. */
@@ -36,7 +37,7 @@ export interface RunOptions {
 }
 
 export class Engine {
-  private readonly system: SystemContext;
+  private readonly sharedEvRegistry: EvidenceRegistry;
   private readonly _registry: RuleRegistry;
 
   constructor(
@@ -47,9 +48,7 @@ export class Engine {
       ...config.evidence,
       api_base_url: config.system.apiBaseUrl || config.evidence.apiBaseUrl,
     };
-    const basePath = process.cwd();
-    const evRegistry = new EvidenceRegistry(evCfg, basePath);
-    this.system = new SystemContext(config.system, evRegistry);
+    this.sharedEvRegistry = new EvidenceRegistry(evCfg, process.cwd());
     this._registry = registry ?? new RuleRegistry();
   }
 
@@ -129,8 +128,8 @@ export class Engine {
   }
 
   private async execute(rule: RuleMeta): Promise<RuleResult> {
-    const registry = this.system.evidence;
-    registry.resetForRule();
+    const ctx = new RuleExecutionContext(this.sharedEvRegistry);
+    const system = new SystemContext(this.config.system, ctx);
 
     const base = {
       ruleId: rule.id,
@@ -145,9 +144,9 @@ export class Engine {
     const t0 = performance.now();
     try {
       if (rule.check) {
-        await executeCheck(rule.check, this.system);
+        await executeCheck(rule.check, system);
       } else if (rule.fn) {
-        await rule.fn(this.system);
+        await rule.fn(system);
       } else {
         throw new ComplianceError(`Rule ${rule.id} has neither check nor fn defined.`);
       }
@@ -156,13 +155,13 @@ export class Engine {
         ...base,
         status: "PASS",
         durationMs,
-        confidence: registry.getConfidence(),
-        evidenceSources: registry.snapshotSources(),
+        confidence: ctx.getConfidence(),
+        evidenceSources: ctx.snapshotSources(),
       };
     } catch (e) {
       const durationMs = performance.now() - t0;
-      const evidenceSources = registry.snapshotSources();
-      const confidence = registry.getConfidence();
+      const evidenceSources = ctx.snapshotSources();
+      const confidence = ctx.getConfidence();
       if (e instanceof ComplianceError) {
         return {
           ...base,

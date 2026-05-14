@@ -401,13 +401,9 @@ Findings from a senior architecture review (May 2026). These are structural issu
 
 `RuleRegistry` instantiable class added to `rule.ts`. All 22 framework article files changed from side-effect `rule({...})` calls to `export const rules: RuleMeta[]`. All 4 framework index files export `register(registry: RuleRegistry)` instead of side-effect imports. `Engine` owns its own `RuleRegistry`, accepts optional one in constructor, calls `register()` on each framework — no global state reads. `createRegistryWithFrameworks()` helper exported for CLI commands. Tests updated: `engine.test.ts`, `rule.test.ts`, `attestation.test.ts` all use isolated registries. Isolation test added proving two Engine instances cannot bleed into each other. 46/46 tests pass, 95 rules preserved.
 
-### ARCH-2 — Separate per-rule execution context from shared evidence cache
+### ARCH-2 — Separate per-rule execution context from shared evidence cache ✓ Done
 
-**Priority: High. Blocks: parallel rule execution (ARCH-3), correctness under concurrency.**
-
-`EvidenceRegistry` conflates two unrelated responsibilities: (a) caching filesystem and network reads across rules, and (b) tracking which sources were accessed during the *current rule's* execution (`ruleSourcePaths`, `resetForRule`, `snapshotSources`). The per-rule tracking is mutable shared state that the engine must explicitly reset before each rule via `registry.resetForRule()`. If `Engine.run()` ever uses `Promise.all`, source attribution silently corrupts.
-
-Fix: introduce a lightweight `RuleExecutionContext` that wraps the shared cache for the duration of a single rule run. The shared `EvidenceRegistry` holds the cache; the context holds per-rule `ruleSourcePaths` and `confidence`. This also removes the `resetForRule`/`snapshotSources` mutable pattern from the registry entirely.
+`RuleExecutionContext` introduced in `src/core/ruleContext.ts`. `EvidenceProvider` interface added to `evidence/types.ts`. `EvidenceRegistry` stripped of all per-rule state (`ruleSourcePaths`, `_confidence`, `resetForRule`, `snapshotSources`, `setConfidence`, `getConfidence`) and exposes two read-only accessors (`getSource`, `getStructuredSourcePath`). `RuleExecutionContext` wraps the shared registry, tracks per-rule source paths and confidence, implements `EvidenceProvider`. `SystemContext.evidence` typed as `EvidenceProvider`; `executor.ts` uses `EvidenceProvider` throughout. `Engine.execute()` creates a fresh `RuleExecutionContext` and `SystemContext` per rule — no shared mutable state, no `resetForRule` call. `redaction.test.ts` updated to use `RuleExecutionContext`. 46/46 tests pass, typecheck clean.
 
 ### ARCH-3 — Parallel rule execution
 

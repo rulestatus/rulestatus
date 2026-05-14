@@ -1,3 +1,7 @@
+import type { ApiResponse } from "./collectors/apiProbe.js";
+
+export type { ApiResponse };
+
 export type Confidence = "strong" | "moderate" | "weak";
 
 export interface EvidenceSource {
@@ -37,4 +41,15 @@ export interface EvidenceCollector {
   findDocument(opts: FindDocumentOptions): Promise<Document | null>;
   loadStructured(name: string): Promise<Record<string, unknown> | null>;
   loadConfig(name: string): Promise<Record<string, unknown> | null>;
+}
+
+export interface EvidenceProvider {
+  findDocument(opts: FindDocumentOptions): Promise<Document | null>;
+  loadStructured(name: string): Promise<Record<string, unknown> | null>;
+  loadConfig(name: string): Promise<Record<string, unknown> | null>;
+  loadModelCard(): Promise<Document | null>;
+  probeApi(endpoint: string): Promise<ApiResponse | null>;
+  requireManual(message: string): never;
+  hasApi(): boolean;
+  setConfidence(c: Confidence): void;
 }

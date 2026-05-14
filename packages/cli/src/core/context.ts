@@ -1,14 +1,14 @@
 import type { SystemConfig } from "../config/schema.js";
-import type { EvidenceRegistry } from "../evidence/registry.js";
+import type { EvidenceProvider } from "../evidence/types.js";
 
 export class SystemContext {
-  readonly evidence: EvidenceRegistry;
+  readonly evidence: EvidenceProvider;
 
   constructor(
     private readonly config: SystemConfig,
-    evidenceRegistry: EvidenceRegistry,
+    evidenceProvider: EvidenceProvider,
   ) {
-    this.evidence = evidenceRegistry;
+    this.evidence = evidenceProvider;
   }
 
   get name(): string {

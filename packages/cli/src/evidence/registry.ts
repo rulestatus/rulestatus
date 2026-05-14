@@ -5,13 +5,12 @@ import { FilesystemCollector } from "./collectors/filesystem.js";
 import { ModelCardCollector } from "./collectors/modelCard.js";
 import { DictDocument, TextDocument } from "./document.js";
 import { redactData, redactText } from "./redact.js";
-import type { Confidence, Document, EvidenceSource, FindDocumentOptions } from "./types.js";
+import type { Document, EvidenceSource, FindDocumentOptions } from "./types.js";
 
 export class EvidenceRegistry {
   private readonly cache = new Map<string, unknown>();
   private readonly sourceMap = new Map<string, EvidenceSource>(); // filePath → source
-  private ruleSourcePaths: string[] = [];
-  private _confidence: Confidence = "strong";
+  private readonly cachePathMap = new Map<string, string>(); // cacheKey → filePath
 
   private readonly fs: FilesystemCollector;
   private readonly cfg: ConfigCollector;
@@ -31,16 +30,13 @@ export class EvidenceRegistry {
   async findDocument(opts: FindDocumentOptions): Promise<Document | null> {
     const key = `doc:${opts.category}:${opts.paths.join(",")}`;
     if (this.cache.has(key)) {
-      const cached = this.cache.get(key) as Document | null;
-      if (cached?.sourcePath) this.ruleSourcePaths.push(cached.sourcePath);
-      return cached;
+      return this.cache.get(key) as Document | null;
     }
     const raw = await this.fs.findDocument(opts);
     const [result, redactedFields] = raw ? this.redactDocument(raw) : [null, 0];
     this.cache.set(key, result);
     if (result) {
       this.recordDocumentSource(result, redactedFields);
-      this.ruleSourcePaths.push(result.sourcePath);
     }
     return result;
   }
@@ -48,8 +44,6 @@ export class EvidenceRegistry {
   async loadStructured(name: string): Promise<Record<string, unknown> | null> {
     const key = `structured:${name}`;
     if (this.cache.has(key)) {
-      const path = this.cachePathMap.get(key);
-      if (path) this.ruleSourcePaths.push(path);
       return this.cache.get(key) as Record<string, unknown> | null;
     }
 
@@ -71,7 +65,6 @@ export class EvidenceRegistry {
         redactedFields,
       });
       this.cachePathMap.set(key, meta.filePath);
-      this.ruleSourcePaths.push(meta.filePath);
       this.cache.set(key, data);
       return data;
     }
@@ -91,16 +84,13 @@ export class EvidenceRegistry {
   async loadModelCard(): Promise<Document | null> {
     const key = "modelcard";
     if (this.cache.has(key)) {
-      const cached = this.cache.get(key) as Document | null;
-      if (cached?.sourcePath) this.ruleSourcePaths.push(cached.sourcePath);
-      return cached;
+      return this.cache.get(key) as Document | null;
     }
     const raw = await this.mc.load();
     const [result, redactedFields] = raw ? this.redactDocument(raw) : [null, 0];
     this.cache.set(key, result);
     if (result) {
       this.recordDocumentSource(result, redactedFields);
-      this.ruleSourcePaths.push(result.sourcePath);
     }
     return result;
   }
@@ -122,35 +112,15 @@ export class EvidenceRegistry {
     return url.length > 0;
   }
 
-  /** Set confidence level for the currently executing rule. */
-  setConfidence(c: Confidence): void {
-    this._confidence = c;
+  /** Returns the EvidenceSource for a file path, if it was recorded during load. */
+  getSource(filePath: string): EvidenceSource | undefined {
+    return this.sourceMap.get(filePath);
   }
 
-  /** Reset per-rule tracking. Called by Engine before each rule execution. */
-  resetForRule(): void {
-    this.ruleSourcePaths = [];
-    this._confidence = "strong";
+  /** Returns the file path cached for a structured document by name, if any. */
+  getStructuredSourcePath(name: string): string | undefined {
+    return this.cachePathMap.get(`structured:${name}`);
   }
-
-  /**
-   * Returns sources accessed during the current rule execution, then resets tracking.
-   * Called by Engine after each rule execution.
-   */
-  snapshotSources(): EvidenceSource[] {
-    const paths = [...new Set(this.ruleSourcePaths)];
-    const sources = paths
-      .map((p) => this.sourceMap.get(p))
-      .filter((s): s is EvidenceSource => s !== undefined);
-    this.ruleSourcePaths = [];
-    return sources;
-  }
-
-  getConfidence(): Confidence {
-    return this._confidence;
-  }
-
-  private readonly cachePathMap = new Map<string, string>(); // cacheKey → filePath
 
   private recordDocumentSource(doc: Document, redactedFields = 0): void {
     if (!doc.sha256) return;
