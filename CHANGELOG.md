@@ -6,6 +6,20 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.
 
 <!-- Generated 2026-05-10 — do not edit manually. Run: bun changelog -->
 
+## [1.4.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.3.0...cli-v1.4.0) (2026-05-14)
+
+
+### Features
+
+* parallel rule execution ([898f8d4](https://github.com/rulestatus/rulestatus/commit/898f8d44b5adde24ba98f22c82c2eecccdf56250))
+* weighted scoring ([22e63ff](https://github.com/rulestatus/rulestatus/commit/22e63ffb70774c024c4c54ba2b5fa94e7f091f15))
+
+
+### Bug Fixes
+
+* circular dependency ([92f3800](https://github.com/rulestatus/rulestatus/commit/92f3800ede3e966dd44e926dfcd9d9c09edaa26c))
+* separate manual reviews from automated checks ([222bd63](https://github.com/rulestatus/rulestatus/commit/222bd63883784be963a6d3ce91ba063b6f03fe00))
+
 ## [1.3.0](https://github.com/rulestatus/rulestatus/compare/cli-v1.2.0...cli-v1.3.0) (2026-05-10)
 
 
