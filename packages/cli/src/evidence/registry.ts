@@ -1,10 +1,10 @@
-import { ApiProbeCollector, type ApiResponse } from "./collectors/apiProbe.js";
+import { ApiProbeCollector } from "./collectors/apiProbe.js";
 import { ConfigCollector } from "./collectors/config.js";
 import { FilesystemCollector } from "./collectors/filesystem.js";
 import { ModelCardCollector } from "./collectors/modelCard.js";
 import { DictDocument, TextDocument } from "./document.js";
 import { redactData, redactText } from "./redact.js";
-import type { Document, EvidenceSource, FindDocumentOptions } from "./types.js";
+import type { ApiResponse, Document, EvidenceSource, FindDocumentOptions } from "./types.js";
 
 export class EvidenceRegistry {
   private readonly cache = new Map<string, unknown>();

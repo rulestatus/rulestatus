@@ -1,8 +1,11 @@
-import type { ApiResponse } from "./collectors/apiProbe.js";
-
-export type { ApiResponse };
-
 export type Confidence = "strong" | "moderate" | "weak";
+
+export interface ApiResponse {
+  statusCode: number;
+  headers: Record<string, string>;
+  body(): Promise<unknown>;
+  ok: boolean;
+}
 
 export interface EvidenceSource {
   filePath: string;

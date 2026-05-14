@@ -1,11 +1,4 @@
-import type { Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
-
-export interface ApiResponse {
-  statusCode: number;
-  headers: Record<string, string>;
-  body(): Promise<unknown>;
-  ok: boolean;
-}
+import type { ApiResponse, Document, EvidenceCollector, FindDocumentOptions } from "../types.js";
 
 export class ApiProbeCollector implements EvidenceCollector {
   constructor(
